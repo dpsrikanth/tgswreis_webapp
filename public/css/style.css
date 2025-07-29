@@ -29,7 +29,7 @@ body {
 .sidebar a {
   color: white;
   font-size: 1.5rem;
-  margin: 20px 0;
+  margin: 10px 0;
 }
 
 .main {
@@ -646,3 +646,37 @@ tfoot td {
   margin: 0 5px;
   font-size: 22px;
 }
+
+
+
+         .top-schools-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .school-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .school-name {
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .school-district {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+
+        .complaint-count {
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }

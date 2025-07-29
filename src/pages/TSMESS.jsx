@@ -1,12 +1,13 @@
 import { toast, ToastContainer } from "react-toastify";
 import { _fetch } from "../libs/utils";
 import { useSelector } from 'react-redux';
-import React, { useEffect } from "react";
+import React, { useEffect,useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 const TSMESS = () => {
     const token = useSelector((state) => state.userappdetails.TOKEN);
     const UserType = useSelector((state) => state.userappdetails.profileData.UserType);
+    const ZoneId = useSelector((state) => state.userappdetails.profileData.ZoneId)
     const navigate = useNavigate();
     const dataFetched = React.useRef(false);
     const [todayDefaults, setTodayDefaults] = React.useState({});
@@ -15,6 +16,10 @@ const TSMESS = () => {
         following: 0,
         notFollowing: 0
     });
+    const [MonthAttendanceTotal, setMonthAttendanceTotal] = useState(0);
+    const [todayconsumedAmount, setTodayConsumedAmount] = useState(0);
+    const [monthconsumedAmount,setMonthConsumedAmount] = useState(0);
+     const [todayAttendanceTotal, setTodayAttendanceTotal] = useState(0);
 
     const tsmessdefaults = () => {
         _fetch("tsmessdefaults", null, false, token).then(res => {
@@ -32,7 +37,13 @@ const TSMESS = () => {
         });
     }
     const monthlyConsumedAmount = () => {
-        _fetch("monthlyconsumedamount", null, false, token).then(res => {
+       const payload = {}
+
+       if(UserType === 'Admin'){
+        payload.ZoneId = ZoneId
+       }
+
+        _fetch("monthlyconsumedamount", payload, false, token).then(res => {
             if (res.status === "success") {
                 const amt = res.data.map(item => item.TotalConsumedAmount);
                 const months = res.data.map(item => item.Month);
@@ -103,6 +114,47 @@ const TSMESS = () => {
         });
     }
 
+
+    const fetchDietStats = async () => {
+
+
+ const payload = {
+      
+    };
+
+    if(UserType === 'Admin'){
+      payload.ZoneId = ZoneId;
+    }
+   
+
+    try {
+      _fetch('getdietstats', payload, false, token).then(res => {
+        if (res.status === 'success') {
+         setTodayAttendanceTotal(res.data?.TodayAttendance ?? 0);
+         setMonthAttendanceTotal(res.data?.MonthAttendance ?? 0);
+         const todayAmountArray = res.data.TodayConsumedAmount;
+         const todayAmount = Array.isArray(todayAmountArray) && todayAmountArray.length > 0
+         ? todayAmountArray[0].TotalConsumedAmount ?? 0
+         : 0;
+         setTodayConsumedAmount(todayAmount);
+         const monthAmountArray = res.data.MonthConsumedAmount;
+         const monthAmount = Array.isArray(monthAmountArray) && monthAmountArray.length > 0
+         ? monthAmountArray[0].TotalConsumedAmount ?? 0
+         : 0;
+         setMonthConsumedAmount(monthAmount);
+
+        } else {
+          console.error(res.message);
+        }
+
+      })
+    } catch (error) {
+      console.error("Error fetching student attendance total:", error);
+    }
+  }
+
+
+
     const fetchMenuCompliance = async () => {
         _fetch("complianceoverview", null, false, token).then(res => {
             if (res.status === "success") {
@@ -127,6 +179,7 @@ const TSMESS = () => {
             fetchMenuCompliance();
             tsmessdefaults();
             monthlyConsumedAmount();
+            fetchDietStats();
         }
     }, []);
     return (
@@ -142,7 +195,8 @@ const TSMESS = () => {
                                     <div className="d-flex justify-content-between align-items-center">
                                         <div>
                                             <h6>Today Attendance</h6>
-                                            <h4 className="fw-bold">{todayDefaults?.TodayTotalPresent || 0}  / {todayDefaults?.TodayTotalStrength || 0}</h4>
+                                            {/* <h4 className="fw-bold">{todayDefaults?.TodayTotalPresent || 0}  / {todayDefaults?.TodayTotalStrength || 0}</h4> */}
+                                            <h4 className="fw-bold">{todayAttendanceTotal}</h4>
                                         </div>
                                         <img src="img/today_attendance_icon.png" height="40px" alt="Today Attendance Icon" />
                                     </div>
@@ -155,7 +209,8 @@ const TSMESS = () => {
                                     <div className="d-flex justify-content-between align-items-center">
                                         <div>
                                             <h6>Today Consumed Amount</h6>
-                                            <h4 className="fw-bold"><span className="pe-1">₹</span>{todayDefaults?.TodayTotalConsumedAmount || 0}</h4>
+                                            {/* <h4 className="fw-bold"><span className="pe-1">₹</span>{todayDefaults?.TodayTotalConsumedAmount || 0}</h4> */}
+                                            <h4 className="fw-bold"><span className="pe-1">₹</span>{todayconsumedAmount}</h4>
                                         </div>
                                         <img src="img/today_consumed_icon.png" height="40px" alt="Today Consumed Icon" />
 
@@ -183,7 +238,8 @@ const TSMESS = () => {
                                 <div className="white-box d-flex justify-content-between align-items-center shadow-sm">
                                     <div>
                                         <h6 className="fw-bold">Month Attendance</h6>
-                                        <h4 className="fw-bold maroon">{monthDefaults?.MonthMonthTotalPresent || 0} / {monthDefaults?.TotalStregth || 0}</h4>
+                                        {/* <h4 className="fw-bold maroon">{monthDefaults?.MonthMonthTotalPresent || 0} / {monthDefaults?.TotalStregth || 0}</h4> */}
+                                        <h4 className="fw-bold maroon">{MonthAttendanceTotal}</h4>
                                     </div>
                                     <img src="img/month_attendance_icon.png" height="40px" alt="Month Attendance Icon" />
                                 </div>
@@ -194,7 +250,8 @@ const TSMESS = () => {
                                 <div className="white-box d-flex justify-content-between align-items-center shadow-sm">
                                     <div>
                                         <h6 className="fw-bold">Month Consumed Amount</h6>
-                                        <h4 className="fw-bold maroon"><span className="text-black pe-1">₹</span>{monthDefaults?.MonthConsumedAmount || 0}</h4>
+                                        {/* <h4 className="fw-bold maroon"><span className="text-black pe-1">₹</span>{monthDefaults?.MonthConsumedAmount || 0}</h4> */}
+                                        <h4 className="fw-bold maroon"><span className="text-black pe-1">₹</span>{monthconsumedAmount}</h4>
                                     </div>
                                     <img src="img/month_consumed_icon.png" height="40px" alt="Month Consumed Icon" />
                                 </div>

@@ -374,7 +374,7 @@ const parseXMLField = (xmlString, tagName) => {
           <div className="white-box mt-2 py-2 px-3 rounded-lg">
             <div className="d-flex justify-content-between">
               <div>
-                <h4 className="">School: {selectedSchoolName}</h4>
+                <h4 className="">School: {selectedSchoolName} - {selectedSchool}</h4>
                 <h6>Total Sanctioned Positions : <strong>{staffCount}</strong></h6>
               </div>
              

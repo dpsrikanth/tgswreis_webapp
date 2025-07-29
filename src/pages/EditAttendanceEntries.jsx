@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import Select from 'react-select';
 import { _fetch } from '../libs/utils';
+import { toast, ToastContainer } from "react-toastify";
+
 const EditAttendanceEntries = () => {
 
 const token = useSelector((state) => state.userappdetails.TOKEN);
@@ -11,6 +13,7 @@ const schoolsList = useSelector((state) => state.userappdetails.SCHOOL_LIST);
 const navigate = useNavigate();
 const dataFetched = useRef(false);
 const [selectedSchool,setSelectedSchool] = useState('');
+const [selectedSchoolId,setSelectedSchoolId] = useState('');
 const [selectedMonth,setSelectedMonth] = useState('');
 const [selectedYear,setSelectedYear] = useState('');
 const [attendanceDetails,setAttendanceDetails] = useState('');
@@ -31,7 +34,8 @@ if(schoolList && Array.isArray(schoolList)){
 
 const schoolOptions = schoolList.map((school) => ({
     value: school.SchoolCode,
-    label: school.PartnerName.replace('TGSWREIS','')
+    label: school.PartnerName.replace('TGSWREIS',''),
+    schoolid: school.SchoolID
 }))
 
 
@@ -74,6 +78,25 @@ const getEditAttendanceEntries = async() => {
 }
 
 
+const UpdateAttendanceEntries = async () => {
+
+    try {
+        _fetch('updateattendanceentries',{schoolid:selectedSchoolId,mealday: new Date(selectedRow.TodayDate).toISOString().split('T')[0],tpresent: totalPresent,tabsent: totalAbsent,toutsiders: totalGuest,tsick: totalSick},false,token).then(res => {
+            if(res.status === 'success'){
+                toast.success(res.message);
+                setShowModal(false);
+                getEditAttendanceEntries();
+            } else {
+                toast.error(res.message);
+            }
+        })
+
+    } catch (error){
+        console.log('Error updating attendance entries',error)
+    }
+}
+
+
 useEffect(() => {
 if(!token) {
     navigate('/login');
@@ -84,7 +107,6 @@ if(!token) {
 
 useEffect(() => {
     getEditAttendanceEntries();
-
 },[selectedMonth,selectedYear])
 
 
@@ -103,6 +125,7 @@ const monthName = date.toLocaleString('default', {month: 'long'});
 
   return (
     <>
+         <ToastContainer />
           <h6 className="fw-bold mb-3"><a onClick={() => {navigate('/samsdashboard')}}><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle',cursor:'pointer'}}></i></a>Edit Attendance Entries</h6>
      
       <div className="row gy-3">
@@ -121,7 +144,9 @@ const monthName = date.toLocaleString('default', {month: 'long'});
                                isSearchable={true}
                                placeholder="Select School"
                                options={schoolOptions}
-                               onChange={(option) => setSelectedSchool(option ? option.value : '')
+                               onChange={(option) => {setSelectedSchool(option ? option.value : '')
+                                 setSelectedSchoolId(option ? option.schoolid : '')
+                               }
                                 }
                                />
                             </div>
@@ -243,7 +268,7 @@ const monthName = date.toLocaleString('default', {month: 'long'});
             </div>
             <div className="modal-footer">
                 <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" className="btn btn-primary">Update</button>
+                <button type="button" className="btn btn-primary" onClick={UpdateAttendanceEntries}>Update</button>
             </div>
           </div>
         </div>

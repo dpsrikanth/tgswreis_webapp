@@ -66,8 +66,18 @@ const SamsDashboard = () => {
   }, [token]);
 
   const fetchStudentAdmissionTotal = async () => {
+
+
+     const payload = {};
+
+     if(UserType === 'Admin'){
+      payload.ZoneId = ZoneId;
+     }
+ 
+
+
     try {
-      _fetch("admissiontotals", null, false, token).then(res => {
+      _fetch("admissiontotals", payload, false, token).then(res => {
         if (res.status === "success") {
           setInitialData({
             TotalSeatsAdmitted: res.data[0].TotalSeatsAdmitted || 0,
@@ -82,10 +92,15 @@ const SamsDashboard = () => {
 
   const fetchStudentAttendanceTotal = async () => {
 
-    const payload = {
+
+ const payload = {
       TodayDate: new Date().toISOString().split('T')[0]
     };
 
+    if(UserType === 'Admin'){
+      payload.ZoneId = ZoneId;
+    }
+   
 
     try {
       _fetch('studentattendancetotal', payload, false, token).then(res => {

@@ -71,7 +71,7 @@ const Header = () => {
                     </div>
                     
                      <div className='d-flex align-items-center gap-3'>
-                     <img src='img/ministerlogo.png' style={{width:'104px',height:'104px'}} alt='' />
+                     <img src='img/ministerlogonew1.png' style={{width:'104px',height:'104px'}} alt='' />
                     <img src='img/CM.png' alt=''/>
                      </div>
                     

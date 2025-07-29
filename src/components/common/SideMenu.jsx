@@ -55,8 +55,22 @@ const SideMenu = () => {
             
              {UserType === 'SuperAdmin' ? (  <NavLink to="/editattendanceentries">
                 <div className="d-flex flex-column justify-content-between align-items-center">
-                <img src="img/data_icon.png" alt="" style={{width:'28px',height:'28px'}}/>
+                <img src="img/editattend2.png" alt="" style={{width:'28px',height:'28px'}}/>
                 <span style={{fontSize:'12px'}}>Edit Attd</span>
+            </div>
+            </NavLink> ) : (null)}
+
+             {UserType === 'SuperAdmin' ? (  <NavLink to="/schoolscontact">
+                <div className="d-flex flex-column justify-content-between align-items-center">
+                <img src="img/editcontacts.png" alt="" style={{width:'28px',height:'28px'}}/>
+                <span style={{fontSize:'12px'}}>Edit Contact</span>
+            </div>
+            </NavLink> ) : (null)}
+
+             {UserType === 'SuperAdmin' ? (  <NavLink to="/complaintdashboard">
+                <div className="d-flex flex-column justify-content-between align-items-center">
+                <img src="img/phonemitra.png" alt="" style={{width:'28px',height:'28px'}}/>
+                <span style={{fontSize:'12px'}}>Phone Mitra</span>
             </div>
             </NavLink> ) : (null)}
         </div>

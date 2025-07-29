@@ -21,6 +21,10 @@ import VendorWiseReleasing from './pages/VendorWiseReleasing';
 import StaffRecords from './pages/StaffRecords';
 import EditAttendanceEntries from './pages/EditAttendanceEntries';
 import StockProvisions from './pages/StockProvisions';
+import ComplaintEntry from './pages/ComplaintEntry';
+import ComplaintDashboard from './pages/ComplaintDashboard';
+import EditZoneContacts from './pages/EditZoneContacts';
+import EditSchoolContacts from './pages/EditSchoolContacts';
 const AppRoutes = () => {
   return (
     <Router>
@@ -136,6 +140,31 @@ const AppRoutes = () => {
          <Route path='/stockprovisions' element={
           <ProtectedRoute>
             <StockProvisions />
+          </ProtectedRoute>
+        } />
+
+         <Route path='/complaintentry' element={
+          <ProtectedRoute>
+            <ComplaintEntry />
+          </ProtectedRoute>
+        } />
+
+        <Route path='/complaintdashboard' element={
+          <ProtectedRoute>
+            <ComplaintDashboard />
+          </ProtectedRoute>
+        } />
+
+         <Route path='/zonescontact' element={
+          <ProtectedRoute>
+            <EditZoneContacts />
+          </ProtectedRoute>
+        } />
+
+
+         <Route path='/schoolscontact' element={
+          <ProtectedRoute>
+            <EditSchoolContacts />
           </ProtectedRoute>
         } />
 

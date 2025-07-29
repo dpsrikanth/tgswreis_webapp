@@ -1,6 +1,54 @@
-import React from 'react'
+import React,{ useEffect,useRef,useState} from 'react'
+import { data, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { _fetch } from '../libs/utils';
+import { toast, ToastContainer } from "react-toastify";
 
 const StockProvisions = () => {
+
+   const token = useSelector((state) => state.userappdetails.TOKEN);
+   const UserType = useSelector((state) => state.userappdetails.profileData.UserType);
+   const schoolsList = useSelector((state) => state.userappdetails.SCHOOL_LIST);
+   const navigate = useNavigate();
+   const dataFetched = useRef(false);
+   const [stockProvisionsGrid,setStockProvisionsGrid] = useState([]); 
+   const [criticalCount,setCriticalCount] = useState(0);
+   const [lowCount,setLowCount] = useState(0);
+   const [mediumCount,setMediumCount] = useState(0);
+   const [goodCount,setGoodCount] = useState(0);
+   const [filterStatus,setFilterStatus] = useState('Critical')
+
+
+   const fetchStockProvisionsSchools = async () => {
+
+    const payload = {
+        StatusFilter : filterStatus
+    }
+
+    try {
+        _fetch('stockprovisionsschools',payload,false,token).then(res => {
+            if(res.status === 'success'){
+                setStockProvisionsGrid(res.data.criticalStockData);
+                setCriticalCount(res.data.Summary[0].NoOfSchools)
+                toast.success(res.message);
+            } else {
+                toast.error(res.message);
+                setStockProvisionsGrid([])
+            }
+        })
+
+    } catch (error) {
+        console.log('Error fetching Stock Provisions data for schools',error)
+    }
+   }
+
+
+ useEffect(() => {
+  fetchStockProvisionsSchools();
+}, [filterStatus]); 
+
+
+
   return (
     <>
      <h6 className="fw-bold mb-3"><a href="tsmess.html"><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign: 'middle'}}></i></a>Food Provisions</h6>
@@ -18,7 +66,8 @@ const StockProvisions = () => {
             <div className="white-box shadow-sm">
                 <div className="card-body">
                  <h5>Critical Stock Levels</h5>
-                 <h4 className="text-danger">48</h4>
+                 <h4 className="text-danger">{criticalCount}</h4>
+                 <button className='btn btn-primary' onClick={() => setFilterStatus('Critical')}>View</button>
                 </div>
             </div>
         </div>
@@ -26,7 +75,8 @@ const StockProvisions = () => {
             <div className="white-box shadow-sm">
                 <div className="card-body">
                  <h5>Low Stock Levels</h5>
-                 <h4 style={{color:'orange'}}>48</h4>
+                 <h4 style={{color:'orange'}}>{lowCount}</h4>
+                  <button className='btn btn-primary' onClick={() => setFilterStatus('Low')}>View</button>
                 </div>
             </div>
         </div>
@@ -34,7 +84,8 @@ const StockProvisions = () => {
             <div className="white-box shadow-sm ">
                 <div className="card-body">
                  <h5>Medium Stock Levels</h5>
-                 <h4 className="text-warning">48</h4>
+                 <h4 className="text-warning">{mediumCount}</h4>
+                  <button className='btn btn-primary' onClick={() => setFilterStatus('Medium')}>View</button>
                 </div>
             </div>
         </div>
@@ -42,7 +93,8 @@ const StockProvisions = () => {
             <div className="white-box shadow-sm ">
                 <div className="card-body">
                  <h5>Good Stock Levels</h5>
-                 <h4 className="text-success">48</h4>
+                 <h4 className="text-success">{goodCount}</h4>
+                  <button className='btn btn-primary' onClick={() => setFilterStatus('Good')}>View</button>
                 </div>
             </div>
         </div>
@@ -52,7 +104,7 @@ const StockProvisions = () => {
             <div className="pe-2">
                 <i className="bi bi-exclamation-triangle" style={{fontSize:'22px'}}></i>
             </div>
-   <div>48 schools have critically low stock in key items like Rice, Oil, and Milk.</div>
+   <div>{criticalCount} schools have critically low stock in key items like Rice, Oil, and Milk.</div>
 </div>
       </div>
 
@@ -67,18 +119,31 @@ const StockProvisions = () => {
                             <tr>
                                 <th>School Code</th>
                                 <th>School Name</th>
-                                <th>Zone</th>
-                                <th>District</th>
                                 <th>Item</th>
                                 <th>Current Stock</th>
-                                <th>Threshold</th>
+                                <th>Required Qty</th>
+                                <th>Total Strength</th>
+                                <th>Stock Percentage</th>
                                 <th>Status</th>
-                                <th>Days Left</th>
-                                <th>Last Updated</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
+                         {stockProvisionsGrid.map((item,index) => (
+                            <tr key={index}>
+                                <td>{item.SchoolCode}</td>
+                                <td>{item.PartnerName}</td>
+                                <td>{item.IngredientName}</td>
+                                <td>{item.AvailQty}</td>
+                                <td>{item.RequiredQty}</td>
+                                <td>{item.TotalStrength}</td>
+                                <td>{item.StockPercent}</td>
+                                <td>
+                                     <span className="badge text-bg-danger">{item.StockStatus}</span>
+                                </td>
+                            </tr>
+                         ))}
+
+                            {/* <tr>
                                 <td>51902</td>
                                 <td>Test School</td>
                                 <td>Kaleshwaram</td>
@@ -93,71 +158,8 @@ const StockProvisions = () => {
                                     <span className="badge text-bg-danger">2 days</span>
                                 </td>
                                 <td>2025-07-15</td>
-                            </tr>
-                             <tr>
-                                <td>51902</td>
-                                <td>Test School 2</td>
-                                <td>Sircilla</td>
-                                <td>Siddipet</td>
-                                <td>Milk</td>
-                                <td>18 liters</td>
-                                <td>150 liters</td>
-                                <td>
-                                    <span className="badge text-bg-danger">Critical</span>
-                                </td>
-                                <td>
-                                    <span className="badge text-bg-danger">2 days</span>
-                                </td>
-                                <td>2025-07-15</td>
-                            </tr>
-                             <tr>
-                                <td>51902</td>
-                                <td>Test School</td>
-                                <td>Kaleshwaram</td>
-                                <td>Asifabad</td>
-                                <td>Oil</td>
-                                <td>8 liters</td>
-                                <td>60 liters</td>
-                                <td>
-                                    <span className="badge text-bg-danger">Critical</span>
-                                </td>
-                                <td>
-                                    <span className="badge text-bg-danger">2 days</span>
-                                </td>
-                                <td>2025-07-15</td>
-                            </tr>
-                            <tr>
-                                <td>51902</td>
-                                <td>Test School</td>
-                                <td>Kaleshwaram</td>
-                                <td>Asifabad</td>
-                                <td>Oil</td>
-                                <td>8 liters</td>
-                                <td>60 liters</td>
-                                <td>
-                                    <span className="badge text-bg-danger">Critical</span>
-                                </td>
-                                <td>
-                                    <span className="badge text-bg-danger">2 days</span>
-                                </td>
-                                <td>2025-07-15</td>
-                            </tr>
-                            <tr>
-                                <td>51902</td>
-                                <td>Test School</td>
-                                <td>Kaleshwaram</td>
-                                <td>Asifabad</td>
-                                <td>Oil</td>
-                                <td>8 liters</td>
-                                <td>60 liters</td>
-                                <td>
-                                    <span className="badge text-bg-danger">Critical</span>
-                                </td>
-                                <td>
-                                    <span className="badge text-bg-danger">2 days</span>
-                                </td>
-                                <td>2025-07-15</td>
-                            </tr>
+                            </tr> */}
+                           
                         </tbody>
                     </table>
                 </div>
