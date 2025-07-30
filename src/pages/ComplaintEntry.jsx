@@ -2,13 +2,14 @@ import React,{ useEffect,useRef,useState }  from 'react'
 import { useSelector } from 'react-redux'
 import { _fetch } from '../libs/utils';
 import { toast, ToastContainer } from "react-toastify";
-import {useNavigate} from 'react-router-dom'
+import {data, useNavigate} from 'react-router-dom'
 
 const ComplaintEntry = () => {
 
 const token = useSelector((state) => state.userappdetails.TOKEN);
 const UserType = useSelector((state) => state.userappdetails.profileData.UserType);
-
+const UserName = useSelector((state) => state.userappdetails.profileData.UserName);
+const dataFetched = useRef(false);
 const [complaintLogs,setComplaintLogs] = useState([]);
 const [showAddModal,setShowAddModal] = useState(false);
 const [showEditModal,setShowEditModal] = useState(false);
@@ -53,8 +54,10 @@ const fetchComplaintLogs = async () => {
 
 useEffect(() => {
 
-    fetchComplaintLogs();
-
+    if(!dataFetched.current){
+        dataFetched.current = true;
+        fetchComplaintLogs();
+    }
 },[])
 
 
@@ -83,7 +86,7 @@ const updateComplaintLog = async () => {
     console.log(complaintId)
      const payload = {
         Status: updateStatus,
-        LastUpdatedBy: UserType,
+        LastUpdatedBy: UserName,
         ResolvedDate: resolvedDate ? new Date(resolvedDate) : null,
         ComplaintId: complaintId
      }
@@ -148,7 +151,7 @@ const CreateNewComplaint = async () => {
             TypeofCall: TypeOfCall,
             ReportedBy: ReportedBy, 
             Remarks: addRemarks,
-            AddedBy: UserType,
+            AddedBy: UserName,
             SchoolId: schoolCode,
             ActionTaken: actionTaken
         }
@@ -169,6 +172,29 @@ const CreateNewComplaint = async () => {
     } catch(error){
         console.error('Error Creating a new complaint:',error)
     }
+}
+
+
+useEffect(() => {
+
+    if(GSMNumber.length === 10){
+        fetchGSMDetails();
+    }
+
+},[GSMNumber])
+
+
+const getStatusClass = (status) => {
+  switch(status){
+    case 'Pending':
+      return 'badge text-bg-danger';
+    case 'Not Resolved':
+      return 'badge text-bg-secondary';
+    case 'Resolved':
+    return 'badge text-bg-success';
+    case 'Partially Resolved':
+      return 'badge text-bg-warning';
+  }
 }
 
 
@@ -234,9 +260,9 @@ const CreateNewComplaint = async () => {
                                 <td>{item.PartnerName}</td>
                                 <td>{item.CallNotes}</td>
                                 <td>{item.TypeOfCall}</td>
-                                <td>{item.ActionTaken}</td>
-                                <td>{item.Remarks}</td>
-                                <td><span className={(item.Status === 'Pending' ? 'badge text-bg-danger' : 'badge text-bg-success')}>{item.Status}</span></td>
+                                <td style={{ whiteSpace: 'pre-line' }}>{item.ActionTaken}</td>
+                                <td style={{ whiteSpace: 'pre-line' }}>{item.Remarks}</td>
+                                <td><span className={getStatusClass(item.Status)}>{item.Status}</span></td>
                                  <td>
                                 <div className="icon-container">
                                     <i className="bi bi-pencil-square" style={{cursor:'pointer',color:'var(--primary-purple)'}} onClick={() => {
@@ -266,11 +292,11 @@ const CreateNewComplaint = async () => {
             <div className="modal-body">
                 <div className="row g-3 mb-3">
                     <div className="col-sm-4">
-                       <label className="form-label">Enter GSM Number</label>
+                       <label className="form-label">Enter GSM Number <span class="man">&#65290;</span></label>
                        <input type="number" value={GSMNumber} onChange={(e) => setGSMNumber(e.target.value)} className="form-control" />
                     </div>
                     <div className='col-sm-2'>
-                        <button className='btn btn-sm btn-primary' onClick={() => fetchGSMDetails()}>Fetch</button>
+                        {/* <button className='btn btn-sm btn-primary mt-4' onClick={() => fetchGSMDetails()}>Fetch</button> */}
                     </div>
                     <div className="col-sm-6">
                         <label className="form-label">Institution Name:</label>
@@ -285,29 +311,29 @@ const CreateNewComplaint = async () => {
                         <textarea rows="3" value={address} className="form-control" disabled></textarea>
                     </div>
                     <div className="col-sm-6">
-                      <label className="form-label">Reported By</label>
+                      <label className="form-label">Reported By <span class="man">&#65290;</span></label>
                       <input type='text' value={ReportedBy} onChange={(e) => setReportedBy(e.target.value)} className='form-control'/>
                   </div>
                     <div className="col-sm-6">
-                    <label className="form-label">Type of Call</label>
+                    <label className="form-label">Type of Call <span class="man">&#65290;</span></label>
                      <select className="form-select" value={TypeOfCall} onChange={(e) => setTypeofCall(e.target.value)}>
                         <option value="">--Select--</option>
                         <option value="Academic Support Complaint">Academic Support Complaint</option>
                         <option value="Emotional and Well Being Complaint">Emotional and Well Being Complaint</option>
                         <option value="Food and Hygiene Complaint">Food and Hygiene Complaint</option>
                         <option value="Behavioral and Social Complaint">Behavioral and Social Complaint</option>
-                        <option value=">Facilities and Infrastructure Complaint">Facilities and Infrastructure Complaint</option>
+                        <option value="Facilities and Infrastructure Complaint">Facilities and Infrastructure Complaint</option>
                         <option value="Security Complaint/Emergency">Security Complaint/Emergency</option>
                         <option value="General">General</option>
                         <option value="Test Call">Test Call</option>
                      </select>
                     </div>
                     <div className="col-sm-12">
-                        <label className="form-label">Discussion Regarding</label>
+                        <label className="form-label">Discussion Regarding <span class="man">&#65290;</span></label>
                         <textarea rows="2" value={callNotes} onChange={(e) => setCallNotes(e.target.value)} className="form-control"></textarea>
                     </div>
                     <div className="col-sm-12">
-                        <label className="form-label">Action Taken</label>
+                        <label className="form-label">Action Taken <span class="man">&#65290;</span></label>
                         <textarea rows="2" value={actionTaken} onChange={(e) => setActionTaken(e.target.value)} className="form-control"></textarea>
                     </div>
                      {/* <div className="col-sm-6">
@@ -324,7 +350,7 @@ const CreateNewComplaint = async () => {
                         <input type="date" className="form-control" />
                     </div> */}
                     <div className="col-sm-12">
-                        <label className="form-label">Reasons/Remarks</label>
+                        <label className="form-label">Reasons/Remarks <span class="man">&#65290;</span></label>
                         <textarea className="form-control" value={addRemarks} onChange={(e) => setAddRemarks(e.target.value)} rows="3"></textarea>
                     </div>
                    </div>

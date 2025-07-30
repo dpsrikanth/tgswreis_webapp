@@ -680,3 +680,13 @@ tfoot td {
             font-size: 0.85rem;
             font-weight: 600;
         }
+
+
+        .man {
+           color: rgb(233, 2, 2);
+        }
+
+        .w-20 {
+          width: 20%;
+          margin: 10px;
+        }

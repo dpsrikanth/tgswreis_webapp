@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 
 const Login = () => {
     const token = useSelector((state) => state.userappdetails.TOKEN);
+    const UserType = useSelector((state) => state.userappdetails.profileData.UserType);
     const [user, setUser] = React.useState({
         userId: '',
         password: ''
@@ -134,7 +135,14 @@ const Login = () => {
                         return false;
                     }
                     await storeResponse(data); // Only after this, lists are fetched
-                    navigate("/samsdashboard", { state: { type: "success", message: "Login successful" } });
+
+                    if(data.data.UserType === 'CallCentre'){
+                        navigate("/complaintentry", { state: { type: "success", message: "Login successful" } });
+                    } else {
+                       navigate("/samsdashboard", { state: { type: "success", message: "Login successful" } });
+                    }
+                    
+                    
                 })
                 .catch(error => {
                     toast.error("Login failed: " + error.message);

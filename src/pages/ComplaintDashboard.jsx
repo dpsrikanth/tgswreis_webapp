@@ -2,17 +2,19 @@ import React,{ useEffect,useRef,useState }  from 'react'
 import { useSelector } from 'react-redux'
 import { _fetch } from '../libs/utils';
 import { toast, ToastContainer } from "react-toastify";
-import {useNavigate} from 'react-router-dom'
+import {data, useNavigate} from 'react-router-dom'
 
 
 const ComplaintDashboard = () => {
 
 const token = useSelector((state) => state.userappdetails.TOKEN);
 const UserType = useSelector((state) => state.userappdetails.profileData.UserType);
+const dataFetched = useRef(false);
 const [pendingCount,setPendingCount] = useState(0);
 const [resolvedCount,setResolvedCount] = useState(0);
 const [totalCount,setTotalCount] = useState(0);
 const [partiallyResolvedCount,setPartiallyResolvedCount] = useState(0);
+const [notResolvedCount,setNotResolvedCount] = useState(0);
 const [topSchoolsList,setTopSchoolsList] = useState([]);
 const [complaintLogs,setComplaintLogs] = useState([]);
 const [showViewModal,setShowViewModal] = useState(false);
@@ -27,7 +29,8 @@ const fetchComplaintStats = async () => {
         setPendingCount(res.data.ComplaintStats[0].CountByStatus);
         setResolvedCount(res.data.ComplaintStats?.[2]?.CountByStatus);
         setPartiallyResolvedCount(res.data.ComplaintStats?.[1]?.CountByStatus);
-        setTotalCount(res.data.ComplaintStats?.[4]?.CountByStatus); 
+        setTotalCount(res.data.ComplaintStats?.[4]?.CountByStatus);
+        setNotResolvedCount(res.data.ComplaintStats?.[3]?.CountByStatus); 
       }
     })
 
@@ -176,11 +179,15 @@ const fetchMonthlyTrends = async () => {
 
 
 useEffect(() => {
+
+if(!dataFetched.current){
+  dataFetched.current = true;
 fetchComplaintStats();
 fetchTopSchoolsByComplaints();
 fetchComplaintLogs();
 fetchComplaintTypes();
 fetchMonthlyTrends();
+}
 },[])
 
 
@@ -193,7 +200,7 @@ const getStatusClass = (status) => {
     case 'Resolved':
     return 'badge text-bg-success';
     case 'Partially Resolved':
-      return 'badge text-bg-primary';
+      return 'badge text-bg-warning';
   }
 }
 
@@ -203,11 +210,11 @@ const getStatusClass = (status) => {
     <>
           <h6 className="fw-bold mb-3"><a onClick={() => navigate('/samsdashboard')} style={{cursor:'pointer'}}><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>TGSWREIS Complaint Dashboard</h6>
 
-      <div className="row g-3 mb-3 pt-3">
+      <div className="row g-3 mb-3">
 
         <div className="col-sm-12">
-            <div className="row g-3 mb-3">
-        <div className="col-md-3">
+            <div className="d-flex text-center">
+        <div className="w-20">
           <a href="">
           <div
             className="white-box d-flex justify-content-between shadow-sm"
@@ -223,23 +230,23 @@ const getStatusClass = (status) => {
           </div>
           </a>
         </div>
-        <div className="col-md-3">
+        <div className="w-20">
           <a href="">
           <div
             className="white-box d-flex justify-content-between shadow-sm">
             <div>
              
-              <h3 className="fw-bold text-warning">{pendingCount}</h3>
+              <h3 className="fw-bold text-danger">{pendingCount}</h3>
                <h6 className="fw-bold">Pending</h6>
             </div>
             <div className="text-end">
-             <i className="bi bi-hourglass-split text-warning" style={{fontSize:'28px'}}></i>
+             <i className="bi bi-hourglass-split text-danger" style={{fontSize:'28px'}}></i>
              
             </div>
           </div>
           </a>
         </div>
-        <div className="col-md-3">
+        <div className="w-20">
           <div
             className="white-box d-flex justify-content-between shadow-sm"
           >
@@ -254,15 +261,27 @@ const getStatusClass = (status) => {
             </div>
           </div>
         </div>
-        <div className="col-md-3">
+        <div className="w-20">
           <div
             className="white-box d-flex justify-content-between shadow-sm">
             <div>
-              <h3 className="fw-bold text-primary">{partiallyResolvedCount}</h3>
+              <h3 className="fw-bold text-warning">{partiallyResolvedCount}</h3>
               <h6 className="fw-bold">Partially Resolved</h6>
             </div>
             <div className="text-end">
-             <i className="bi bi-exclamation-triangle-fill text-primary" style={{fontSize: '28px'}}></i>
+             <i className="bi bi-circle-half text-warning" style={{fontSize: '28px'}}></i>
+            </div>
+          </div>
+        </div>
+        <div className="w-20">
+          <div
+            className="white-box d-flex justify-content-between shadow-sm">
+            <div>
+              <h3 className="fw-bold text-secondary">{notResolvedCount}</h3>
+              <h6 className="fw-bold">Not Resolved</h6>
+            </div>
+            <div className="text-end">
+             <i className="bi bi-exclamation-triangle-fill text-secondary" style={{fontSize: '28px'}}></i>
             </div>
           </div>
         </div>
@@ -278,7 +297,7 @@ const getStatusClass = (status) => {
                  <div className="col-sm-4">
             <div className="white-box shadow-sm">
                  <h5 className="chart-title">Complaint Types</h5>
-                    <div className="chart-container" style={{width:'300px'}}>
+                    <div className="chart-container" style={{width:'350px'}}>
                         <canvas id="complaintTypesChart"></canvas>
                     </div>
             </div>
@@ -286,7 +305,7 @@ const getStatusClass = (status) => {
 
         <div className="col-sm-4">
             <div className="white-box shadow-sm">
-                 <h5 className="chart-title">Monthly Trends</h5>
+                 <h5 className="chart-title">Monthly Complaint Trends</h5>
                     <div className="chart-container" style={{width:'300px'}}>
                         <canvas id="dailyTrendsChart"></canvas>
                     </div>
@@ -306,7 +325,7 @@ const getStatusClass = (status) => {
                     </div> */}
 
                     {topSchoolsList.map((item,index) => (
-                      <div className='school-item'>
+                      <div className='school-item' key={index}>
                         <div>
                          <div className='school-name'>{item.PartnerName}</div>
                          <div className="school-district">{item.DistrictName}</div>
