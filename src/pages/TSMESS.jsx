@@ -281,7 +281,7 @@ const TSMESS = () => {
                             <a onClick={() => { navigate("/menus") }} className="shadow-sm"><span className="dot"></span>Daily Menu</a>
                         </div>
                         <div className="col-md-3">
-                            <a onClick={() => { navigate("/stock") }} className="shadow-sm"><span className="dot"></span>Stock</a>
+                            <a onClick={() => { navigate("/stockprovisions") }} className="shadow-sm"><span className="dot"></span>Stock</a>
                         </div>
                         <div className="col-md-3">
                             <a onClick={() => { navigate("/items") }} style={{ cursor: 'pointer' }} className="shadow-sm"><span className="dot"></span>Items</a>

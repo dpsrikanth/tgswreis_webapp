@@ -51,7 +51,7 @@ const StockProvisions = () => {
 
   return (
     <>
-     <h6 className="fw-bold mb-3"><a href="tsmess.html"><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign: 'middle'}}></i></a>Food Provisions</h6>
+     <h6 className="fw-bold mb-3"><a onClick={navigate('/samsdashboard')}><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign: 'middle'}}></i></a>Food Provisions</h6>
      
       <div className="row gy-3">
        

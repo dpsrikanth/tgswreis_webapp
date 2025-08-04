@@ -3,6 +3,9 @@ import { useSelector } from 'react-redux'
 import { _fetch } from '../libs/utils';
 import { toast, ToastContainer } from "react-toastify";
 import {data, useNavigate} from 'react-router-dom'
+import io from 'socket.io-client'
+
+
 
 
 const ComplaintDashboard = () => {
@@ -19,6 +22,7 @@ const [topSchoolsList,setTopSchoolsList] = useState([]);
 const [complaintLogs,setComplaintLogs] = useState([]);
 const [showViewModal,setShowViewModal] = useState(false);
 const [selectedRow,setSelectedRow] = useState('');
+const [notification, setNotification] = useState(null);
 const navigate = useNavigate();
 
 const fetchComplaintStats = async () => {
@@ -74,6 +78,10 @@ const fetchComplaintLogs = async () => {
     }
 }
 
+
+let complaintChartInstance = null;
+let monthlyTrendChartInstance = null;
+
 const fetchComplaintTypes = async () => {
   try{ 
 
@@ -81,11 +89,15 @@ const fetchComplaintTypes = async () => {
       if(res.status === 'success'){
         const complainTypes = res.data.map(item => item.TypeOfCall);
         const count = res.data.map(item => item.Count);
+
+         if (complaintChartInstance) {
+          complaintChartInstance.destroy();
+        }
        
         if(document.getElementById('complaintTypesChart')) {
-          const complaintsdoughnut = document.getElementById('complaintTypesChart')
+          const ctx = document.getElementById('complaintTypesChart')
                                     .getContext('2d');
-                          new Chart(complaintsdoughnut,{
+           complaintChartInstance = new Chart(ctx,{
                                 type: 'doughnut',
                 data: {
                     labels: complainTypes,
@@ -131,11 +143,15 @@ const fetchMonthlyTrends = async () => {
         const months = res.data.map(item => item.MonthYear)
         const count = res.data.map(item => item.RecordCount)
 
+        if(monthlyTrendChartInstance){
+          monthlyTrendChartInstance.destroy();
+        }
+
        if(document.getElementById('dailyTrendsChart')){
-        const monthlytrends = document.getElementById('dailyTrendsChart')
+        const ctx2 = document.getElementById('dailyTrendsChart')
                               .getContext('2d');
 
-                      new Chart(monthlytrends,{
+         monthlyTrendChartInstance = new Chart(ctx2,{
                            type: 'line',
                 data: {
                     labels: months,
@@ -180,14 +196,63 @@ const fetchMonthlyTrends = async () => {
 
 useEffect(() => {
 
-if(!dataFetched.current){
-  dataFetched.current = true;
-fetchComplaintStats();
-fetchTopSchoolsByComplaints();
-fetchComplaintLogs();
-fetchComplaintTypes();
-fetchMonthlyTrends();
-}
+ if(!dataFetched.current){
+   dataFetched.current = true; 
+ fetchComplaintStats();
+ fetchTopSchoolsByComplaints();
+ fetchComplaintLogs();
+ fetchComplaintTypes();
+ fetchMonthlyTrends();
+ }
+
+// const socket = io('http://localhost:9001/ws/complaints',{
+//   transports: ['websocket']
+// })
+
+// socket.on('connect',() => {
+//   console.log('Connected to complaints namespace')
+// });
+
+// socket.on('connect_error', (err) => {
+//   console.error('Socket connection error:', err);
+// });
+
+// socket.on('complaintUpdated',(data) => {
+// console.log(data.message)
+// fetchComplaintStats();
+// fetchTopSchoolsByComplaints();
+// fetchComplaintLogs();
+// fetchComplaintTypes();
+// fetchMonthlyTrends();
+
+// });
+
+// socket.on('complaintNotification',(data) => {
+//   console.log(data.message);
+//    toast.info(
+//       <>
+//         <strong>{data.message}</strong>
+//         <br />
+//         <small>{new Date(data.timestamp).toLocaleTimeString()}</small>
+//       </>,
+//       {
+//         position: 'top-right',
+//         autoClose: 4000,
+//         hideProgressBar: false,
+//         closeOnClick: true,
+//         pauseOnHover: true,
+//         draggable: true,
+//         icon: '📢',
+//         theme: 'colored',
+//       }
+//     );
+// })
+
+// return () => {
+//   socket.disconnect();
+// }
+
+
 },[])
 
 
@@ -208,8 +273,18 @@ const getStatusClass = (status) => {
 
   return (
     <>
+      <ToastContainer/>
           <h6 className="fw-bold mb-3"><a onClick={() => navigate('/samsdashboard')} style={{cursor:'pointer'}}><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>TGSWREIS Complaint Dashboard</h6>
-
+        
+      <div>
+        {notification && (
+          <div className="alert alert-danger position-fixed top-0 end-0 m-3 shadow" role="alert">
+          <strong>{notification.message}</strong>
+          <br />
+          <small>{new Date(notification.timestamp).toLocaleTimeString()}</small>
+        </div>
+        )}
+      </div>
       <div className="row g-3 mb-3">
 
         <div className="col-sm-12">
@@ -369,7 +444,7 @@ const getStatusClass = (status) => {
                         <thead id="attendance-table">
                             <tr>
                                  <th>Log ID</th>
-                                <th>GSM Number</th>
+                                <th>Card / GSM Number</th>
                                 <th>School Name</th>
                                 <th>Date & Time</th>
                                 <th>Type of Call</th>
@@ -430,8 +505,12 @@ const getStatusClass = (status) => {
             <div className="modal-body">
                 <div className="row g-3 mb-3">
                     <div className="col-sm-6">
-                       <label className="fw-bold">GSM Number</label>
+                       <label className="fw-bold">Card / GSM Number</label>
                        <div>{selectedRow.GSMNumber}</div>
+                    </div>
+                    <div className="col-sm-6">
+                       <label className="fw-bold">Reported By</label>
+                       <div>{selectedRow.ReportedBy}</div>
                     </div>
                     <div className="col-sm-6">
                         <label className="fw-bold">Institution Name:</label>

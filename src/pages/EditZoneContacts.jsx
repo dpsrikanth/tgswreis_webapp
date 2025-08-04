@@ -2,12 +2,14 @@ import React,{ useEffect,useRef,useState } from 'react'
 import { useSelector } from 'react-redux'
 import { _fetch } from '../libs/utils';
 import { toast, ToastContainer } from "react-toastify";
+import {useNavigate} from 'react-router-dom'
 
 const EditZoneContacts = () => {
 
 const token = useSelector((state) => state.userappdetails.TOKEN);
 const UserType = useSelector((state) => state.userappdetails.profileData.UserType);
 const [ZoneContacts,setZoneContacts] = useState([]);
+const navigate = useNavigate();
 
 useEffect(() => {
     fetchZoneContacts()
@@ -65,6 +67,7 @@ const updateZoneContact = async (zoneId,contactNumber) => {
   return (
     <>
     <ToastContainer/>
+     <h6 className="fw-bold mb-3"><a onClick={() => navigate('/samsdashboard')} style={{cursor:'pointer'}}><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>Edit Zone Contacts</h6>
     <div className='row'>
         <div className='col-sm-12'>
              <div className="white-box shadow-sm">

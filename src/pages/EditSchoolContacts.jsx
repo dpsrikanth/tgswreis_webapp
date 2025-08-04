@@ -71,6 +71,7 @@ const updateSchoolContact = async (schoolCode, contactNumber) => {
   return (
    <>
    <ToastContainer/>
+    <h6 className="fw-bold mb-3"><a onClick={() => navigate('/samsdashboard')} style={{cursor:'pointer'}}><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>Edit School Contacts</h6>
     <div className='row'>
         <div className='col-sm-12'>
              <div className="white-box shadow-sm">

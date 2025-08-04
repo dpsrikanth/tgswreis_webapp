@@ -31,6 +31,11 @@ const [ReportedBy, setReportedBy] = useState('');
 const [complaintId,setComplaintId] = useState('');
 const [newActionTaken,setNewActionTaken] = useState('');
 const [newRemarks,setNewRemarks] = useState('');
+const [studentsList,setStudentsList] = useState([]);
+const [houseMaster,setHouseMaster] = useState('');
+const [houseMasPhoneNum,setHouseMasterPhoneNum] = useState('');
+const [classDetails,setClassDetails] = useState('');
+const [section,setSection] = useState('');
 
 
 
@@ -117,6 +122,33 @@ const updateComplaintLog = async () => {
     }
 }
 
+const fetchCardDetails = async () => {
+   try{
+
+    const payload = {}
+
+    payload.cardNumber = GSMNumber
+
+    _fetch('getcarddetails',payload,false,token).then(res => {
+        if(res.status === 'success'){
+           setAddress(res.data.Other.schooladdress);
+           setInstName(res.data.Other.PartnerName);
+           setSchoolCode(res.data.Other.SchoolCode);
+           setHouseMaster(res.data.Other.HouseMaster);
+           setHouseMasterPhoneNum(res.data.Other.HouseMasterPhoneNumber);
+           setClassDetails(res.data.Other.Class);
+           setSection(res.data.Other.Section);
+           setDistrict(res.data.Other.DistrictName);
+           setStudentsList(res.data.Students);
+        }
+    })
+
+   } catch(error){
+    console.log('Error fetching details related to card number:',error)
+    toast.error(res.message)
+   }
+}
+
 
 const fetchGSMDetails = async () => {
     try{
@@ -164,6 +196,18 @@ const CreateNewComplaint = async () => {
                 toast.success(res.message);
                 setShowAddModal(false);
                 fetchComplaintLogs();
+                setGSMNumber('');
+                setReportedBy('');
+                setTypeofCall('');
+                setCallNotes('');
+                setActionTaken('');
+                setAddRemarks('');
+                setInstName('');
+                setAddress('');
+                setDistrict('');
+                setSchoolCode('');
+                setHouseMaster('');
+                setHouseMasterPhoneNum('');
             } else {
                 toast.error(res.message)
             }
@@ -177,8 +221,12 @@ const CreateNewComplaint = async () => {
 
 useEffect(() => {
 
-    if(GSMNumber.length === 10){
-        fetchGSMDetails();
+    if(GSMNumber.length === 6){
+        fetchCardDetails();
+    } else if(GSMNumber.length === 10){
+       fetchGSMDetails();
+    } else {
+         
     }
 
 },[GSMNumber])
@@ -236,12 +284,13 @@ const getStatusClass = (status) => {
                     <img src="img/download_icon.png" className="download_img">
                       </div> 
                 </div> */}
+                </div>
                 <div className="table-responsive">
                     <table className="table table-bordered mt-2" id="tsmess-table">
                         <thead id="attendance-table">
                             <tr>
                                 <th>Log ID</th>
-                                <th>GSM Number</th>
+                                <th>Card / GSM Number</th>
                                 <th>School Name</th>
                                 <th>Type of Call</th>
                                 <th>Call Notes</th>
@@ -276,7 +325,7 @@ const getStatusClass = (status) => {
                         </tbody>
                     </table>
                 </div>
-            </div>
+            
         </div>
       </div>
 
@@ -292,12 +341,24 @@ const getStatusClass = (status) => {
             <div className="modal-body">
                 <div className="row g-3 mb-3">
                     <div className="col-sm-4">
-                       <label className="form-label">Enter GSM Number <span class="man">&#65290;</span></label>
-                       <input type="number" value={GSMNumber} onChange={(e) => setGSMNumber(e.target.value)} className="form-control" />
+                       <label className="form-label">Enter Card/GSM Number <span class="man">&#65290;</span></label>
+                       <input type="number" value={GSMNumber} onChange={(e) => setGSMNumber(e.target.value)} onPaste={(e) => setGSMNumber(e.target.value)} className="form-control" />
                     </div>
                     <div className='col-sm-2'>
                         {/* <button className='btn btn-sm btn-primary mt-4' onClick={() => fetchGSMDetails()}>Fetch</button> */}
                     </div>
+                    <div className="col-sm-6">
+                      <label className="form-label">Reported By <span class="man">&#65290;</span></label>
+                      {GSMNumber.length === 6 ? (
+                        <select className='form-select' value={ReportedBy} onChange={(e) => setReportedBy(e.target.value)}>
+                            <option value=''>Select Student</option>
+                            {studentsList.map((item,index) => (
+                                <option key={index} value={item}>{item}</option>
+                            ))}
+                        </select>
+                      ) : ( <input type='text' value={ReportedBy} onChange={(e) => setReportedBy(e.target.value)} className='form-control'/>)}
+                     
+                  </div>
                     <div className="col-sm-6">
                         <label className="form-label">Institution Name:</label>
                         <input type="text" value={instName} className="form-control" disabled />
@@ -311,9 +372,11 @@ const getStatusClass = (status) => {
                         <textarea rows="3" value={address} className="form-control" disabled></textarea>
                     </div>
                     <div className="col-sm-6">
-                      <label className="form-label">Reported By <span class="man">&#65290;</span></label>
-                      <input type='text' value={ReportedBy} onChange={(e) => setReportedBy(e.target.value)} className='form-control'/>
-                  </div>
+                        <label className="form-label">House Master Details</label>
+                        <textarea className="form-control" rows={2} value={`Name: ${houseMaster} , PhNo: ${houseMasPhoneNum}`} disabled />
+
+                    </div>
+                    
                     <div className="col-sm-6">
                     <label className="form-label">Type of Call <span class="man">&#65290;</span></label>
                      <select className="form-select" value={TypeOfCall} onChange={(e) => setTypeofCall(e.target.value)}>
@@ -381,8 +444,13 @@ const getStatusClass = (status) => {
                         <div>{selectedRow.ComplaintId}</div>
                     </div>
                     <div className="col-sm-6">
-                        <div className="fw-bold">GSM Number</div>
+                        <div className="fw-bold">Card Number/ GSM Number</div>
                         <div>{selectedRow.GSMNumber}</div>
+                    </div>
+
+                    <div className="col-sm-6">
+                        <div className="fw-bold">Reported By</div>
+                        <div>{selectedRow.ReportedBy}</div>
                     </div>
 
                     <div className="col-sm-6">
@@ -425,7 +493,7 @@ const getStatusClass = (status) => {
                         <textarea rows="2" className="form-control" value={newActionTaken} onChange={(e) => setNewActionTaken(e.target.value)}></textarea>
                     </div>
                     <div className="col-sm-6">
-                        <label className="form-label fw-bold">Status of Issue</label>
+                        <label className="form-label fw-bold">Status of Issue <span class="man">&#65290;</span></label>
                         <select className="form-select" value={updateStatus} onChange={(e) => setUpdateStatus(e.target.value)}>
                             <option value="">--Select--</option>
                             <option value="Resolved">Resolved</option>
