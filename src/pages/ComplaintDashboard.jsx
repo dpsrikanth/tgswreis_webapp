@@ -4,6 +4,8 @@ import { _fetch } from '../libs/utils';
 import { toast, ToastContainer } from "react-toastify";
 import {data, useNavigate} from 'react-router-dom'
 import io from 'socket.io-client'
+import ExcelJS from 'exceljs';
+import {saveAs} from 'file-saver';
 
 
 
@@ -269,7 +271,112 @@ const getStatusClass = (status) => {
   }
 }
 
+const DailyLogsReport = async (data) => {
+ const workbook = new ExcelJS.Workbook();
 
+ const borderStyle = {
+  top: {style:'thin'},
+  left:{style:'thin'},
+  bottom:{style: 'thin'},
+  right: {style: 'thin'}
+ }
+
+ const customHeaders = [
+  {header: 'Complaint ID', key: 'ComplaintId'},
+  {header: 'Card/ GSM Number', key: 'GSMNumber'},
+  {header: 'School Code', key: 'SchoolId'},
+  {header: 'Call Notes', key: 'CallNotes'},
+  {header: 'Action Taken', key: 'ActionTaken'},
+  {header: 'Type of Call', key: 'TypeOfCall'},
+  {header: 'Resolved Date', key: 'ResolvedDate'},
+  {header: 'Reported By' , key: 'ReportedBy'},
+  {header: 'Remarks', key: 'Remarks'},
+  {header: 'Status', key: 'Status'},
+ ]
+
+
+const createSheet = (sheetName,headers,data) => {
+  const sheet = workbook.addWorksheet(sheetName);
+
+  const todayDate = new Date().toISOString().split('T')[0];
+  const titleRow = sheet.addRow([`Daily Complaint Logs Report - Project Mitra - ${todayDate}`]);
+  titleRow.font = {bold: 'true', size: 16};
+  titleRow.alignment = {horizontal: 'center'};
+  sheet.mergeCells(`A1:E1`);
+  sheet.addRow([]);
+
+
+  const headerNames = headers.map(h => h.header);
+  const headerRow = sheet.addRow(headerNames);
+  headerRow.font = {bold: true};
+  headerRow.alignment = {horizontal: 'center'};
+
+  headerRow.eachCell((cell) => {
+    cell.border = borderStyle;
+    cell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'D9E1F2' },
+    };
+  });
+
+     data.forEach((item) => {
+      const rowData = customHeaders.map(h => {
+       if (h.key === 'ResolvedDate') {
+      return item.ResolvedDate ? new Date(item.ResolvedDate).toLocaleDateString('en-IN') : '-';
+    }
+    return item[h.key] != null ? item[h.key] : ''
+      })
+
+      const row = sheet.addRow(rowData);
+      row.eachCell((cell) => {
+        cell.border = borderStyle;
+        cell.alignment = { vertical: 'middle', horizontal: 'center' };
+      });
+    });
+
+    // Auto-fit column width
+    sheet.columns.forEach((column) => {
+      let maxLength = 5;
+      column.eachCell({ includeEmpty: true }, (cell) => {
+        const length = cell.value ? cell.value.toString().length : 0;
+        if (length > maxLength) maxLength = length;
+      });
+      column.width = maxLength + 2;
+    });
+
+    return sheet;
+};
+
+if(Array.isArray(data) && data.length > 0){
+  const headers = Object.keys(data[0]);
+  createSheet("Daily Logs",customHeaders,data);
+} else {
+  toast.error(`No Logs for today's date`);
+}
+
+const buffer = await workbook.xlsx.writeBuffer();
+const blob = new Blob([buffer],{
+  type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+});
+saveAs(blob,`DailyLogsReport_${new Date().toISOString().split('T')[0]}.xlsx`);
+}
+
+const fetchDailyLogsReport = async () => {
+  try{
+   _fetch('dailylogsreport',null,false,token).then(res => {
+    if(res.status === 'success'){
+       DailyLogsReport(res.data);
+    } else {
+      toast.error(res.message);
+    }
+  })
+  }
+  catch(error){
+    console.log('Error fetching Daily Logs report:',error)
+    toast.error(res.message);
+  }
+}
 
   return (
     <>
@@ -415,6 +522,10 @@ const getStatusClass = (status) => {
 
         <div className="col-sm-12">
             <div className="white-box shadow-sm">
+
+              <div className='col-sm-12 text-end'>
+                <button className='btn btn-success' onClick={() => fetchDailyLogsReport()}>Get Daily Logs Report</button>
+              </div>
                 
                 <div className="table-header">
                     <h5><span className="pink fw-bold">List of Complaints</span></h5>
