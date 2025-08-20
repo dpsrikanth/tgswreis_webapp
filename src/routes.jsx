@@ -25,6 +25,7 @@ import ComplaintEntry from './pages/ComplaintEntry';
 import ComplaintDashboard from './pages/ComplaintDashboard';
 import EditZoneContacts from './pages/EditZoneContacts';
 import EditSchoolContacts from './pages/EditSchoolContacts';
+import SchoolsDailyTracker from './pages/SchoolsDailyTracker';
 const AppRoutes = () => {
   return (
     <Router>
@@ -165,6 +166,12 @@ const AppRoutes = () => {
          <Route path='/schoolscontact' element={
           <ProtectedRoute>
             <EditSchoolContacts />
+          </ProtectedRoute>
+        } />
+
+         <Route path='/schoolsdailytracker' element={
+          <ProtectedRoute>
+            <SchoolsDailyTracker/>
           </ProtectedRoute>
         } />
 

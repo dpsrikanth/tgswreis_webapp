@@ -36,19 +36,20 @@ const fetchSchoolContacts = async () => {
 }
 
 
-const handleInputChange = (index,newValue) => {
+const handleInputChange = (index,field,newValue) => {
     const updatedContacts = [...SchoolContacts]
-    updatedContacts[index].ContactMobile = newValue;
+    updatedContacts[index][field] = newValue;
     setSchoolContacts(updatedContacts)
 }
 
-const updateSchoolContact = async (schoolCode, contactNumber) => {
+const updateSchoolContact = async (schoolCode, contactNumber,ContacteMailAddress) => {
 
     try {
 
     const payload = {
         schoolCode: schoolCode,
-        ContactMobile : contactNumber
+        ContactMobile : contactNumber,
+        ContacteMailAddress : ContacteMailAddress
     }
 
     
@@ -85,8 +86,9 @@ const updateSchoolContact = async (schoolCode, contactNumber) => {
                     <thead>
                     <tr>
                         <th>School Code</th>
-                        <th>School Name</th>
+                        <th style={{width:'200px'}}>School Name</th>
                         <th>School Contact</th>
+                        <th>School Email</th>
                         <th>Action</th>
                     </tr>
                     </thead>
@@ -96,10 +98,13 @@ const updateSchoolContact = async (schoolCode, contactNumber) => {
                                 <td>{item.SchoolCode}</td>
                                 <td>{item.PartnerName}</td>
                                 <td>
-                                    <input type='text' className='form-control' value={item.ContactMobile} onChange={(e) => handleInputChange(index,e.target.value)} />
+                                    <input type='text' className='form-control' value={item.ContactMobile} onChange={(e) => handleInputChange(index,"ContactMobile",e.target.value)} />
                                 </td>
                                 <td>
-                                    <button className='btn btn-primary' onClick={() => updateSchoolContact(item.SchoolCode,item.ContactMobile)}>Update</button>
+                                    <input type='text' className='form-control' value={item.ContacteMailAddress} onChange={(e) => handleInputChange(index,"ContacteMailAddress",e.target.value)}/>
+                                </td>
+                                <td>
+                                    <button className='btn btn-primary' onClick={() => updateSchoolContact(item.SchoolCode,item.ContactMobile,item.ContacteMailAddress)}>Update</button>
                                 </td>
                             </tr>
                         ))}

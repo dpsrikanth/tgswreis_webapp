@@ -367,7 +367,7 @@ const SamsDashboard = () => {
           </div>
           <div>
             {UserType === 'SuperAdmin' ? (<h5 class="text-purple fw-bold mb-3 maroon">Zonal Wise Report</h5>) : (<h5 class="text-purple fw-bold mb-3 maroon">District Wise Report</h5>)}
-            <div className="zonehead" style={{ display: 'flex', flexWrap: 'nowrap', justifyContent: 'flex-start', }}>
+            <div className="zonehead" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'flex-start',rowGap: '10px' }}>
               {zones.length === 1 ?
                 <div key={"1"} zoncode={zones[0].ZoneCode} className="hzones" ><div className="zonal_report shadow-sm zonal_report_select" zoncode1={zones[0].ZoneCode}>
                   <label>{zones[0].ZoneName.split(" ")[zones[0].ZoneName.split(" ").length - 1]}</label>

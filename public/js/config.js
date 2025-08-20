@@ -58,7 +58,10 @@ const _gc = {
         getcomplainttypes: {url : 'http://localhost:9001/complainttypes', method: 'GET'},
         getmonthlytrends: {url : 'http://localhost:9001/monthtrends', method: 'GET'},
         getcarddetails: {url : 'http://localhost:9001/carddetails', method: 'GET'},
-        dailylogsreport: {url : 'http://localhost:9001/dailylogs', method: 'GET'}
+        dailylogsreport: {url : 'http://localhost:9001/dailylogs', method: 'GET'},
+        betweenlogsreport : {url : 'http://localhost:9001/logsreport', method: 'GET'},
+        schoolslistnostock : {url : 'http://localhost:9001/nostockentered', method: 'GET'},
+        schoolslistnoprint : {url : 'http://localhost:9001/noprintprovisions', method: 'GET'}
     },
 };
 window.gc = _gc;

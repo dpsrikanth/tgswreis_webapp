@@ -12,6 +12,12 @@ const [ZoneContacts,setZoneContacts] = useState([]);
 const navigate = useNavigate();
 
 useEffect(() => {
+    if(!token) {
+        navigate('/login')
+    }
+},[token])
+
+useEffect(() => {
     fetchZoneContacts()
 },[])
 
@@ -34,20 +40,21 @@ const fetchZoneContacts = async () => {
 }
 
 
-const handleInputChange = (index,newValue) => {
+const handleInputChange = (index,field,newValue) => {
     const updatedContacts = [...ZoneContacts];
     console.log(updatedContacts);
-    updatedContacts[index].ZoneContactNumber = newValue;
+    updatedContacts[index][field] = newValue;
     setZoneContacts(updatedContacts);
 }
 
 
-const updateZoneContact = async (zoneId,contactNumber) => {
+const updateZoneContact = async (zoneId,contactNumber,ZoneContactEmail) => {
     try{
 
         const payload = {
             ZoneId: zoneId,
-            ZoneContactNumber: contactNumber
+            ZoneContactNumber: contactNumber,
+            ZoneContactEmail : ZoneContactEmail
         };
 
     _fetch('updatezonecontact',payload,false,token).then(res => {
@@ -80,6 +87,7 @@ const updateZoneContact = async (zoneId,contactNumber) => {
                         <th>Zone</th>
                         <th>Zone Contact Name</th>
                         <th>Zone Contact Number</th>
+                        <th>Zone Contact Email</th>
                         <th>Action</th>
                     </tr>
                  </thead>
@@ -89,10 +97,13 @@ const updateZoneContact = async (zoneId,contactNumber) => {
                         <td>{item.ZoneId}</td>
                         <td>{item.ZoneContactName}</td>
                         <td>
-                            <input type='text' className='form-control' value={item.ZoneContactNumber} onChange={(e) => handleInputChange(index,e.target.value)} />
+                            <input type='text' className='form-control' value={item.ZoneContactNumber} onChange={(e) => handleInputChange(index,"ZoneContactNumber",e.target.value)} />
                         </td>
                         <td>
-                            <button className='btn btn-primary' onClick={() => updateZoneContact(item.ZoneId,item.ZoneContactNumber)}>Update</button>
+                            <input type='text' className='form-control' value={item.ZoneContactEmail} onChange={(e) => handleInputChange(index,"ZoneContactEmail",e.target.value)} />
+                        </td>
+                        <td>
+                            <button className='btn btn-primary' onClick={() => updateZoneContact(item.ZoneId,item.ZoneContactNumber,item.ZoneContactEmail)}>Update</button>
                         </td>
                     </tr>
                    ))}
