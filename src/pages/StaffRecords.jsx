@@ -423,7 +423,7 @@ const parseXMLField = (xmlString, tagName) => {
                       <td>{item.StaffName}</td>
                       <td><span className={item.FacultyType === "Teaching" ? "badge text-bg-primary" : "badge text-bg-secondary"}>{item.FacultyType}</span></td>
                       <td>{item.StaffPosition}</td>
-                      <td>{item.Gender ? "Female" : "Male"}</td>
+                      <td>{item.Gender ? "Male" : "Female"}</td>
                       <td>{item.EmploymentType}</td>
                       <td>{parseXMLField(item.ModeofRecruitment,"ModeRecrtCurrent")}</td>
                       <td>{item.GrossSalary}</td>

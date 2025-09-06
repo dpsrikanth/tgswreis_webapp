@@ -94,10 +94,10 @@ const SamsDashboard = () => {
 
 
  const payload = {
-      TodayDate: new Date().toISOString().split('T')[0]
+      TodayDate: new Date(Date.now() + 86400000).toISOString().split('T')[0]
     };
 
-    if(UserType === 'Admin'){
+    if(UserType === 'Admin') {
       payload.ZoneId = ZoneId;
     }
    

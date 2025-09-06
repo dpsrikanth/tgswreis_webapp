@@ -128,7 +128,7 @@ const Menus = () => {
                         </div>
                     ))}
                 </div>
-                <h2>Week - 1</h2>
+                <h2>Weekly Menu</h2>
                 <div className="text-end" style={{ marginBottom: "8px" }}>
                     <img src="img/print_icon.png" style={{ marginRight: "8px", cursor: "pointer" }} />
                     <img src="img/download_icon.png" className="download_img" style={{ cursor: "pointer" }} />

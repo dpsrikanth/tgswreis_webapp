@@ -134,7 +134,7 @@ const TSMESS = () => {
          setMonthAttendanceTotal(res.data?.MonthAttendance ?? 0);
          const todayAmountArray = res.data.TodayConsumedAmount;
          const todayAmount = Array.isArray(todayAmountArray) && todayAmountArray.length > 0
-         ? todayAmountArray[0].TotalConsumedAmount ?? 0
+         ? todayAmountArray[0].TodayConsumedAmount ?? 0
          : 0;
          setTodayConsumedAmount(todayAmount);
          const monthAmountArray = res.data.MonthConsumedAmount;
