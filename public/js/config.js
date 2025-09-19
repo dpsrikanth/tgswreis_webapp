@@ -61,7 +61,16 @@ const _gc = {
         dailylogsreport: {url : 'http://localhost:9001/dailylogs', method: 'GET'},
         betweenlogsreport : {url : 'http://localhost:9001/logsreport', method: 'GET'},
         schoolslistnostock : {url : 'http://localhost:9001/nostockentered', method: 'GET'},
-        schoolslistnoprint : {url : 'http://localhost:9001/noprintprovisions', method: 'GET'}
+        schoolslistnoprint : {url : 'http://localhost:9001/noprintprovisions', method: 'GET'},
+        schoolslistgrievance: {url : 'http://localhost:9001/schoolslist', method: 'GET'},
+        creategrievance: {url : 'http://localhost:9001/grievance', method: 'POST'},
+        getgrievances: {url : 'http://localhost:9001/grievance', method: 'GET'},
+        getcsractivities: {url : 'http://localhost:9001/csractivities', method: 'GET'},
+        createcsractivity: {url : 'http://localhost:9001/csractivity', method: 'POST'},
+        getcsrstats: {url : 'http://localhost:9001/csrstats', method: 'GET'},
+        getgrievancestats: {url : 'http://localhost:9001/grievancestats', method: 'GET'},
+        updatecsractivity: {url : 'http://localhost:9001/csractivity', method: 'PATCH'},
+        updategrievancestatus: {url : 'http://localhost:9001/grievance', method: 'PATCH'},
     },
 };
 window.gc = _gc;

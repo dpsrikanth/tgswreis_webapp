@@ -10,7 +10,7 @@ const SideMenu = () => {
            {UserType === 'SuperAdmin' || UserType === 'Admin' ? (<NavLink to="/samsdashboard" className="active">
                  
                  <div className="d-flex flex-column justify-content-between align-items-center">
-                <img src="img/menu_home.png" alt="" style={{width:'22px',height:'22px'}}/>
+                <i class="bi bi-house-door text-white" style={{fontSize:'24px'}}></i>
                 <span style={{fontSize:'12px'}}>Home</span>
             </div>
             </NavLink>) : (null)} 
@@ -20,7 +20,7 @@ const SideMenu = () => {
 
             {UserType === 'SuperAdmin' || UserType === 'Admin' ? (<NavLink to="/tickets">
             <div className="d-flex flex-column justify-content-between align-items-center">
-                <img src="img/data_icon.png" alt="" style={{width:'28px',height:'28px'}}/>
+                <i class="bi bi-journal-check text-white" style={{fontSize:'24px'}}></i>
                 <span style={{fontSize:'12px'}}>Tickets</span>
             </div>
             </NavLink>) : (null)}   
@@ -35,22 +35,22 @@ const SideMenu = () => {
 
            {UserType === 'SuperAdmin' || UserType === 'Admin' ? ( <NavLink to="/tsmess">
             <div className="d-flex flex-column justify-content-between align-items-center">
-                 <img src="img/food.png" alt="" style={{width:'28px',height:'28px'}}/> 
+                <i class="bi bi-egg text-white" style={{fontSize:'24px'}}></i>
                 <span style={{fontSize:'12px'}}>TG Diet</span>
             </div>
             </NavLink>) : (null)} 
              
-          {UserType === 'SuperAdmin' || UserType === 'Admin' ? ( <NavLink to="/health_records">
+          {/* {UserType === 'SuperAdmin' || UserType === 'Admin' ? ( <NavLink to="/health_records">
               
                  <div className="d-flex flex-column justify-content-between align-items-center">
                 <img src="img/report_icons.png" alt="" style={{width:'28px',height:'28px'}}/>
                 <span style={{fontSize:'12px'}}>Health</span>
             </div>
-            </NavLink>) : (null)} 
+            </NavLink>) : (null)}  */}
 
              {UserType === 'SuperAdmin' ? (  <NavLink to="/staffrecords">
                 <div className="d-flex flex-column justify-content-between align-items-center">
-                <img src="img/data_icon.png" alt="" style={{width:'28px',height:'28px'}}/>
+                <i class="bi bi-person-vcard text-white" style={{fontSize:'24px'}}></i>
                 <span style={{fontSize:'12px'}}>Staff Records</span>
             </div>
             </NavLink> ) : (null)}
@@ -58,31 +58,50 @@ const SideMenu = () => {
             
              {UserType === 'SuperAdmin' ? (  <NavLink to="/editattendanceentries">
                 <div className="d-flex flex-column justify-content-between align-items-center">
-                <img src="img/editattend2.png" alt="" style={{width:'28px',height:'28px'}}/>
+                <i class="bi bi-calendar-week text-white" style={{fontSize:'24px'}}></i>
                 <span style={{fontSize:'12px'}}>Edit Attd</span>
             </div>
             </NavLink> ) : (null)}
 
              {UserType === 'SuperAdmin' ? (  <NavLink to="/schoolscontact">
                 <div className="d-flex flex-column justify-content-between align-items-center">
-                <img src="img/editcontacts.png" alt="" style={{width:'28px',height:'28px'}}/>
+                <i class="bi bi-person-rolodex text-white" style={{fontSize:'24px'}}></i>
                 <span style={{fontSize:'12px'}}>Edit Contact</span>
             </div>
             </NavLink> ) : (null)}
 
              {UserType === 'SuperAdmin' ? (  <NavLink to="/complaintdashboard">
                 <div className="d-flex flex-column justify-content-between align-items-center">
-                <img src="img/phonemitra.png" alt="" style={{width:'28px',height:'28px'}}/>
+                <i class="bi bi-telephone-inbound text-white" style={{fontSize:'24px'}}></i>
                 <span style={{fontSize:'12px'}}>Phone Mitra</span>
             </div>
 
             
             </NavLink> ) : (null)}
 
-            {UserType === 'CallCentre' ? (  <NavLink to="/complaintentry">
+            {UserType === 'CallCentre' ? (<NavLink to="/complaintentry">
                 <div className="d-flex flex-column justify-content-between align-items-center">
-                <img src="img/phonemitra.png" alt="" style={{width:'28px',height:'28px'}}/>
+                <i class="bi bi-telephone-inbound text-white" style={{fontSize:'24px'}}></i>
                 <span style={{fontSize:'12px'}}>Phone Mitra</span>
+            </div>
+
+            
+            </NavLink> ) : (null)}
+
+
+             {UserType === 'SuperAdmin' ? (  <NavLink to="/csrdashboard">
+                <div className="d-flex flex-column justify-content-between align-items-center">
+               <i class="bi bi-globe-central-south-asia text-white" style={{fontSize:'24px'}}></i>
+                <span style={{fontSize:'12px'}}>CSR</span>
+            </div>
+
+            
+            </NavLink> ) : (null)}
+
+             {UserType === 'SuperAdmin' ? (  <NavLink to="/grievancedashboard">
+                <div className="d-flex flex-column justify-content-between align-items-center">
+                <i class="bi bi-exclamation-triangle text-white" style={{fontSize:'24px'}}></i>
+                <span style={{fontSize:'12px'}}>Grievance</span>
             </div>
 
             

@@ -10,7 +10,7 @@ const default_headers = (token) => {
 };
 const file_upload_headers = (token) => {
     const headers = {
-        "Content-Type": "multipart/form-data"
+        // "Content-Type": "multipart/form-data"
     };
     if (token) {
         headers["Authorization"] = `token=${token}`;

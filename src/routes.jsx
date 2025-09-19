@@ -26,12 +26,17 @@ import ComplaintDashboard from './pages/ComplaintDashboard';
 import EditZoneContacts from './pages/EditZoneContacts';
 import EditSchoolContacts from './pages/EditSchoolContacts';
 import SchoolsDailyTracker from './pages/SchoolsDailyTracker';
+import GrievanceForm from './pages/GrievanceForm';
+import CsrDashboard from './pages/CsrDashboard';
+import GrievanceDashboard from './pages/GrievanceDashboard';
 const AppRoutes = () => {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
+        <Route path='/grievanceform' element={<GrievanceForm/>} />
+        
         <Route element={<Layout />}>
           <Route path="/dashboard" element={
             <ProtectedRoute>
@@ -174,6 +179,19 @@ const AppRoutes = () => {
             <SchoolsDailyTracker/>
           </ProtectedRoute>
         } />
+
+        <Route path='/csrdashboard' element={
+          <ProtectedRoute>
+            <CsrDashboard/>
+          </ProtectedRoute>
+        } />
+
+
+        <Route path='/grievancedashboard' element={
+          <ProtectedRoute>
+            <GrievanceDashboard />
+          </ProtectedRoute>
+        } /> 
 
         </Route>
 
