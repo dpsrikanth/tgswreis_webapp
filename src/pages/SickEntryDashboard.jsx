@@ -473,7 +473,7 @@ useEffect(() => {
     </div>
 
     <div className="row g-3 mb-3">
-
+       {/*Charts Section*/}
         <div className="col-sm-12">
             <div className="row gy-3">
         <div className="col-sm-4">
