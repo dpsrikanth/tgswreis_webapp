@@ -6,6 +6,8 @@ import { toast, ToastContainer } from "react-toastify";
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react';
+import ExcelJS from 'exceljs';
+import {saveAs} from 'file-saver';
 
 
 
@@ -23,6 +25,18 @@ const [totalCount,setTotalCount] = useState('');
 const [PendingCount,setPendingCount] = useState('');
 const [ResolvedCount,setResolvedCount] = useState('');
 const [NotResolvedCount,setNotResolvedCount] = useState('');
+
+
+const getStatusClass = (status) => {
+  switch(status){
+    case 'Pending':
+      return 'badge text-bg-danger';
+      case 'Not Resolved':
+        return 'badge text-bg-warning';
+        case 'Resolved':
+          return 'badge text-bg-success';
+  }
+}
 
 
 const fetchGrievances = async () => {
@@ -69,14 +83,19 @@ const fetchGrievancesStats = async () => {
 const updateGrievanceStatus = async () => {
   try {
 
-    const payload = {GrievanceId: selectedGrievanceId.GrievanceId,GrievanceStatus: GrievanceStatus,ResolutionReason: resolutionReason,ResolvedOn:resolvedOn}
+    const payload = {GrievanceId: selectedGrievanceId.GrievanceId,GrievanceStatus: GrievanceStatus,ResolutionReason: resolutionReason,ResolvedOn:resolvedOn ? resolvedOn : null}
 
     _fetch('updategrievancestatus',payload,false,token).then(res => {
       if(res.status === 'success'){
         setShowModal(false);
         toast.success(res.message);
+        setSelectedGrievanceId(null);
+        setGrievanceStatus('');
+        setResolutionReason('');
+        setResolvedOn('');
         fetchGrievances();
         fetchGrievancesStats();
+
       } else {
         toast.error(res.message)
       }
@@ -97,8 +116,70 @@ useEffect(() => {
 },[])
 
 
+const DailyLogsReport = async (data) => {
+const workbook = new ExcelJS.Workbook();
+
+const borderStyle = {
+  top: {style:'thin'},
+  left:{style:'thin'},
+  bottom:{style: 'thin'},
+  right: {style: 'thin'}
+}
+
+
+const customHeaders = [
+  {
+    header: 'Grievance ID' , key: 'GrievanceCode',
+    header: 'School Code',   key: 'SchoolCode',
+    header: 'Complainant Name' , key: 'ComplainantName',
+    header: 'Subject', key: 'Subject',
+    header: 'Description' , key: 'Description',
+    header: 'Status', key: 'Status'
+  }
+]
+
+const createSheet = (sheetName,headers,data) => {
+  const sheet = workbook.addWorksheet(sheetName);
+  const todayDate = new Date().toISOString.split('T')[0];
+  const titleRow = sheet.addRow([`Daily Grievance Report ${todayDate}`]);
+  titleRow.font = {bold: 'true', size: 16}
+  titleRow.alignment = {horizontal: 'center'};
+  sheet.mergeCells(`A1:E1`);
+  sheet.addRow([]);
+
+    const headerNames = headers.map(h => h.header);
+  const headerRow = sheet.addRow(headerNames);
+  headerRow.font = {bold: true};
+  headerRow.alignment = {horizontal: 'center'};
+
+    headerRow.eachCell((cell) => {
+    cell.border = borderStyle;
+    cell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'D9E1F2' },
+    };
+  });
+
+  
+
+}
+
+}
+
+useEffect(() => {
+
+  if(!showModal){
+    setResolutionReason('');
+    setGrievanceStatus('');
+    setResolvedOn('');
+  }
+
+},[showModal,selectedGrievanceId])
+
   return (
     <>
+    <ToastContainer />
    <div className="row g-3 mb-3">
 
     <div className='col-sm-12'>
@@ -193,7 +274,7 @@ useEffect(() => {
                     <td>{item.Subject}</td>
                     <td>{item.Description}</td>
                     <td>
-                        <span className={item.GrievanceStatus === 'Pending' ? 'badge bg-warning text-dark' : 'badge bg-success text-white'}>{item.GrievanceStatus}</span>
+                        <span className={getStatusClass(item.GrievanceStatus)}>{item.GrievanceStatus}</span>
                     </td>
                     <td>
             <div className="d-flex justify-content-between">
@@ -213,7 +294,8 @@ useEffect(() => {
 
 
      {showModal && selectedGrievanceId && (
-        <div className="modal fade show"  tabIndex="-1" role='dialog' style={{ display: "block", background: "rgba(0,0,0,0.5)" }}>
+        <div className="modal fade show"  tabIndex="-1" role='dialog' style={{ display: "block", background: "rgba(0,0,0,0.5)" }}
+        key={selectedGrievanceId}>
   <div className="modal-dialog modal-lg">
     <div className="modal-content">
       <div className="modal-header">
@@ -253,7 +335,7 @@ useEffect(() => {
 
         
         <div className="col-md-6">
-          <label className="form-label">Resolved On</label>
+          <label className="form-label">If Resolved,Enter Date</label>
           <input type="date" className="form-control" value={resolvedOn} onChange={(e) => setResolvedOn(e.target.value)} />
         </div>
        

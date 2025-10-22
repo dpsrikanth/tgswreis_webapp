@@ -29,6 +29,8 @@ import SchoolsDailyTracker from './pages/SchoolsDailyTracker';
 import GrievanceForm from './pages/GrievanceForm';
 import CsrDashboard from './pages/CsrDashboard';
 import GrievanceDashboard from './pages/GrievanceDashboard';
+import StaffEntryForm from './pages/StaffEntryForm';
+import SickEntryDashboard from './pages/SickEntryDashboard';
 const AppRoutes = () => {
   return (
     <Router>
@@ -192,6 +194,20 @@ const AppRoutes = () => {
             <GrievanceDashboard />
           </ProtectedRoute>
         } /> 
+
+        <Route path='/staffentryform' element={
+          <ProtectedRoute>
+            <StaffEntryForm/>
+          </ProtectedRoute>
+        }
+        
+        />
+
+        <Route path='/sickdashboard' element={
+          <ProtectedRoute>
+            <SickEntryDashboard />
+          </ProtectedRoute>
+        } />
 
         </Route>
 

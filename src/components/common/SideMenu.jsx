@@ -55,13 +55,20 @@ const SideMenu = () => {
             </div>
             </NavLink> ) : (null)}
 
+             {UserType === 'SuperAdmin' || UserType === 'Admin' ? ( <NavLink to="/sickdashboard">
+            <div className="d-flex flex-column justify-content-between align-items-center text-center">
+                <i class="bi bi-heart-pulse text-white" style={{fontSize:'24px'}}></i>
+                <span style={{fontSize:'12px'}}>Sick Report</span>
+            </div>
+            </NavLink>) : (null)} 
+
             
-             {UserType === 'SuperAdmin' ? (  <NavLink to="/editattendanceentries">
+             {/* {UserType === 'SuperAdmin' ? (  <NavLink to="/editattendanceentries">
                 <div className="d-flex flex-column justify-content-between align-items-center">
                 <i class="bi bi-calendar-week text-white" style={{fontSize:'24px'}}></i>
                 <span style={{fontSize:'12px'}}>Edit Attd</span>
             </div>
-            </NavLink> ) : (null)}
+            </NavLink> ) : (null)} */}
 
              {UserType === 'SuperAdmin' ? (  <NavLink to="/schoolscontact">
                 <div className="d-flex flex-column justify-content-between align-items-center">
@@ -83,6 +90,15 @@ const SideMenu = () => {
                 <div className="d-flex flex-column justify-content-between align-items-center">
                 <i class="bi bi-telephone-inbound text-white" style={{fontSize:'24px'}}></i>
                 <span style={{fontSize:'12px'}}>Phone Mitra</span>
+            </div>
+
+            
+            </NavLink> ) : (null)}
+
+            {UserType === 'Accounts' || UserType === 'Admin' ? (<NavLink to="/staffentryform">
+                <div className="d-flex flex-column justify-content-between align-items-center">
+                <i class="bi bi-person text-white" style={{fontSize:'24px'}}></i>
+                <span style={{fontSize:'12px'}}>Staff Entry</span>
             </div>
 
             

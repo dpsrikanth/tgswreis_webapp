@@ -289,6 +289,9 @@ const TSMESS = () => {
                         {UserType === 'SuperAdmin' ? (<div className="col-md-3">
                             <a onClick={() => { navigate("/reportsdashboard") }} style={{ cursor: 'pointer' }} className="shadow-sm"><span className="dot"></span>Reports</a>
                         </div>) : null}
+                        {UserType === 'SuperAdmin' ? (<div className="col-md-3">
+                            <a onClick={() => { navigate("/editattendanceentries") }} style={{ cursor: 'pointer' }} className="shadow-sm"><span className="dot"></span>Edit Attendance</a>
+                        </div>) : null}
 
                         <div className="col-md-3">
                             <a onClick={() => { navigate("/itemingredientmapping") }} style={{ cursor: 'pointer' }} className="shadow-sm"><span className="dot"></span>Menu Mapping</a>

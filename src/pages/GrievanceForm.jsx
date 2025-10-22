@@ -1,14 +1,14 @@
-import React,{useState} from 'react';
+import React,{useState,useRef} from 'react';
 import { _fetch } from '../libs/utils';
 import { toast, ToastContainer } from "react-toastify";
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react';
 
+import {useForm} from 'react-hook-form'
+
 
 const GrievanceForm = () => {
-
-
 
 const [MobileNumber,setMobileNumber] = useState('');
 const [Category,setCategory] = useState('');
@@ -21,7 +21,16 @@ const [selectedSchoolCode,setSelectedSchoolCode] = useState('');
 const [attachment,setAttachment] = useState(null);
 const [grievanceCode,setGrievanceCode] = useState('');
 const [showModal,setShowModal] = useState(false);
+const fileInputRef = useRef(null);
 
+
+
+const {
+        register,
+        handleSubmit,
+        reset,
+        formState: {errors},
+    } = useForm();
 
 const fetchSchools = async () => {
     try {
@@ -41,37 +50,30 @@ const fetchSchools = async () => {
 
 
 
-const sendGrievance = async () => {
+const onSubmit = async (data) => {
     try{
 
-        const payload = {SchoolId:selectedSchoolCode,MobileNumber,Category,ComplainantName,EmailAddress,Subject,Description}
+        // e.preventDefault();
+
+        // const payload = {SchoolId:selectedSchoolCode,MobileNumber,Category,ComplainantName,EmailAddress,Subject,Description}
 
         const formData = new FormData();
 
-        formData.append('SchoolId',selectedSchoolCode);
-        formData.append('MobileNumber',MobileNumber);
-        formData.append('Category',Category);
-        formData.append('ComplainantName',ComplainantName);
-        formData.append('EmailAddress',EmailAddress);
-        formData.append('Subject',Subject);
-        formData.append('Description',Description);
-        if(attachment){
-         formData.append('Attachment',attachment);
-        }
+        formData.append('SchoolId',data.schoolCode);
+        formData.append('MobileNumber',data.mobilenum);
+        formData.append('Category',data.Category);
+        formData.append('ComplainantName',data.name);
+        formData.append('EmailAddress',data.emailaddress);
+        formData.append('Subject',data.Subject);
+        formData.append('Description',data.Description);
+         formData.append('Attachment',data.Attachment[0]);
 
 
 
         _fetch("creategrievance",formData,true).then(res => {
             if(res.status === 'success'){
                 toast.success(res.message)
-                setMobileNumber('');
-                setCategory('');
-                setComplainantName('');
-                setEmailAddress('');
-                setSubject('');
-                setDescription('');
-                setSelectedSchoolCode('');
-                setAttachment(null);
+                reset();
                 setGrievanceCode(res.data.GrievanceCode);
                 setShowModal(true);
             } else {
@@ -104,6 +106,7 @@ useEffect(() => {
                 <p>Lodge your complaint 24x7. We're here to help you.</p>
             </div>
             
+            <form onSubmit={handleSubmit(onSubmit)}>
             <div className="form-body">
                 <div className="info-box">
                     <i className="fas fa-info-circle text-primary"></i>
@@ -115,13 +118,15 @@ useEffect(() => {
                         <div className="col-md-6">
                             <div className="form-group">
                                 <label className="form-label">Full Name <span className="required">*</span></label>
-                                <input type="text" className="form-control" id="fullName" value={ComplainantName} onChange={(e) => setComplainantName(e.target.value)} required="" />
+                                <input type="text" className="form-control" id="fullName" {...register('name',{required: 'Name is required'})} />
+                                {errors.name && <p style={{ color: "red" }}>{errors.name.message}</p>}
                             </div>
                         </div>
                         <div className="col-md-6">
                             <div className="form-group">
                                 <label className="form-label">Mobile Number <span className="required">*</span></label>
-                                <input type="tel" className="form-control" id="mobile" pattern="[0-9]{10}" value={MobileNumber} onChange={(e) => setMobileNumber(e.target.value)} required="" />
+                                <input type="tel" className="form-control" id="mobile" {...register('mobilenum',{required: 'Mobile Number is required'})} />
+                                {errors.mobilenum && <p style={{ color: "red" }}>{errors.mobilenum.message}</p>}
                             </div>
                         </div>
                     </div>
@@ -129,19 +134,23 @@ useEffect(() => {
                     <div className="row mt-3">
                         <div className="col-md-6">
                             <div className="form-group">
-                                <label className="form-label">Email Address</label>
-                                <input type="email" className="form-control" id="email" value={EmailAddress} onChange={(e) => setEmailAddress(e.target.value)} />
+                                <label className="form-label">Email Address <span className="required">*</span></label>
+                                <input type="email" className="form-control" id="email" {...register('emailaddress',{required: 'Email Address is required'})} />
+                                {errors.emailaddress && <p style={{ color: "red" }}>{errors.emailaddress.message}</p>}
                             </div>
                         </div>
                         <div className="col-md-6">
                             <div className="form-group">
-                                <label className="form-label">Institution/School</label>
-                                <select className='form-select' value={selectedSchoolCode} onChange={(e) => setSelectedSchoolCode(e.target.value)} >
+                                <label className="form-label">Institution/School <span className="required">*</span></label>
+                                <select className='form-select' {...register("schoolCode", { required: "School is required" })} >
                                     <option value=''>--Select School--</option>
                                     {schoolsList.map((item) => (
                                         (<option key={item.SchoolCode} value={item.SchoolCode}>{item.InstitutionName}</option>)
                                     ))}
                                 </select>
+                                 {errors.schoolCode && (
+            <p style={{ color: "red" }}>{errors.schoolCode.message}</p>
+          )}
                             </div>
                         </div>
                     </div>
@@ -150,7 +159,7 @@ useEffect(() => {
                         <div className="col-md-6">
                             <div className="form-group">
                                 <label className="form-label">Grievance Category <span className="required">*</span></label>
-                                <select className="form-select" id="category" required="" value={Category} onChange={(e) => setCategory(e.target.value)}>
+                                <select className="form-select" id="category" required="" {...register('Category',{required:'Select Grievance Category'})}>
                                     <option value="">Select Category</option>
                                     <option value="Academic Issues">Academic Issues</option>
                                     <option value="Infrastructure">Infrastructure</option>
@@ -163,6 +172,9 @@ useEffect(() => {
                                     <option value="Financial & Scholarship">Financial/Scholarship</option>
                                     <option value="Others">Others</option>
                                 </select>
+                                {errors.Category && (
+              <p style={{ color: "red" }}>{errors.Category.message}</p>
+            )}
                             </div>
                         </div>
                         {/* <div className="col-md-6">
@@ -181,30 +193,35 @@ useEffect(() => {
 
                     <div className="form-group mt-3">
                         <label className="form-label">Grievance Subject <span className="required">*</span></label>
-                        <input type="text" className="form-control" id="subject" placeholder="Brief subject of your grievance" value={Subject} onChange={(e) => setSubject(e.target.value)} required="" />
+                        <input type="text" className="form-control" id="subject" placeholder="Brief subject of your grievance" {...register('Subject',{required: 'Subject is required'})} />
+                        {errors.Subject && <p style={{ color: "red" }}>{errors.Subject.message}</p>}
                     </div>
 
                     <div className="form-group mt-3">
                         <label className="form-label">Detailed Description <span className="required">*</span></label>
-                        <textarea className="form-control" id="description" rows="6" placeholder="Please provide detailed description of your grievance..." required="" value={Description} onChange={(e) => setDescription(e.target.value)}></textarea>
+                        <textarea className="form-control" id="description" rows="6" placeholder="Please provide detailed description of your grievance..." {...register('Description',{required: 'Description is required'})}></textarea>
+                        {errors.Description && <p style={{ color: "red" }}>{errors.Description.message}</p>}
                     </div>
 
-                     <div className="form-group mt-3">
+                    <div className="form-group mt-3">
                         <label className="form-label">Attachment<span className="required">*</span></label>
-                        <input className="form-control" id="attachment" type='file' onChange={(e) => setAttachment(e.target.files[0])} />
-                        </div>
+                        <input className="form-control" id="attachment" type='file' {...register('Attachment',{required: 'Attachment is required'})} />
+                         {errors.Attachment && (<p style={{ color: "red" }}>{errors.Attachment.message}</p>)}
+                    </div>
 
                   
                     <div className="col-sm-12 mt-3">
-                       <button type="submit" className="btn btn-primary w-100" onClick={() => sendGrievance()}>
+                       <button type="submit" className="btn btn-primary w-100">
                         <i className="fas fa-paper-plane"></i> Submit Grievance
                     </button>
                     </div>
-                   
+                  
                
 
                 
             </div>
+            </form>
+
         </div>
         </div>
        </div>

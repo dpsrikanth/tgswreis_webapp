@@ -138,7 +138,9 @@ const Login = () => {
 
                     if(data.data.UserType === 'CallCentre'){
                         navigate("/complaintentry", { state: { type: "success", message: "Login successful" } });
-                    } else {
+                    } else if(data.data.UserType === 'Accounts') {
+                       navigate("/staffentryform", { state: { type: "success", message: "Login successful" } });
+                    }else {
                        navigate("/samsdashboard", { state: { type: "success", message: "Login successful" } });
                     }
                     

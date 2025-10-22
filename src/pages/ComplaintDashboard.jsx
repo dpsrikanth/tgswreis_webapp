@@ -142,7 +142,7 @@ const fetchComplaintTypes = async () => {
 
 const fetchMonthlyTrends = async () => {
   try {
-
+          
     _fetch('getmonthlytrends',null,false,token).then(res => {
       if(res.status === 'success'){
         const months = res.data.map(item => item.MonthYear)
