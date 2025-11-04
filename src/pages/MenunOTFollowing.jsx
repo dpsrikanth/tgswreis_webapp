@@ -37,7 +37,7 @@ const MenuOTFollowing = () => {
                 <a onClick={() => { navigate("/tsmess") }}>
                     <i className="bi bi-arrow-left pe-2" style={{ fontSize: "24px", verticalAlign: "middle" }}></i>
                 </a>
-                OT Following Schools
+                Diet Not Following Schools
             </h6>
 
             <div className="row">
@@ -55,8 +55,9 @@ const MenuOTFollowing = () => {
                             <table className="table">
                                 <thead>
                                     <tr>
-                                        <th>School ID</th>
+                                        <th>School Code</th>
                                         <th>School Name</th>
+                                        <th>ZoneName</th>
                                         <th>Status</th>
                                     </tr>
                                 </thead>
@@ -64,15 +65,16 @@ const MenuOTFollowing = () => {
                                     {/* Example data, replace with actual data */}
                                     {Array.isArray(compliancenotfollowing) && compliancenotfollowing.length > 0 ? (
                                         compliancenotfollowing.map((item, index) => (
-                                            <tr key={item.schoolId}>
-                                                <td>{item.schoolId}</td>
-                                                <td>{item.schoolName}</td>
-                                                <td><span className="text-bg-danger">Following</span></td>
+                                            <tr key={index}>
+                                                <td>{item.SchoolCode}</td>
+                                                <td>{item.PartnerName}</td>
+                                                <td>{item.ZoneName}</td>
+                                                <td><span className="text-bg-danger">{item.Compliance}</span></td>
                                             </tr>
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan={3} className="text-center text-muted">No data available</td>
+                                            <td colSpan={4} className="text-center text-muted">No data available</td>
                                         </tr>
                                     )}
                                     

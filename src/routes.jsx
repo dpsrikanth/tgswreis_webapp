@@ -31,6 +31,7 @@ import CsrDashboard from './pages/CsrDashboard';
 import GrievanceDashboard from './pages/GrievanceDashboard';
 import StaffEntryForm from './pages/StaffEntryForm';
 import SickEntryDashboard from './pages/SickEntryDashboard';
+import WrongEntriesAttendance from './pages/WrongEntriesAttendance';
 const AppRoutes = () => {
   return (
     <Router>
@@ -206,6 +207,12 @@ const AppRoutes = () => {
         <Route path='/sickdashboard' element={
           <ProtectedRoute>
             <SickEntryDashboard />
+          </ProtectedRoute>
+        } />
+
+        <Route path='/wrongentriesattendance' element={
+          <ProtectedRoute>
+            <WrongEntriesAttendance />
           </ProtectedRoute>
         } />
 

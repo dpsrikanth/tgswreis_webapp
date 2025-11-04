@@ -51,23 +51,25 @@ const MenuFollowing = () => {
                                 <thead>
                                 </thead><thead>
                                     <tr>
-                                        <th>School ID</th>
+                                        <th>School Code</th>
                                         <th>School Name</th>
+                                        <th>ZoneName</th>
                                         <th>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {Array.isArray(compliancefollowing) && compliancefollowing.length > 0 ? (
                                         compliancefollowing.map((item, index) => (
-                                            <tr key={item.schoolId}>
-                                                <td>{item.schoolId}</td>
-                                                <td>{item.schoolName}</td>
-                                                <td><span className="badge text-bg-success">Following</span></td>
+                                            <tr key={index}>
+                                                <td>{item.SchoolCode}</td>
+                                                <td>{item.PartnerName}</td>
+                                                <td>{item.ZoneName}</td>
+                                                <td><span className="badge text-bg-success">{item.Compliance}</span></td>
                                             </tr>
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan={3} className="text-center text-muted">No data available</td>
+                                            <td colSpan={4} className="text-center text-muted">No data available</td>
                                         </tr>
                                     )}
                                 </tbody>

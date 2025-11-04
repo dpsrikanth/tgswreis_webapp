@@ -12,20 +12,20 @@ const SchoolsDailyTracker = () => {
 const token = useSelector((state) => state.userappdetails.TOKEN);
 const UserType = useSelector((state) => state.userappdetails.profileData.UserType);
 const dataFetched = useRef(false);
-const [schoolsStockList,setSchoolsStockList] = useState([]);
-const [schoolsPrintList,setSchoolsPrintList] = useState([]);
+const [schoolsNoConsumption,setSchoolsNoConsumption] = useState([]);
+const [schoolsNoPurchase,setSchoolsNoPurchase] = useState([]);
 const navigate = useNavigate();
 
 
 
 
 
-const fetchSchoolsListStock = async () => {
+const fetchSchoolsNoConsumption = async () => {
     try {
 
-        _fetch('schoolslistnostock',null,false,token).then(res => {
+        _fetch('noconsumptionentered',null,false,token).then(res => {
             if(res.status === 'success'){
-                setSchoolsStockList(res.data);
+                setSchoolsNoConsumption(res.data);
                 toast.success(res.message);
             } else {
                 toast.error(res.message);
@@ -39,12 +39,12 @@ const fetchSchoolsListStock = async () => {
     }
 }
 
-const fetchSchoolsListPrint = async () => {
+const fetchSchoolsNoPurchase = async () => {
     try {
 
-        _fetch('schoolslistnoprint',null,false,token).then(res => {
+        _fetch('nopurchaseentries',null,false,token).then(res => {
             if(res.status === 'success'){
-                setSchoolsPrintList(res.data)
+                setSchoolsNoPurchase(res.data)
                 toast.success(res.message);
             } else {
                 toast.error(res.message);
@@ -61,7 +61,7 @@ const fetchSchoolsListPrint = async () => {
 
 
 
-const SchoolsListNoStockReport = async (data) => {
+const SchoolsNoConsumptionReport = async (data) => {
  const workbook = new ExcelJS.Workbook();
 
  const borderStyle = {
@@ -74,7 +74,6 @@ const SchoolsListNoStockReport = async (data) => {
  const customHeaders = [
   {header: 'School Code', key: 'SchoolCode'},
   {header: 'School Name', key: 'PartnerName'},
-  {header: 'School Contact', key: 'ContactMobile'}
  ]
 
 
@@ -82,10 +81,10 @@ const createSheet = (sheetName,headers,data) => {
   const sheet = workbook.addWorksheet(sheetName);
 
   const todayDate = new Date().toISOString().split('T')[0];
-  const titleRow = sheet.addRow([`Schools with No Stock Data Report - ${todayDate}`]);
+  const titleRow = sheet.addRow([`Schools with No Consumption Entries Today - ${todayDate}`]);
   titleRow.font = {bold: 'true', size: 16};
   titleRow.alignment = {horizontal: 'center'};
-  sheet.mergeCells(`A1:C1`);
+  sheet.mergeCells(`A1:B1`);
   sheet.addRow([]);
 
 
@@ -132,17 +131,17 @@ if(Array.isArray(data) && data.length > 0){
   const headers = Object.keys(data[0]);
   createSheet("Schools List",customHeaders,data);
 } else {
-  toast.error(`Schools List with no stock data not found`);
+  toast.error(`Schools List with no consumption entries today not found`);
 }
 
 const buffer = await workbook.xlsx.writeBuffer();
 const blob = new Blob([buffer],{
   type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 });
-saveAs(blob,`SchoolsListNoStockData_${new Date().toISOString().split('T')[0]}.xlsx`);
+saveAs(blob,`SchoolsListNoConsumptionEntries_${new Date().toISOString().split('T')[0]}.xlsx`);
 }
 
-const SchoolsListNoPrintReport = async (data) => {
+const SchoolsNoPurchaseReport = async (data) => {
      const workbook = new ExcelJS.Workbook();
 
  const borderStyle = {
@@ -155,7 +154,6 @@ const SchoolsListNoPrintReport = async (data) => {
  const customHeaders = [
   {header: 'School Code', key: 'SchoolCode'},
   {header: 'School Name', key: 'PartnerName'},
-  {header: 'School Contact', key: 'ContactMobile'}
  ]
 
 
@@ -163,10 +161,10 @@ const createSheet = (sheetName,headers,data) => {
   const sheet = workbook.addWorksheet(sheetName);
 
   const todayDate = new Date().toISOString().split('T')[0];
-  const titleRow = sheet.addRow([`Schools who have not clicked Print Provisions Today - ${todayDate}`]);
+  const titleRow = sheet.addRow([`Schools who have not entered purchase entries till now - ${todayDate}`]);
   titleRow.font = {bold: 'true', size: 16};
   titleRow.alignment = {horizontal: 'center'};
-  sheet.mergeCells(`A1:C1`);
+  sheet.mergeCells(`A1:B1`);
   sheet.addRow([]);
 
 
@@ -213,14 +211,14 @@ if(Array.isArray(data) && data.length > 0){
   const headers = Object.keys(data[0]);
   createSheet("Schools List",customHeaders,data);
 } else {
-  toast.error(`Schools List who have not clicked print provisions not found`);
+  toast.error(`Schools List who have not entered any purchase entries till now`);
 }
 
 const buffer = await workbook.xlsx.writeBuffer();
 const blob = new Blob([buffer],{
   type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 });
-saveAs(blob,`SchoolsListNoPrintData_${new Date().toISOString().split('T')[0]}.xlsx`);
+saveAs(blob,`SchoolsListNoPurchaseEntries_${new Date().toISOString().split('T')[0]}.xlsx`);
 }
 
 
@@ -242,11 +240,7 @@ const columns = [
     selector: row => row.PartnerName,
     sortable:true,
    },
-   {
-    name: 'School Contact',
-    selector: row => row.ContactMobile,
-    sortable:true,
-   },
+   
 ]
 
 
@@ -267,11 +261,7 @@ const columnsprint = [
     selector: row => row.PartnerName,
     sortable:true,
    },
-   {
-    name: 'School Contact',
-    selector: row => row.ContactMobile,
-    sortable:true,
-   },
+   
 ]
 
 
@@ -282,8 +272,8 @@ if(!token) {
 
 if(!dataFetched.current){
   dataFetched.current = true;
-  fetchSchoolsListStock();
- fetchSchoolsListPrint();
+  fetchSchoolsNoConsumption();
+ fetchSchoolsNoPurchase();
 }
 
 
@@ -298,8 +288,8 @@ if(!dataFetched.current){
         <div className='col-sm-12'>
              <div className="white-box shadow-sm">
                 <div className="d-flex justify-content-between align-items-center">
-                    <h5><span className="headercolor fw-bold">Schools with No Stock Details</span></h5>
-                    <button className='btn btn-success' onClick={() => SchoolsListNoStockReport(schoolsStockList)}>Get Report</button>
+                    <h5><span className="headercolor fw-bold">Schools Who have not Entered Consumption Entries Today</span></h5>
+                    <button className='btn btn-success' onClick={() => SchoolsNoConsumptionReport(schoolsNoConsumption)}>Get Report</button>
                 </div>
                 <div className='text-end'>
                     
@@ -307,7 +297,7 @@ if(!dataFetched.current){
                 <div>
                     <DataTable 
                     columns={columns}
-                    data={schoolsStockList}
+                    data={schoolsNoConsumption}
                     pagination
                   striped
                   persistTableHead
@@ -324,8 +314,8 @@ if(!dataFetched.current){
         <div className='col-sm-12'>
              <div className="white-box shadow-sm">
                 <div className="d-flex justify-content-between align-items-center">
-                    <h5><span className="headercolor fw-bold">Schools who have not Clicked Print Provisions Today</span></h5>
-                     <button className='btn btn-success' onClick={() => SchoolsListNoPrintReport(schoolsPrintList)}>Get Report</button>
+                    <h5><span className="headercolor fw-bold">Schools who have not Entered Purchase Entries till now</span></h5>
+                     <button className='btn btn-success' onClick={() => SchoolsNoPurchaseReport(schoolsNoPurchase)}>Get Report</button>
                 </div>
                 <div className='text-end'>
                    
@@ -333,7 +323,7 @@ if(!dataFetched.current){
                 <div>
                     <DataTable 
                     columns={columnsprint}
-                    data={schoolsPrintList}
+                    data={schoolsNoPurchase}
                     pagination
                   striped
                   persistTableHead

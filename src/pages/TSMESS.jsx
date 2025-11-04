@@ -132,16 +132,18 @@ const TSMESS = () => {
         if (res.status === 'success') {
          setTodayAttendanceTotal(res.data?.TodayAttendance ?? 0);
          setMonthAttendanceTotal(res.data?.MonthAttendance ?? 0);
-         const todayAmountArray = res.data.TodayConsumedAmount;
-         const todayAmount = Array.isArray(todayAmountArray) && todayAmountArray.length > 0
-         ? todayAmountArray[0].TodayConsumedAmount ?? 0
-         : 0;
-         setTodayConsumedAmount(todayAmount);
-         const monthAmountArray = res.data.MonthConsumedAmount;
-         const monthAmount = Array.isArray(monthAmountArray) && monthAmountArray.length > 0
-         ? monthAmountArray[0].TotalConsumedAmount ?? 0
-         : 0;
-         setMonthConsumedAmount(monthAmount);
+        //  const todayAmountArray = res.data.TodayConsumedAmount;
+        //  const todayAmount = Array.isArray(todayAmountArray) && todayAmountArray.length > 0
+        //  ? todayAmountArray[0].TodayConsumedAmount ?? 0
+        //  : 0;
+        //  setTodayConsumedAmount(todayAmount);
+        //  const monthAmountArray = res.data.MonthConsumedAmount;
+        //  const monthAmount = Array.isArray(monthAmountArray) && monthAmountArray.length > 0
+        //  ? monthAmountArray[0].TotalConsumedAmount ?? 0
+        //  : 0;
+        //  setMonthConsumedAmount(monthAmount);
+        setTodayConsumedAmount(res.data?.TodayConsumedAmount ?? 0);
+        setMonthConsumedAmount(res.data?.MonthConsumedAmount ?? 0);
 
         } else {
           console.error(res.message);
@@ -290,7 +292,7 @@ const TSMESS = () => {
                             <a onClick={() => { navigate("/reportsdashboard") }} style={{ cursor: 'pointer' }} className="shadow-sm"><span className="dot"></span>Reports</a>
                         </div>) : null}
                         {UserType === 'SuperAdmin' ? (<div className="col-md-3">
-                            <a onClick={() => { navigate("/editattendanceentries") }} style={{ cursor: 'pointer' }} className="shadow-sm"><span className="dot"></span>Edit Attendance</a>
+                            <a onClick={() => { navigate("/wrongentriesattendance") }} style={{ cursor: 'pointer' }} className="shadow-sm"><span className="dot"></span>Edit Attendance</a>
                         </div>) : null}
 
                         <div className="col-md-3">

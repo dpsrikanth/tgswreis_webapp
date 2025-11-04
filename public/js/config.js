@@ -79,6 +79,11 @@ const _gc = {
         topgeneralschools: {url : 'http://localhost:9001/topschoolssickgeneral', method: 'GET'},
         zonalreportsick: {url : 'http://localhost:9001/zonalreportsickbetween', method: 'GET'},
         sickdailytrends: {url : 'http://localhost:9001/dailytrendschart', method: 'GET'},
+        sickentriesdrilldown: {url : 'http://localhost:9001/institutionswisebetween', method: 'GET'},
+        wrongattendanceentries: {url : 'http://localhost:9001/wrongattendance', method: 'GET'},
+        updatewrongattendance: {url : 'http://localhost:9001/updatewrongattandanceentries', method: 'PATCH'},
+        noconsumptionentered: {url : 'http://localhost:9001/noconsumptionentered', method: 'GET'},
+        nopurchaseentries: {url : 'http://localhost:9001/nopurchaseentries', method: 'GET'}
     },
 };
 window.gc = _gc;
