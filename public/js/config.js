@@ -83,7 +83,8 @@ const _gc = {
         wrongattendanceentries: {url : 'http://localhost:9001/wrongattendance', method: 'GET'},
         updatewrongattendance: {url : 'http://localhost:9001/updatewrongattandanceentries', method: 'PATCH'},
         noconsumptionentered: {url : 'http://localhost:9001/noconsumptionentered', method: 'GET'},
-        nopurchaseentries: {url : 'http://localhost:9001/nopurchaseentries', method: 'GET'}
+        nopurchaseentries: {url : 'http://localhost:9001/nopurchaseentries', method: 'GET'},
+        consolidatedsickreport: {url : 'http://localhost:9001/consolidatedsickreport', method: 'GET'}
     },
 };
 window.gc = _gc;

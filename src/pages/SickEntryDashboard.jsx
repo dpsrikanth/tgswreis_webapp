@@ -21,6 +21,9 @@ const [referralCases,setReferralCases] = useState(0);
 const [admittedCases,setAdmittedCases] = useState(0);
 const [topschoolsfever,setTopschoolsfever] = useState([]);
 const [topschoolsgeneral,setTopschoolsgeneral] = useState([]);
+const [fromDateConsolidated,setFromDateConsolidated] = useState('');
+const [toDateConsolidated,setToDateConsolidated] = useState('');
+const [consolidatedData,setConsolidatedData] = useState([])
 // const [fromDate,setFromDate] = useState('');
 // const [toDate,setToDate] = useState('');
 
@@ -84,6 +87,129 @@ const fetchTopSchoolsGeneral = async () => {
         console.error('Error fetching Top Schools general',error)
     }
 }
+
+
+const fetchConsolidatedSickReport = async () => {
+  try {
+    const payload = {fromDate:fromDateConsolidated,toDate:toDateConsolidated,ZoneId}
+
+   const res = await _fetch('consolidatedsickreport',payload,false,token);
+      if(res.status === 'success' && Array.isArray(res.data) && res.data.length > 0){
+        setConsolidatedData(res.data)
+        toast.success(res.message);
+        await ConsolidatedSickExcelReport(res.data);
+      } else {
+        console.error('Unable to fetch consolidated sick report');
+      }
+    
+    
+  } catch(error){
+    console.error('Error fetching Consolidated Sick Report');
+  }
+}
+
+const ConsolidatedSickExcelReport = async(data) => {
+  const workbook = new ExcelJS.Workbook();
+    
+    const borderStyle = {
+    top: {style:'thin'},
+    left:{style:'thin'},
+    bottom:{style: 'thin'},
+    right: {style: 'thin'}
+  }
+  
+  const customHeaders = [
+    {header: 'Date' , key: 'Date'},
+    {header: 'Zone Name' , key: 'ZoneName'},
+    {header: 'School Code' , key: 'SchoolCode'},
+    {header: 'Institution Name' , key: 'PartnerName'},
+    {header: 'Total No. of General Sick', key: 'TotalGeneralSick'},
+    {header: 'Total No. of Fever Cases' , key: 'TotalFever'},
+    {header: 'Total No. of Hospital Referral Cases', key: 'TotalReferralCases'},
+    {header: 'Total No. of Admitted Cases', key: 'TotalAdmittedCases'},
+    {header: 'Temperature', key: 'Temperature'},
+    {header: 'Action Taken', key: 'ActionTaken'},
+    {header: 'Taken To The Hospital', key: 'TakenToTheHospital'},
+    {header: 'Remarks', key: 'Remarks'}
+  ]
+  
+  
+  const createSheet = (sheetName,headers,data) => {
+    const sheet = workbook.addWorksheet(sheetName);
+    const todayDate = new Date().toISOString().split('T')[0];
+    let titleRow;
+    if(fromDateConsolidated && toDateConsolidated){
+     titleRow = sheet.addRow([`Filtered Consolidated Sick Report - ${fromDateConsolidated} to ${toDateConsolidated}`]);
+    } else {
+      titleRow = sheet.addRow([`Daily Consolidated Sick Report - ${todayDate}`]);
+    }
+  
+    titleRow.font = {bold: 'true', size: 16}
+    titleRow.alignment = {horizontal: 'center'};
+    sheet.mergeCells(`A1:L1`);
+    sheet.addRow([]);
+  
+    const headerNames = headers.map(h => h.header);
+    const headerRow = sheet.addRow(headerNames);
+    headerRow.font = {bold: true};
+    headerRow.alignment = {horizontal: 'center'};
+  
+      headerRow.eachCell((cell) => {
+      cell.border = borderStyle;
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'D9E1F2' },
+      };
+    });
+  
+  
+         data.forEach((item) => {
+          const rowData = customHeaders.map(h => {
+           if (h.key === 'Date') {
+          return item.Date ? new Date(item.Date).toLocaleDateString('en-IN') : '-';
+        }
+        return item[h.key] != null ? item[h.key] : ''
+          })
+    
+          const row = sheet.addRow(rowData);
+          row.eachCell((cell) => {
+            cell.border = borderStyle;
+            cell.alignment = { vertical: 'middle', horizontal: 'center' };
+          });
+        });
+    
+        // Auto-fit column width
+        sheet.columns.forEach((column) => {
+          let maxLength = 7;
+          column.eachCell({ includeEmpty: true }, (cell) => {
+            const length = cell.value ? cell.value.toString().length : 0;
+            if (length > maxLength) maxLength = length;
+          });
+          column.width = maxLength + 2;
+        });
+    
+        return sheet;
+    };
+    
+    if(Array.isArray(data) && data.length > 0){
+      const headers = Object.keys(data[0]);
+      createSheet("Consolidated Sick Report",customHeaders,data);
+    } else {
+      toast.error(`No Entries for today's date`);
+    }
+    
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer],{
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    });
+    saveAs(blob,`ConsolidatedSickReport_${new Date().toISOString().split('T')[0]}.xlsx`);
+}
+
+
+
+
+
 
 let dailyTrendChartInstance = null;
 
@@ -260,8 +386,7 @@ useEffect(() => {
                         </div>
                         <div className="complaint-count">{item.TotalGeneralCases}</div>
                     </div>
-                  ))) : (<tr>No Sick Entries Entered</tr>) }
-                   
+                  ))) : (<div>No Sick Entries Entered</div>) }
                 </div>
             </div>
         </div>
@@ -282,7 +407,7 @@ useEffect(() => {
                     </div>
 
                  ))
-                ) : (<tr>No Sick Entries Entered</tr>) }
+                ) : (<div>No Sick Entries Entered</div>) }
                 
                 </div>
             </div>
@@ -340,6 +465,32 @@ useEffect(() => {
                 </div>
             </div>
         </div> */}
+
+        <div className='col-sm-12'>
+          <div className='white-box shadow-sm pt-3'>
+            <h5 style={{color:'#cc1178'}} className='fw-bold'>Consolidated Sick Report</h5>
+            <div className='row align-items-center'>
+              <div className='col-sm-3'>
+                <label className='form-label'>
+                  From Date
+                </label>
+                <input type='date' value={fromDateConsolidated} onChange={(e) => setFromDateConsolidated(e.target.value)} className='form-control' />
+              </div>
+              <div className='col-sm-3'>
+                <label className='form-label'>
+                  To Date
+                </label>
+                <input type='date' value={toDateConsolidated} onChange={(e) => setToDateConsolidated(e.target.value)} className='form-control' />
+              </div>
+              <div className='col-sm-3 pt-4'>
+                <button className='btn btn-success' onClick={() => fetchConsolidatedSickReport()}>Filtered Consolidated Report</button>
+              </div>
+              <div className = 'col-sm-3 pt-4'>
+                <button className='btn btn-success' onClick={() => fetchConsolidatedSickReport()}>Today's Consolidated Report</button>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <div className='col-sm-12'>
           <div className='white-box shadow-sm pt-2'>

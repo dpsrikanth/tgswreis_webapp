@@ -55,7 +55,7 @@ const SideMenu = () => {
             </div>
             </NavLink> ) : (null)}
 
-             {UserType === 'SuperAdmin' || UserType === 'Admin' ? ( <NavLink to="/sickdashboard">
+             {UserType === 'SuperAdmin' || UserType === 'Admin' || UserType === 'JointSecretary' ? ( <NavLink to="/sickdashboard">
             <div className="d-flex flex-column justify-content-between align-items-center text-center">
                 <i class="bi bi-heart-pulse text-white" style={{fontSize:'24px'}}></i>
                 <span style={{fontSize:'12px'}}>Sick Report</span>
@@ -95,7 +95,7 @@ const SideMenu = () => {
             
             </NavLink> ) : (null)}
 
-            {UserType === 'Accounts' || UserType === 'Admin' ? (<NavLink to="/staffentryform">
+            {UserType === 'Accounts' ? (<NavLink to="/staffentryform">
                 <div className="d-flex flex-column justify-content-between align-items-center">
                 <i class="bi bi-person text-white" style={{fontSize:'24px'}}></i>
                 <span style={{fontSize:'12px'}}>Staff Entry</span>

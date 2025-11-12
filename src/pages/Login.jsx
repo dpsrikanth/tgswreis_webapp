@@ -136,13 +136,29 @@ const Login = () => {
                     }
                     await storeResponse(data); // Only after this, lists are fetched
 
-                    if(data.data.UserType === 'CallCentre'){
-                        navigate("/complaintentry", { state: { type: "success", message: "Login successful" } });
-                    } else if(data.data.UserType === 'Accounts') {
-                       navigate("/staffentryform", { state: { type: "success", message: "Login successful" } });
-                    }else {
-                       navigate("/samsdashboard", { state: { type: "success", message: "Login successful" } });
+                    const {UserType} = data.data;
+
+                    const routeMap = {
+                        CallCentre: '/complaintentry',
+                        Accounts: '/staffentryform',
+                        JointSecretary: '/sickdashboard',
+                        Admin : '/samsdashboard',
+                        SuperAdmin: '/samsdashboard'
                     }
+
+                    const successState = { state: { type: "success", message: "Login successful" } };
+
+                    const route = routeMap[UserType] || '/login'
+
+                    navigate(route,successState)
+
+                    // if(data.data.UserType === 'CallCentre'){
+                    //     navigate("/complaintentry", { state: { type: "success", message: "Login successful" } });
+                    // } else if(data.data.UserType === 'Accounts') {
+                    //    navigate("/staffentryform", { state: { type: "success", message: "Login successful" } });
+                    // }else {
+                    //    navigate("/samsdashboard", { state: { type: "success", message: "Login successful" } });
+                    // }
                     
                     
                 })

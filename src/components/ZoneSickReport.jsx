@@ -321,15 +321,14 @@ fetchZoneWiseData();
             <tr key={index}>
               <td>{item.Date.split('T')[0]}</td>
               <td>{item.ZoneName}</td>
-              <td>{item.GeneralSick}</td>
-              <td>{item.Fever}</td>
-              <td>{item.ReferralCases}</td>
-              <td>{item.AdmittedCases}</td>
+              <td>{item.TotalGeneralSick}</td>
+              <td>{item.TotalFever}</td>
+              <td>{item.TotalReferralCases}</td>
+              <td>{item.TotalAdmittedCases}</td>
               <td>
                 <button
                   className="btn btn-primary btn-sm"
-                  onClick={() => onZoneClick(item.ZoneId, item.ZoneName)}
-                >
+                  onClick={() => onZoneClick(item.ZoneId, item.ZoneName)}>
                   View Schools
                 </button>
               </td>

@@ -135,7 +135,7 @@ const Header = () => {
                 </div>
                 <hr style={{ margin: "0px" }} />
                 <div style={{ padding: "10px" }}>
-                    <a href="/profile" style={{ display: "block", padding: "8px 5px" }}>Profile</a>
+                    <a href="#" style={{ display: "block", padding: "8px 5px" }}>Profile</a>
                     <a onClick={() => navigate("/change-password")} style={{ display: "block", padding: "8px 5px" }}>Change Password</a>
                     <a onClick={handleLogout} style={{ display: "block", padding: "8px 5px" }}>Logout</a>
                 </div>

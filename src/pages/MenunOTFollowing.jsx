@@ -69,7 +69,7 @@ const MenuOTFollowing = () => {
                                                 <td>{item.SchoolCode}</td>
                                                 <td>{item.PartnerName}</td>
                                                 <td>{item.ZoneName}</td>
-                                                <td><span className="text-bg-danger">{item.Compliance}</span></td>
+                                                <td><span className="badge bg-danger">{item.Compliance}</span></td>
                                             </tr>
                                         ))
                                     ) : (
