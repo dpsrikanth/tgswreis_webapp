@@ -64,7 +64,7 @@ const MenuFollowing = () => {
                                                 <td>{item.SchoolCode}</td>
                                                 <td>{item.PartnerName}</td>
                                                 <td>{item.ZoneName}</td>
-                                                <td><span className="badge text-bg-success">{item.Compliance}</span></td>
+                                                <td><span className="badge text-bg-success">Following</span></td>
                                             </tr>
                                         ))
                                     ) : (

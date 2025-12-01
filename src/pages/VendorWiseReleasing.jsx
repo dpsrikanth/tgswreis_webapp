@@ -122,8 +122,8 @@ const handleVendorWiseData = async () => {
                                  <td>{item.Branch}</td>
                                  <td>{item.IFSC}</td>
                                  <td>{item["Total Amount"]}</td>
-                                 <td>{item["TDS Deducted 2%"]}</td>
-                                 <td>{item["Final Amount"]}</td>
+                                 <td>{item["TDS Amount- 2%"]}</td>
+                                 <td>{item["Final amount"]}</td>
                                 </tr>
                             ))}
                         </tbody>

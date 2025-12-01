@@ -33,6 +33,15 @@ import StaffEntryForm from './pages/StaffEntryForm';
 import SickEntryDashboard from './pages/SickEntryDashboard';
 import WrongEntriesAttendance from './pages/WrongEntriesAttendance';
 import EditTGDietEntries from './pages/EditTGDietEntries';
+import TourDiaryDashboard from './pages/TourDiaryDashboard';
+import TourSystemSettings from './pages/TourSystemSettings';
+import UploadTourReports from './pages/UploadTourReports';
+import TourDiarySchedule from './pages/TourDiarySchedule';
+import TourDiaryEntry from './pages/TourDiaryEntry';
+import VisitTracking from './pages/VisitTracking';
+import TourUserDashboard from './pages/TourUserDashboard';
+import TourUserVisits from './pages/TourUserVisits';
+import AttendanceandConsumptionReport from './pages/AttendanceandConsumptionReport';
 const AppRoutes = () => {
   return (
     <Router>
@@ -221,10 +230,64 @@ const AppRoutes = () => {
           </ProtectedRoute>
         } />
 
-        </Route>
+        <Route path='/tourdiarydashboard' element={
+          <ProtectedRoute>
+            <TourDiaryDashboard />
+          </ProtectedRoute>
+        } />
 
-      
-        
+        <Route path='/toursystemsettings' element={
+          <ProtectedRoute>
+            <TourSystemSettings />
+          </ProtectedRoute>
+        } />
+
+        <Route path='/uploadtourreports/:TourDiaryId' element={
+          <ProtectedRoute>
+            <UploadTourReports />
+          </ProtectedRoute>
+        } />
+
+        <Route path='/tourdiaryschedule' element={
+          <ProtectedRoute>
+            <TourDiarySchedule />
+          </ProtectedRoute> } />
+
+        <Route path='/tourdiaryentry' element={
+         <ProtectedRoute>
+          <TourDiaryEntry />
+         </ProtectedRoute>
+        } />
+
+        <Route path='/visittracking' element={
+          <ProtectedRoute>
+            <VisitTracking />
+          </ProtectedRoute>
+        } />
+
+
+        <Route path='/touruserdashboard' element={
+          <ProtectedRoute>
+            <TourUserDashboard />
+          </ProtectedRoute>
+        } />
+
+        <Route path='/touruservisits' element={
+          <ProtectedRoute>
+            <TourUserVisits />
+          </ProtectedRoute>
+        } />
+
+
+        <Route path='/attenandconsreport'element={
+          <ProtectedRoute>
+            <AttendanceandConsumptionReport />
+          </ProtectedRoute>
+
+        } />
+
+       
+        </Route>
       </Routes>
     </Router>
   );

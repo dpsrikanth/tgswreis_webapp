@@ -70,10 +70,26 @@ const SideMenu = () => {
             </div>
             </NavLink> ) : (null)} */}
 
-             {UserType === 'SuperAdmin' ? (  <NavLink to="/schoolscontact">
+             {/* {UserType === 'SuperAdmin' ? (  <NavLink to="/schoolscontact">
                 <div className="d-flex flex-column justify-content-between align-items-center">
                 <i class="bi bi-person-rolodex text-white" style={{fontSize:'24px'}}></i>
                 <span style={{fontSize:'12px'}}>Edit Contact</span>
+            </div>
+            </NavLink> ) : (null)} */}
+
+
+                {UserType === 'SuperAdmin' ? (  <NavLink to="/tourdiarydashboard">
+                <div className="d-flex flex-column justify-content-between align-items-center">
+                <i class="bi bi-geo-alt text-white" style={{fontSize:'24px'}}></i>
+                <span style={{fontSize:'12px'}}>Tour Diary</span>
+            </div>
+            </NavLink> ) : (null)}
+
+
+              {UserType === 'Admin' || UserType === 'DCO' || UserType === 'SpecialOfficer' ? (  <NavLink to="/touruserdashboard">
+                <div className="d-flex flex-column justify-content-between align-items-center">
+                <i class="bi bi-geo-alt text-white" style={{fontSize:'24px'}}></i>
+                <span style={{fontSize:'12px'}}>Tour Diary</span>
             </div>
             </NavLink> ) : (null)}
 

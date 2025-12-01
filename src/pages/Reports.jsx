@@ -24,7 +24,7 @@ const Reports = () => {
                     <div className="col-md-4">
                         <ul>
                             {/* <li><a href="#" className="text-primary">Month-Wise Vendor Report</a></li> */}
-                            <li> <a href="#" className="text-primary">School-Wise Attendance and Consumption</a></li>
+                            <li> <a onClick={() => {navigate('/attenandconsreport')}} style={{cursor: 'pointer'}} className="text-primary">School-Wise Attendance and Consumption</a></li>
                         </ul>
                     </div>
                     {/* <div className="col-md-4">

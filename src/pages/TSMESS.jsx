@@ -162,10 +162,10 @@ const TSMESS = () => {
             if (res.status === "success") {
                 //console.log("Menu Compliance Data", res.data);
                 setMenuCompliance({
-                    following: res.data.FollowingCompliance,
-                    notFollowing: res.data.NotFollowingCompliance
+                    following: res.data.FollowingSchools,
+                    notFollowing: res.data.NotFollowingSchools
                 });
-                displayChart(res.data.FollowingCompliance, res.data.NotFollowingCompliance);
+                displayChart(res.data.FollowingSchools, res.data.NotFollowingSchools);
                 //toast.success("Menu compliance data fetched successfully.");
             } else {
                 //toast.error("Failed to fetch menu compliance data.");
@@ -224,7 +224,7 @@ const TSMESS = () => {
                             <div className="card-box pink-bg_ts shadow-sm">
                                 <div className="d-flex justify-content-between align-items-center">
                                     <div>
-                                        <h6>Today Balance Amount</h6>
+                                        <h6>Today Purchase Amount</h6>
                                         <h4 className="fw-bold"><span className="pe-1">₹</span>{todayDefaults?.TodayTotalBalanceAmount || 0}</h4>
                                     </div>
                                     <img src="img/today_balance_icon.png" height="40px" alt="Today Balance Icon" />
@@ -262,7 +262,7 @@ const TSMESS = () => {
                         <div className="col-md-4">
                             <div className="white-box d-flex justify-content-between align-items-center shadow-sm">
                                 <div>
-                                    <h6 className="fw-bold">Month Balance Amount</h6>
+                                    <h6 className="fw-bold">Month Purchase Amount</h6>
                                     <h4 className="fw-bold maroon"><span className="text-black pe-1">₹</span>{monthDefaults?.MonthBalanceAmount || 0}</h4>
                                 </div>
                                 <img src="img/month_balance_icon.png" height="40px" alt="Month Balance Icon" />
