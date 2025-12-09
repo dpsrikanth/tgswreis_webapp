@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, PrefetchPageLinks } from 'react-router-dom';
 import Layout from './components/Layout';
 import Login from './pages/Login';
 import ProtectedRoute from './components/common/ProtectedRoute';
@@ -42,6 +42,9 @@ import VisitTracking from './pages/VisitTracking';
 import TourUserDashboard from './pages/TourUserDashboard';
 import TourUserVisits from './pages/TourUserVisits';
 import AttendanceandConsumptionReport from './pages/AttendanceandConsumptionReport';
+import DailyTourReport from './pages/DailyTourReport';
+import ConsolidatedTourReport from './pages/ConsolidatedTourReport';
+import OfficerWiseTourReport from './pages/OfficerWiseTourReport';
 const AppRoutes = () => {
   return (
     <Router>
@@ -284,6 +287,25 @@ const AppRoutes = () => {
             <AttendanceandConsumptionReport />
           </ProtectedRoute>
 
+        } />
+
+        <Route path='/dailytourreport' element={
+          <ProtectedRoute>
+            <DailyTourReport />
+          </ProtectedRoute>
+        } />
+
+
+        <Route path='/consolidatedtourreport' element={
+           <ProtectedRoute>
+            <ConsolidatedTourReport />
+           </ProtectedRoute>
+        } />
+
+        <Route path='/officerwisetourreport' element={
+          <ProtectedRoute>
+            <OfficerWiseTourReport />
+          </ProtectedRoute>
         } />
 
        

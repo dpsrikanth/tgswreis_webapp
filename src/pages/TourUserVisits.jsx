@@ -5,7 +5,9 @@ import { useEffect, useState, useRef, use } from 'react';
 import { _fetch } from "../libs/utils";
 import { useSelector } from 'react-redux';
 import { toast, ToastContainer } from "react-toastify";
-import Select from 'react-select';
+import { Fancybox } from "@fancyapps/ui";
+import "@fancyapps/ui/dist/fancybox/fancybox.css";
+
 
 const TourUserVisits = () => {
 const token = useSelector((state) => state.userappdetails.TOKEN);
@@ -25,6 +27,10 @@ const [showCannotVisitModal, setCannotVisitModal] = useState(false);
 const [rejectedReason,setRejectedReason] = useState('');
 const [rejectedRemarks,setRejectedRemarks] = useState('');
 const navigate = useNavigate();
+const [showReportModal,setShowReportModal] = useState(false);
+const [showImagesModal,setShowImagesModal] = useState(false);
+const [selectedFileUrl,setSelectedFileUrl] = useState('');
+const apiUrl = import.meta.env.VITE_API_URL;
 
 
 const fetchTourScheduleInd = async () => {
@@ -90,205 +96,263 @@ const MarkVisited = async () => {
     }
 }
 
-
 useEffect(() => {
 fetchTourScheduleInd();    
 
 },[])
 
+const isToday = (dateStr) => {
+    const d = new Date(dateStr);
+    const today = new Date();
+    return (
+      d.getFullYear() === today.getFullYear() &&
+      d.getMonth() === today.getMonth() &&
+      d.getDate() === today.getDate()
+    );
+}
+
+
+const openPhotoGallery = (tourDiaryId, photoList) => {
+  const images = photoList.map((img, index) => ({
+    src: `${apiUrl}/uploads/tourdiary/${tourDiaryId}/photos/${img}`,
+    thumb: `${apiUrl}/uploads/tourdiary/${tourDiaryId}/photos/${img}`,
+    caption: `Photo ${index + 1}`,
+  }));
+
+  Fancybox.show(images, {
+    Thumbs: {
+      autoStart: true,
+    },
+  });
+};
+
+
+
+
   return (
     <>
     <ToastContainer />
       <h6 className="fw-bold mb-3"><a href="#"><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>My Scheduled Visits</h6>
+
+      <ul className="nav nav-tabs" id="tourTabs">
+  <li className="nav-item">
+    <button className="nav-link active" data-bs-toggle="tab" data-bs-target="#upcoming">Upcoming</button>
+  </li>
+  <li className="nav-item">
+    <button className="nav-link" data-bs-toggle="tab" data-bs-target="#visited">Visited </button>
+  </li>
+  <li className="nav-item">
+    <button className="nav-link" data-bs-toggle="tab" data-bs-target="#completed">Completed </button>
+  </li>
+  <li className="nav-item">
+    <button className="nav-link" data-bs-toggle="tab" data-bs-target="#cannotvisit">Cannot Visit </button>
+  </li>
+</ul>
+
+<div className="tab-content pt-3">
+    {/*UPCOMING */}
+    <div className="tab-pane fade show active" id="upcoming">
+      
+
+                <div className="white-box shadow-sm">
+    <h5>Upcoming Visits</h5>
+
+    {planned.length ? planned.map(item => (
+      <div key={item.TourDiaryId} className="card mb-3 shadow-sm border-sm">
+        <div className="card-body d-flex justify-content-between align-items-start">
+          <div>
+            <span className="badge bg-secondary">
+              {item.DateOfVisit.split("T")[0]}
+            </span>
+            <h6 className="mt-2 mb-1 fw-bold">
+              {item.PartnerName.replace("TGSWREIS", "")}
+            </h6>
+            <p className="text-muted small mb-0">{item.Purpose}</p>
+          </div>
+
+          <div className="text-end">
+            <span className="badge bg-primary mb-2">PLANNED</span>
+            <div className="d-flex gap-2 justify-content-end">
+              <button
+                className="btn btn-success btn-sm"
+                disabled={!isToday(item.DateOfVisit)}
+                onClick={() => { setVisitedId(item.TourDiaryId); setShowMarkVisitModal(true); }}
+              >
+                Mark Visited
+              </button>
+              <button
+                className="btn btn-danger btn-sm"
+                disabled={!isToday(item.DateOfVisit)}
+                onClick={() => { setCannotVisitId(item.TourDiaryId); setCannotVisitModal(true); }}
+              >
+                Cannot Visit
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    )) : <div className="text-muted">No upcoming visits</div>}
+  </div>
+    </div>
+
+
+     {/*VISITED */}
+    <div className="tab-pane fade" id="visited">
+      <div className="white-box shadow-sm">
+    <h5>Visited – Pending Upload</h5>
+
+    {visited.length ? visited.map(item => (
+      <div key={item.TourDiaryId} className="card mb-3 shadow-sm border-sm">
+        <div className="card-body d-flex justify-content-between align-items-start">
+
+          <div>
+            <span className="badge bg-secondary">
+              {item.DateOfVisit.split("T")[0]}
+            </span>
+            <h6 className="mt-2 mb-1 fw-bold">
+              {item.PartnerName.replace("TGSWREIS", "")}
+            </h6>
+            <p className="text-muted small mb-0">{item.Purpose}</p>
+          </div>
+
+          <div className="text-end">
+            <span className="badge bg-info mb-2">VISITED</span>
+            <div> 
+                <button className="btn btn-primary btn-sm"
+              onClick={() => navigate(`/uploadtourreports/${item.TourDiaryId}`)}>
+              Upload Proof
+            </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    )) : <div className="text-muted">No visited records</div>}
+  </div>
+    </div>
+
+
+     {/*COMPLETED*/}
+    <div className="tab-pane fade" id="completed">
+
+         <div className="white-box shadow-sm">
+    <h5>Completed Visits</h5>
+
+    {completed.length ? completed.map(item => (
+      <div key={item.TourDiaryId} className="card mb-3 shadow-sm border-sm">
+        <div className="card-body d-flex justify-content-between align-items-start">
+
+          <div>
+            <span className="badge bg-secondary">
+              {item.DateOfVisit.split("T")[0]}
+            </span>
+            <h6 className="mt-2 mb-1 fw-bold">{item.PartnerName}</h6>
+            <p className="text-muted small mb-1">{item.Purpose}</p>
+          </div>
+
+          <div className="text-end">
+             <span className="badge bg-success mb-2">COMPLETED</span>
+            {/* Report */}
+            <div className='d-flex gap-2 justify-content-end'>
+               {item.ReportPDF ? (
+              <button className="btn btn-primary btn-sm mb-2"
+                onClick={() => {
+                  setSelectedTourDiaryId(item.TourDiaryId);
+                  setSelectedFileUrl(`${apiUrl}/uploads/tourdiary/${item.TourDiaryId}/reports/${item.ReportPDF}`);
+                  setShowReportModal(true);
+                }}>
+                View Report
+              </button>
+            ) : <span className="text-muted small">No Report</span>}
+
+             {/* Photos */}
+            {/* {item.PhotoAttachment && (
+              <div>
+                <button className="btn btn-secondary btn-sm"
+                  onClick={() => { setSelectedTourDiaryId(item.TourDiaryId); setShowImagesModal(true); }}>
+                  Photos
+                </button>
+                <small className="text-muted ms-1">
+                  ({JSON.parse(item.PhotoAttachment).length}) photos
+                </small>
+              </div>
+            )} */}
+           
+  {item.PhotoAttachment ? (() => {
+    const photosArray = JSON.parse(item.PhotoAttachment);
+    return (
+      <button
+        className="btn btn-primary btn-sm mb-2"
+        onClick={() => openPhotoGallery(item.TourDiaryId, photosArray)}
+      >
+        View Photos ({photosArray.length})
+      </button>
+    );
+  })() : (
+    <span className="text-muted">Not Uploaded</span>
+  )}
+
+
+            </div>
+          
+
+           
+          </div>
+
+        </div>
+      </div>
+    )) : <div className="text-muted">No completed visits</div>}
+  </div>
+    </div>
+
+     {/*CANNOT VISIT */}
+    <div className="tab-pane fade" id="cannotvisit">
+
+        <div className="white-box shadow-sm">
+    <h5>Cannot Visit</h5>
+
+    {cannotVisit.length ? cannotVisit.map(item => (
+      <div key={item.TourDiaryId} className="card mb-3 shadow-sm border-sm">
+        <div className="card-body d-flex justify-content-between align-items-start">
+
+          <div>
+            <span className="badge bg-secondary">
+              {item.DateOfVisit.split("T")[0]}
+            </span>
+            <h6 className="mt-2 mb-1 fw-bold">
+              {item.PartnerName.replace("TGSWREIS","")}
+            </h6>
+            <p className="text-muted small mb-1">{item.Purpose}</p>
+            
+          </div>
+          <div className='text-end'>
+          <span className="badge bg-warning text-dark">CANNOT VISIT</span>
+          </div>
+
+        </div>
+      </div>
+    )) : <div className="text-muted">No data</div>}
+  </div>
+    </div>
+</div>
      
       <div className="row gy-3">
         <div className="col-sm-6">
-            <div className="white-box shadow-sm">
-                <h5>Upcoming Visits</h5>
-                <div className="row gy-3">
-                   
-                    <div className="col-sm-12">
-                        <table className="table tablee-responsive">
-                         <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>School/Location</th>
-                                <th>Purpose</th>
-                                <th>Status</th>
-                                <th>
-                                    Action
-                                </th>
-                            </tr>
-                         </thead>
-                         <tbody>
-                            {Array.isArray(planned) && planned.length > 0 ? (
-                                planned.map((item) => (
-                                    <tr key={item.TourDiaryId}>
-                                        <td>{item.DateOfVisit.split('T')[0]}</td>
-                                        <td>{item.PartnerName.replace('TGSWREIS','')}</td>
-                                        <td>{item.Purpose}</td>
-                                        {item.Status === 1 ? (<td><span className='badge bg-primary'>PLANNED</span></td>) : null}
-                                        <td>
-                                            <div className="d-flex gap-2">
-                                                <button className="btn btn-success btn-sm" onClick={() => {
-                                                    setVisitedId(item.TourDiaryId)
-                                                    setShowMarkVisitModal(true)
-                                                }}>
-                                                    <i className="fas fa-check"></i> Mark Visited
-                                                </button>
-                                                <button className="btn btn-danger btn-sm" onClick={() => {
-                                                    setCannotVisitId(item.TourDiaryId)
-                                                    setCannotVisitModal(true)
-                                                }}>
-                                                    <i className="fas fa-times"></i> Cannot Visit
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td colSpan={5}>No Data available</td>
-                                </tr>
-                            )}
-                            
-                         </tbody>
-                        </table>
-                    </div>
-                </div>
-                </div>
+           
         </div>
 
 
           <div className="col-sm-6">
-            <div className="white-box shadow-sm">
-                <h5>Completed Visits</h5>
-                <div className="row gy-3">
-                     <table className="table tablee-responsive">
-                         <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>School/Location</th>
-                                <th>Purpose</th>
-                                <th>Status</th>
-                               
-                            </tr>
-                         </thead>
-                         <tbody>
-                            {Array.isArray(completed) && completed.length > 0 ? (completed.map((item,index) => (
-                                <tr>
-                                    <td>{item.DateOfVisit.split('T')[0]}</td>
-                                    <td>{item.PartnerName}</td>
-                                    <td>{item.Purpose}</td>
-                                    <td><span className='badge bg-success'>{item.Status === 3 ? 'COMPLETED' : ''}</span></td>
-                                    
-                                </tr>
-                            ))) : (<div>No Data available</div>)}
-                            {/* <tr>
-                                <td>2025-11-19</td>
-                                <td>51902 - Adilabad</td>
-                                <td>Routine Inspection</td>
-                                <td><span className="badge bg-success">Completed</span></td>
-                                <td>
-                                    <div className="alert alert-warning mb-3">
-                            <i className="fas fa-exclamation-triangle me-2"></i>
-                            Report upload pending. Deadline: Nov 18, 2025
-                        </div>
-                                </td>
-                                <td>
-                                    <div className="d-flex gap-2">
-                            <button className="btn btn-primary btn-sm w-100">
-                            <i className="fas fa-upload"></i> Upload Report Now
-                        </button>
-                           
-                        </div>
-                                </td>
-                            </tr> */}
-                         </tbody>
-                        </table>
-                     
-                </div>
-                </div>
+            
         </div>
 
         <div className="col-sm-6">
-            <div className="white-box shadow-sm">
-                <h5>Cannot Visit</h5>
-                <div className="row gy-3">
-                   
-                    <div className="col-sm-12">
-                        <table className="table tablee-responsive">
-                         <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>School/Location</th>
-                                <th>Purpose</th>
-                                <th>Status</th>
-                               
-                            </tr>
-                         </thead>
-                         <tbody>
-                            {Array.isArray(cannotVisit) && cannotVisit.length > 0 ? (
-                                cannotVisit.map((item) => (
-                                    <tr key={item.TourDiaryId}>
-                                        <td>{item.DateOfVisit.split('T')[0]}</td>
-                                        <td>{item.PartnerName.replace('TGSWREIS','')}</td>
-                                        <td>{item.Purpose}</td>
-                                        {item.Status === 5 ? (<td><span className='badge bg-warning'>CANNOT VISIT</span></td>) : null}
-                                      
-                                    </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td colSpan={4}>No Data available</td>
-                                </tr>
-                            )}
-                            
-                         </tbody>
-                        </table>
-                    </div>
-                </div>
-                </div>
+           
         </div>
 
         <div className="col-sm-6">
-            <div className="white-box shadow-sm">
-                <h5>Visited</h5>
-                <div className="row gy-3">
-                   
-                    <div className="col-sm-12">
-                        <table className="table tablee-responsive">
-                         <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>School/Location</th>
-                                <th>Purpose</th>
-                                <th>Status</th>
-                               
-                            </tr>
-                         </thead>
-                         <tbody>
-                            {Array.isArray(visited) && visited.length > 0 ? (
-                                visited.map((item) => (
-                                    <tr key={item.TourDiaryId}>
-                                        <td>{item.DateOfVisit.split('T')[0]}</td>
-                                        <td>{item.PartnerName.replace('TGSWREIS','')}</td>
-                                        <td>{item.Purpose}</td>
-                                        {item.Status === 2 ? (<td><span className='badge text-bg-info'>VISITED</span></td>) : null}
-                                      
-                                    </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td colSpan={4}>No Data available</td>
-                                </tr>
-                            )}
-                            
-                         </tbody>
-                        </table>
-                    </div>
-                </div>
-                </div>
+           
         </div>
 
 
@@ -393,6 +457,87 @@ fetchTourScheduleInd();
           </div>
         </div>
       </div>)}
+
+
+      {/*Report Modal*/}
+
+      {showReportModal && selectedTourDiaryId && (
+  <div className="modal show fade" style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+    <div className="modal-dialog modal-xl">
+      <div className="modal-content">
+        <div className="modal-header">
+          <h5>Visit Report</h5>
+          <button className="btn-close" onClick={() => setShowReportModal(false)} />
+        </div>
+        <div className="modal-body" style={{ height: '80vh' }}>
+          <iframe
+            src={selectedFileUrl}
+            style={{ width: '100%', height: '100%', border: 'none' }}
+          ></iframe>
+        </div>
+        <div className="modal-footer">
+          <a
+            className="btn btn-success"
+            download
+            href={`/uploads/reports/${completed.find(x => x.TourDiaryId === selectedTourDiaryId).ReportPDF}`}
+          >
+            Download
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
+
+    {/* Images Modal */}
+
+    {showImagesModal && selectedTourDiaryId && (() => {
+  const item = completed.find(x => x.TourDiaryId === selectedTourDiaryId);
+  const photos = item.PhotoAttachment ? JSON.parse(item.PhotoAttachment) : [];
+
+  return (
+    <div className="modal show fade" style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+      <div className="modal-dialog modal-lg">
+        <div className="modal-content">
+          <div className="modal-header">
+            <h5>Uploaded Photos</h5>
+            <button className="btn-close" onClick={() => setShowImagesModal(false)} />
+          </div>
+          <div className="modal-body">
+            <div className="row">
+              
+                  {photos.map((img, i) => {
+                const imgUrl = `http://localhost:9001/uploads/tourdiary/${selectedTourDiaryId}/photos/${img}`;
+                return (
+                  <div className="col-sm-4 mb-3" key={i}>
+                    <a
+                      href={imgUrl}
+                      data-fancybox="tour-images"
+                      data-caption={`Photo ${i + 1}`}
+                    >
+                      <img
+                        src={imgUrl}
+                        alt="Tour"
+                        className="img-fluid rounded border"
+                        style={{ cursor: "pointer" }}
+                      />
+                    </a>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          <div className="modal-footer">
+         
+        </div>
+        </div>
+      </div>
+    </div>
+  );
+})()}
+
+
       
     </>
   )

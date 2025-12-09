@@ -5,7 +5,6 @@ import { useEffect, useState, useRef,} from 'react';
 import { _fetch } from "../libs/utils";
 import { useSelector } from 'react-redux';
 import { toast, ToastContainer } from "react-toastify";
-import Select from 'react-select';
 
 const UploadTourReports = () => {
 const token = useSelector((state) => state.userappdetails.TOKEN);
@@ -15,6 +14,27 @@ const {TourDiaryId} = useParams();
 const [photos,setPhotos] = useState([]);
 const [report,setReport] = useState(null);
 const [tourInfo,setTourInfo] = useState(null);
+const [loading, setLoading] = useState(false);
+const [uploadedReport,setUploadedReport] = useState(null);
+const [uploadedPhotos,setUploadedPhotos] = useState('');
+const navigate = useNavigate();
+const API_URL = import.meta.env.VITE_API_URL;
+
+
+const validateFiles = () => {
+    if(report && report.size > 3 * 1024 * 1024){
+        toast.error('PDF Size must be less than 3MB');
+        return false;
+    }
+
+    for(let file of photos){
+        if(file.size > 1 * 1024 * 1024){
+            toast.error('Each Photo must be less than 1MB');
+            return false;
+        }
+    }
+    return true;
+}
 
 
 const fetchTourInfo = async () => {
@@ -23,7 +43,9 @@ const fetchTourInfo = async () => {
         const payload = {TourDiaryId}
         _fetch('tourinfo',payload,false,token).then(res => {
             if(res.status === 'success'){
-                setTourInfo(res.data)
+                setTourInfo(res.data[0])
+                setUploadedReport(res.data[0].ReportPDF || null)
+                setUploadedPhotos(res.data[0].PhotoAttachment ? JSON.parse(res.data[0].PhotoAttachment): [])
             }else{
                 toast.error('Error fetching tour info')
             }
@@ -33,6 +55,35 @@ const fetchTourInfo = async () => {
         console.error('Error fetching tour info',error)
     }
 }
+
+
+const handleSubmit = () => {
+    if(!report && photos.length === 0){
+     toast.error("Upload report or photos before completing");
+      return;
+    }
+    if(!validateFiles()) return;
+    setLoading(true);
+    const formData = new FormData();
+    formData.append("TourDiaryId", TourDiaryId);
+
+    if (report) formData.append("report", report);
+    photos.forEach(f => formData.append("photos", f));
+
+    _fetch('uploadtourassetscomplete',formData,true,token).then(res => {
+        setLoading(false);
+        if (res.status === 'success') {
+        toast.success(res.message);
+        setTimeout(() => navigate("/touruservisits"), 1200);
+      } else {
+        toast.error(res.message);
+      }
+    })
+}
+
+const existingPhotos = tourInfo?.PhotoAttachment
+    ? JSON.parse(tourInfo.PhotoAttachment)
+    : [];
 
 
 const uploadReport = async () => {
@@ -114,7 +165,7 @@ fetchTourInfo();
   return (
     <>
       <ToastContainer />
-    <h6 className="fw-bold mb-3"><a href="tsmess.html"><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>Upload Tour Reports</h6>
+    <h6 className="fw-bold mb-3"><a onClick={() => {navigate('/touruservisits')}} style={{cursor:'pointer'}}><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>Upload Tour Reports</h6>
      
       <div className="row gy-3">
         <div className="col-sm-12">
@@ -123,17 +174,81 @@ fetchTourInfo();
                 <div className="row gy-3">
                     <div className="col-sm-4">
                         <label className="form-label">Visit Date:</label>
-                         <div className='fw-bold'>{tourInfo ? tourInfo[0]?.DateOfVisit?.split('T')[0] : ''}</div>
+                         <span className='fw-bold ms-2'>{tourInfo ? tourInfo?.DateOfVisit?.split('T')[0] : ''}</span>
                     </div>
                     <div className="col-sm-4">
                         <label className="form-label">School:</label>
-                        <div className='fw-bold'>{tourInfo ? tourInfo[0].PartnerName : ''}</div>
+                        <span className='fw-bold ms-2'>{tourInfo ? tourInfo.PartnerName : ''}</span>
                     </div>
-                    <div className="col-sm-4">
+                    {/* <div className="col-sm-4">
                         <label className="form-label">Upload Report</label>
                         <input type="file" className="form-control" accept='.pdf' onChange={(e) => setReport(e.target.files[0]) } />
+                    </div> */}
+                    {/* Report Upload */}
+
+                    <div className='col-sm-6'>
+                      <div className="mb-3">
+          <label className="form-label">Report (PDF) <span className='fw-bold' style={{color:'red'}}>(Note: Size Limit is 3MB)</span></label>
+          {tourInfo?.ReportPDF && (
+            <div className="mb-2 small">
+              <a
+                href={`${API_URL}/uploads/tourdiary/${TourDiaryId}/reports/${tourInfo.ReportPDF}`}
+                target="_blank"
+              >
+                📄 View Existing Report
+              </a>
+            </div>
+          )}
+          <input
+            type="file"
+            accept=".pdf"
+            className="form-control"
+            onChange={(e) => setReport(e.target.files[0])}
+          />
+        </div>
                     </div>
-                    <div className="col-sm-4">
+      
+
+        {/* Photo Upload */}
+        <div className='col-sm-6'>
+        <div className="mb-3">
+          <label className="form-label">Photos <span className='fw-bold' style={{color:'red'}}>(Note: Only 3 photos allowed)</span></label>
+          <input
+            type="file"
+            multiple accept="image/*"
+            className="form-control"
+            onChange={(e) => {
+            const selected = Array.from(e.target.files);
+            const alreadyUploaded =  uploadedPhotos.length
+            console.log(alreadyUploaded)
+            const total = alreadyUploaded + selected.length;
+            console.log(total);
+            if(total > 3){
+                toast.error(`Only 3 photos allowed`);
+                e.target.value = "";
+                return;
+            }
+                setPhotos(selected)}
+            }
+                
+          />
+        
+          {photos.length > 0 && (
+            <div className="text-success small mt-1">
+              Selected: {photos.length} files
+            </div>
+          )}
+           
+           {existingPhotos.length > 0 && (
+            <span className="ms-2 small">
+              (Existing Photos: {existingPhotos.length})
+            </span>
+          )}
+            
+        </div>
+        </div>
+        
+                    {/* <div className="col-sm-4">
                         <label className="form-label">Upload Photos (Multiple)</label>
                         <input
                   type="file"
@@ -145,7 +260,8 @@ fetchTourInfo();
                    <div className="text-muted small">
                   {photos.length} photo(s) selected
                 </div>
-                    </div>
+                    </div> */}
+
                     {/* <div className='col-sm-12'>
                         <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="additionalVisit" />
@@ -161,46 +277,27 @@ fetchTourInfo();
                        <option>51905</option>
                        </select>
                     </div> */}
-                    <div className="col-sm-12 text-center">
+                    {/* <div className="col-sm-12 text-center">
                         <button className="btn btn-primary me-2" onClick={() => uploadReport()}>Upload Report</button>
                         <button className="btn btn-primary me-2" onClick={() => uploadPhotos()}>Upload Photos</button>
-                        <button className="btn btn-primary" onClick={() => markCompleted()}>Mark Completed</button>
-                    </div>
-                   
+                        <button className="btn btn-success" onClick={() => markCompleted()}>Mark Completed</button>
+                    </div> */}
+                   <div className='col-sm-12 text-center'>
+                      <button
+            disabled={loading}
+            className="btn btn-success px-4"
+            onClick={handleSubmit}
+          >
+            {loading ? "Uploading..." : "Submit & Mark Completed ✔"}
+          </button>
+                   </div> 
                 </div>
                 </div>
                 </div>
-                <div className="col-sm-12">
-                    <div className="white-box shadow-sm">
-                 <div className="table-header pt-3">
-                    <h5><span className="pink fw-bold">Uploaded Reports</span></h5>
-                </div> 
-                <div className="table-responsive pt-3">
-                    <table className="table">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Officer</th>
-                                <th>Location</th>
-                                <th>Report</th>
-                                <th>Photos</th>
-                                <th>Uploaded On</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>2025-11-15</td>
-                                <td>John Doe</td>
-                                <td>51902 - Adilabad</td>
-                                <td><button className="btn btn-sm">Report</button></td>
-                                <td><span className="badge bg-primary">5 Photos</span></td>
-                                <td>2025-11-15 18:30</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                </div>
-            </div>
+                 {/* Submit Button */}
+        <div className="text-center">
+         
+        </div>
         
       </div>
     </>

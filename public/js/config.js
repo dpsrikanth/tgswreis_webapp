@@ -103,6 +103,13 @@ const _gc = {
         topnoncompliant: {url:'http://localhost:9001/tour/topnoncompliant', method: 'GET'},
         topcompliant: {url:'http://localhost:9001/tour/topcompliant', method: 'GET'},
         countuseradmin: {url:'http://localhost:9001/tour/totalsadmin', method: 'GET'},
+        gettourschedulenew: {url:'http://localhost:9001/tour/tourschedulenew', method: 'GET'},
+        monthlytourschedulenew: {url:'http://localhost:9001/tour/tourschedulenew', method: 'POST'},
+        uploadtourassetscomplete: {url:'http://localhost:9001/tour/uploadassetscomplete', method: 'POST'},
+        dailytourreport: {url:'http://localhost:9001/tour/getdailyreport', method: 'GET'},
+        consolidatedtourreport: {url:'http://localhost:9001/tour/consolidatedtourreport', method: 'GET'},
+        getofficersbydesig: {url: 'http://localhost:9001/tour/officersdesig', method: 'GET'},
+        officerwisereport: {url: 'http://localhost:9001/tour/officerwisereport', method: 'GET'},
     },
 };
 window.gc = _gc;

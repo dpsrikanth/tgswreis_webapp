@@ -18,9 +18,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fancyapps/ui": "^6.1.6",
     "@reduxjs/toolkit": "^2.8.1",
     "bootstrap": "^5.3.6",
     "bootstrap-icons": "^1.13.1",
+    "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
     "exceljs": "^4.4.0",
     "fast-xml-parser": "^5.2.5",
@@ -28,7 +30,7 @@
     "react": "^19.1.0",
     "react-bootstrap": "^2.10.10",
     "react-data-table-component": "^7.7.0",
-    "react-datepicker": "^8.4.0",
+    "react-datepicker": "^8.10.0",
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.63.0",
     "react-redux": "^9.2.0",

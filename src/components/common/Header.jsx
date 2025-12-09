@@ -56,79 +56,35 @@ const Header = () => {
         dispatch({ type: "LOGOUT" });
     };
     return (
-        <div className="header">
-           <div style={{width:'100%'}}>
-                <div className="logo">
-                    <div className='d-flex align-items-center gap-3'>
-                    <img src="img/left_logo.png" alt="" />
-                    <h5 className="">
+       <div className="">
+           <div className='row align-items-center text-center'>
+              {/* Hamburger only on Mobile */}
+        <div className="col-2 d-md-none text-start">
+          <i className="bi bi-list fs-2" style={{ cursor: "pointer" }} onClick={toggleSidebar}></i>
+        </div>
+        
+            <div className='col-sm-1'>
+                 <img src="img/left_logo.png" alt="" />
+            </div>
+            <div className='col-sm-4'>
+                 <h5 className="text-center">
                         Telangana Social Welfare Residential<br />Educational Institutions
                         Society
                     </h5>
-                    </div>
-                    <div>
-                     <img src='img/main_logo.png' />
-                    </div>
-                    
-                     <div className='d-flex align-items-center gap-3'>
-                     <img src='img/ministerlogonew1.png' style={{width:'104px',height:'104px'}} alt='' />
-                    <img src='img/CM.png' alt=''/>
-                     </div>
-                    
-                </div>
             </div>
-            <div className="d-flex align-items-center gap-3">
+            <div className='col-sm-1'>
+                 <img src='img/main_logo.png' />
+            </div>
+            <div className='col-sm-3'>
+                <img src='img/ministerlogonew1.png' style={{width:'104px',height:'104px'}} alt='' />
+                <img src='img/CM.png' className='ms-2' alt=''/>
+            </div>
+            <div className='col-sm-1 d-none d-md-block'>
                 <div className="timedatebg"><span id="time">{time}</span> | <span id="date">{date}</span></div>
-              
-                {/* <label className="position-relative" onClick={toggleMessagesPopup}>
-                    <img src="img/message_icon.png" />
-                    <span
-                        className="position-absolute top-0 start-100 translate-middle badge bg-danger"
-                    >4</span>
-
-                    <div id="messagesPopup" className="messages-popup d-none">
-                        <h6 className="px-3 pt-3">Your Messages</h6>
-                        <hr />
-                        <a href="mail_box.html">
-                            <div className="message-item">
-                                <div className="avatar">VV</div>
-                                <div className="message-content">
-                                    <strong>Lorem ipsum dolor sit amet</strong>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit...</p>
-                                </div>
-                            </div>
-                        </a>
-                        <a href="mail_box.html">
-                            <div className="message-item">
-                                <div className="avatar pink">VV</div>
-                                <div className="message-content">
-                                    <strong>Ipsum dolor sit amet</strong>
-                                    <p>Consectetur adipiscing elit, sed do eiusmod tempor...</p>
-                                </div>
-                            </div>
-                        </a>
-                        <a href="mail_box.html">
-                            <div className="message-item">
-                                <div className="avatar">VV</div>
-                                <div className="message-content">
-                                    <strong>Dolor sit ametLorem ipsum</strong>
-                                    <p>Dolor sit amet, consectetur adipiscing elit, sed do...</p>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                </label>
-                <label className=" position-relative">
-                    <img src="img/notification_icon.png" />
-                    <span
-                        className="position-absolute top-0 start-100 translate-middle badge bg-danger"
-                    >6</span>
-                </label>
-                <img src="img/hand_burger_Icon.png" /> */}
-                <img src="img/profile_icon.png" onClick={toggleProfileMenu} />
             </div>
-
-            <div className="profile-menu" id="profileMenu" style={{ display: "none", position: "absolute", right: "10px", top: "60px", background: "white", boxShadow: "0 0 10px rgba(0,0,0,0.1)", borderRadius: "10px", padding: "10px", width: "200px", zIndex: 9 }}>
+            <div className='col-sm-2'>
+                <img src="img/profile_icon.png" style={{cursor:'pointer'}} onClick={toggleProfileMenu} />
+                <div className="profile-menu" id="profileMenu" style={{ display: "none", position: "absolute", right: "10px", top: "60px", background: "white", boxShadow: "0 0 10px rgba(0,0,0,0.1)", borderRadius: "10px", padding: "10px", width: "200px", zIndex: 9 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "10px 0" }}>
                     <img src="img/profile_icon.png" style={{ width: "40px", height: "40px" }} />
                     <span>{RoleDisplayName}</span>
@@ -141,8 +97,12 @@ const Header = () => {
                 </div>
 
             </div>
+            </div>
+            
+           </div>
 
         </div>
+
     );
 };
 

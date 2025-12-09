@@ -17,6 +17,7 @@ const TourDiaryDashboard = () => {
   const [todayPlanned,setTodayPlanned] = useState(null);
   const [todayVisited,setTodayVisited] = useState(null);
   const [todayNotVisited,setTodayNotVisited] = useState(null);
+  const [todayCompleted,setTodayCompleted] = useState(null);
   const [TotalPlanned,setTotalPlanned] = useState(null);
   const [TotalVisited,setTotalVisited] = useState(null);
   const [TotalNotVisited,setTotalNotVisited] = useState(null);
@@ -110,6 +111,7 @@ const fetchLowCompliance = async () => {
                 setTodayPlanned(res.data[0].TotalPlannedToday);
                 setTodayVisited(res.data[0].TotalVisitedToday);
                 setTodayNotVisited(res.data[0].TotalNotVisitedToday);
+                setTodayCompleted(res.data[0].TotalCompletedToday);
                 toast.success(res.message);
             }else {
                 toast.error(res.message);
@@ -291,6 +293,11 @@ useEffect(() => {
                 <div className="fw-bold text-success h3">{todayVisited}</div>
                 <div class="traffic-light green"></div>
                 </div>
+                <div className="d-flex justify-content-between align-items-center shadow-sm border px-2 rounded mt-2">
+                  <div>Completed</div>
+                <div className="fw-bold text-success h3">{todayCompleted}</div>
+                <div class="traffic-light green"></div>
+                </div>
                  <div className="d-flex justify-content-between align-items-center shadow-sm border px-2 rounded mt-2">
                    <div>Not Visited</div>
                 <div className="fw-bold text-danger h3">{todayNotVisited}</div>
@@ -309,8 +316,8 @@ useEffect(() => {
                        lowCompliance.map((item,index) => (
                          <div className="school-item" key={index}>
                         <div>
-                            <div className="school-name">{item.UserName}</div>
-                            <div className="school-district">{item.RoleDisplayName}</div>
+                            <div className="school-name">{item.OfficerName}</div>
+                            <div className="school-district">{item.RoleDisplayName} - {item.Region}</div>
                         </div>
                         <div className="complaint-count">{item.TotalNonCompliant}</div>
                     </div>
@@ -330,8 +337,8 @@ useEffect(() => {
                        topCompliance.map((item,index) => (
                          <div className="school-item" key={index}>
                         <div>
-                            <div className="school-name">{item.UserName}</div>
-                            <div className="school-district">{item.RoleDisplayName}</div>
+                            <div className="school-name">{item.OfficerName}</div>
+                            <div className="school-district">{item.RoleDisplayName} - {item.Region}</div>
                         </div>
                         <div className="complaint-count">{item.TotalCompleted}</div>
                     </div>
@@ -351,12 +358,14 @@ useEffect(() => {
                 <h5 className="chart-title">Today's Scheduled Visits</h5>
                 <div className="row">
                     <div className="col-sm-12">
-                        <table className="table table-responsive">
+                      <div className='table-responsive'>
+                      <table className="table table-responsive">
                             <thead>
                                 <tr>
                                     <th>S.No</th>
-                                    <th>DateOfVisit</th>
+                                    <th>Visit Date</th>
                                     <th>Officer Name</th>
+                                    <th>Designation</th>
                                     <th>School Name</th>
                                     <th>School Code</th>
                                     <th>Status</th>
@@ -368,8 +377,9 @@ useEffect(() => {
                                     <tr key={index}>
                                         <td>{index + 1}</td>
                                         <td>{item.DateOfVisit.split('T')[0]}</td>
-                                        <td>{item.UserName}</td>
-                                        <td>{item.PartnerName}</td>
+                                        <td>{item.OfficerName}</td>
+                                        <td>{item.RoleDisplayName} - {item.Region}</td>
+                                        <td>{item.PartnerName.replace('TGSWREIS','')}</td>
                                         <td>{item.SchoolCode}</td>
                                         <td><span className={getStatus(item.Status).badge}>{getStatus(item.Status).label}</span></td>
                                     </tr>
@@ -379,6 +389,8 @@ useEffect(() => {
                               )}
                             </tbody>
                         </table>
+                      </div>
+                        
                     </div>
                     </div>
                     </div>
@@ -386,10 +398,28 @@ useEffect(() => {
 
                     <div className="col-sm-4">
             <div className="white-box shadow-sm">
-                <h5 className="chart-title">Quick Links</h5>
-                <div className="row">
-                    <div className="col-sm-12">
-                       <button className = 'btn btn-primary' onClick={() => navigate('/tourdiaryschedule')}>Create Schedule</button>
+                <h5 className="chart-title">Reports</h5>
+                <div className="row gy-2">
+                    {/* <div className="col-sm-12">
+                       <button className = 'btn btn-primary' onClick={() => navigate('/dailytourreport')}>Daily Compliance Report</button>
+                       <button className = 'btn btn-primary mt-2' onClick={() => navigate('/consolidatedtourreport')}>Month Wise Consolidated Report</button>
+                       <button className = 'btn btn-primary mt-2' >Designation Wise Report</button>
+                       <button className = 'btn btn-primary mt-2' >Officer Wise Report</button>
+                    </div> */}
+                    <div className='col-sm-12 shadow-sm border rounded-3 p-3 d-flex gap-3 align-items-center' onClick={() => navigate('/dailytourreport')} style={{cursor:'pointer'}}>
+                      <div className="report-icon"><i class="bi bi-suitcase-lg-fill"></i></div>
+                     <p className='mb-0'>Daily Tour Compliance Report</p>
+                    </div>
+                    <div className='col-sm-12 shadow-sm border rounded-3 p-3 d-flex gap-3 align-items-center' onClick={() => navigate('/consolidatedtourreport')} style={{cursor:'pointer'}}>
+                      <div className="report-icon"><i class="bi bi-suitcase2-fill"></i></div>
+                     <p className='mb-0'>Consolidated Tour Compliance Report</p>
+                    </div>
+                    {/* <div className='col-sm-12 shadow-sm border rounded-3 p-3'  style={{cursor:'pointer'}}>
+                     <p className='mb-0'>Designation Wise Report</p>
+                    </div> */}
+                     <div className='col-sm-12 shadow-sm border rounded-3 p-3 d-flex gap-3 align-items-center' onClick={() => navigate('/officerwisetourreport')}  style={{cursor:'pointer'}}>
+                        <div className="report-icon"><i class="bi bi-file-earmark-person-fill"></i></div>
+                     <p className='mb-0'>Officer Wise Report</p>
                     </div>
                 </div>
             </div>

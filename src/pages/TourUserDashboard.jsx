@@ -5,7 +5,6 @@ import { useEffect, useState, useRef, use } from 'react';
 import { _fetch } from "../libs/utils";
 import { useSelector } from 'react-redux';
 import { toast, ToastContainer } from "react-toastify";
-import Select from 'react-select';
 
 const TourUserDashboard = () => {
   const token = useSelector((state) => state.userappdetails.TOKEN);
@@ -59,6 +58,9 @@ const fetchUpcomingWeek = async() => {
   }
 }
 
+
+
+
 useEffect(() => {
 fetchCountTotals();
 fetchUpcomingWeek();
@@ -67,9 +69,9 @@ fetchUpcomingWeek();
   return (
     <>
     
-    <h6 className="fw-bold mb-3"><a href="tsmess.html"><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>Tour Diary Dashboard</h6>
+    <h6 className="fw-bold mb-1"><a href="tsmess.html"><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>Tour Diary Dashboard</h6>
 
-      <div className="row g-3 mb-3 pt-3">
+      <div className="row g-3 mb-3 pt-2">
 
         <div className="col-sm-12">
             <div className="row g-3 mb-3">
@@ -158,7 +160,7 @@ fetchUpcomingWeek();
              
             </thead>
             <tbody>
-            {upcomingTours.map((item,index) => (
+              {Array.isArray(upcomingTours) && upcomingTours.length > 0 ? (upcomingTours.map((item,index) => (
               <tr key={item.index}>
                 <td>{index+1}</td>
                 <td>{item.DateOfVisit.split('T')[0]}</td>
@@ -166,7 +168,12 @@ fetchUpcomingWeek();
                 <td>{item.SchoolCode}</td>
                 <td><span className='badge bg-primary'>PLANNED</span></td>
               </tr>
-            ))}
+            ))) : (<tr>
+    <td colSpan={5} className="text-center text-muted py-3">
+      No Upcoming visits scheduled
+    </td>
+  </tr>)}
+            
             </tbody>
           </table>
         </div>
@@ -176,10 +183,9 @@ fetchUpcomingWeek();
         <div className="white-box shadow-sm">
                  <h5 className="">Quick Actions</h5>
                   <div className="row">
-                    <div className="col-sm-12">
+                    <div className="col-sm-12 d-flex flex-column justify-content-around">
                         <button className="btn btn-primary" onClick={() => navigate('/touruservisits')}>View My Visits</button>
-                        {/* <button className="btn btn-primary">Upload Report</button>
-                        <button className="btn btn-primary">Add Remarks</button> */}
+                        <button className="btn btn-primary mt-2" onClick={() => navigate('/tourdiaryschedule')}>Create Schedule</button>
                     </div>
                   </div>
             </div>

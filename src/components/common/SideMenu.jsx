@@ -1,12 +1,36 @@
 import { NavLink } from "react-router-dom";
 import { useSelector } from 'react-redux';
+import { useSidebar } from "./SidebarProvider";
+import { useRef,useEffect } from "react";
 
 // SideMenu Component
 const SideMenu = () => {
+    const {isOpen,toggleSidebar} = useSidebar();
+    const sidebarRef = useRef(null)
     const RoleDisplayName = useSelector((state) => state.userappdetails.profileData.RoleDisplayName)
       const UserType = useSelector((state) => state.userappdetails.profileData.UserType);
+
+useEffect(() => {
+  if (!isOpen) return; // Only when sidebar is open
+
+  const handleClickOutside = (e) => {
+    if (sidebarRef.current && !sidebarRef.current.contains(e.target)) {
+      toggleSidebar(); // Close sidebar
+    }
+  };
+
+  document.addEventListener("mousedown", handleClickOutside);
+
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, [isOpen, toggleSidebar]);
+
+
+
     return (
-        <div className="sidebar">
+        <div className={`sidebar d-flex flex-column align-items-center py-3
+        ${isOpen ? "show-sidebar" : "hide-sidebar"}`} ref={sidebarRef}>
            {UserType === 'SuperAdmin' || UserType === 'Admin' ? (<NavLink to="/samsdashboard" className="active">
                  
                  <div className="d-flex flex-column justify-content-between align-items-center">
@@ -87,9 +111,23 @@ const SideMenu = () => {
 
 
               {UserType === 'Admin' || UserType === 'DCO' || UserType === 'SpecialOfficer' ? (  <NavLink to="/touruserdashboard">
-                <div className="d-flex flex-column justify-content-between align-items-center">
+                <div className="d-flex flex-column justify-content-between align-items-center text-center">
                 <i class="bi bi-geo-alt text-white" style={{fontSize:'24px'}}></i>
-                <span style={{fontSize:'12px'}}>Tour Diary</span>
+                <span style={{fontSize:'12px'}}>Tour Diary Dashboard</span>
+            </div>
+            </NavLink> ) : (null)}
+
+              {UserType === 'Admin' || UserType === 'DCO' || UserType === 'SpecialOfficer' ? (  <NavLink to="/tourdiaryschedule">
+                <div className="d-flex flex-column justify-content-between align-items-center text-center">
+                <i class="bi bi-calendar2-week text-white" style={{fontSize:'24px'}}></i>
+                <span style={{fontSize:'12px'}}>Create Schedule</span>
+            </div>
+            </NavLink> ) : (null)}
+
+              {UserType === 'Admin' || UserType === 'DCO' || UserType === 'SpecialOfficer' ? (  <NavLink to="/touruservisits">
+                <div className="d-flex flex-column justify-content-between align-items-center text-center">
+                <i class="bi bi-eye text-white" style={{fontSize:'24px'}}></i>
+                <span style={{fontSize:'12px'}}>View Visits</span>
             </div>
             </NavLink> ) : (null)}
 
