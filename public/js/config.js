@@ -110,6 +110,14 @@ const _gc = {
         consolidatedtourreport: {url:'http://localhost:9001/tour/consolidatedtourreport', method: 'GET'},
         getofficersbydesig: {url: 'http://localhost:9001/tour/officersdesig', method: 'GET'},
         officerwisereport: {url: 'http://localhost:9001/tour/officerwisereport', method: 'GET'},
+        studentcompletedetails: {url: 'http://localhost:9001/studentcompletedetails', method: 'GET'},
+        studentdetailsrefresh: {url: 'http://localhost:9001/studentcompletedetails/refresh', method: 'POST'},
+        studentsummary: {url: 'http://localhost:9001/students/summary', method: 'GET'},
+        studentdrilldown: {url: 'http://localhost:9001/students/drilldown', method: 'GET'},
+        studentprofile: {url: 'http://localhost:9001/students/profile', method: 'GET'},
+        studentlist: {url: 'http://localhost:9001/students/list', method: 'GET'},
+        studentreport: {url: 'http://localhost:9001/students/reports', method: 'GET'},
+        notenteredsick: {url: 'http://localhost:9001/notenteredsickentries', method: 'GET'}
     },
 };
 window.gc = _gc;

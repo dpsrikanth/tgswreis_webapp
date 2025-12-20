@@ -7,9 +7,9 @@ import {saveAs} from 'file-saver';
 
 const DailySickReport = ({SchoolId,PartnerName,SchoolCode,onBack}) => {
 const token = useSelector((state) => state.userappdetails.TOKEN);
- const [entries,setEntries] = useState([]);
- const [fromDate,setFromDate] = useState('');
- const [toDate,setToDate] = useState('');
+const [entries,setEntries] = useState([]);
+const [fromDate,setFromDate] = useState('');
+const [toDate,setToDate] = useState('');
 
  const fetchDailyReport = async () => {
     const payload = {SchoolId};
@@ -62,7 +62,7 @@ const token = useSelector((state) => state.userappdetails.TOKEN);
    {header: 'Taken To The Hospital', key: 'TakenToTheHospital'},
    {header: 'Total No. of Hospital Referral Cases', key: 'ReferralCases'},
    {header: 'Total No. of Admitted Cases', key: 'AdmittedCases'},
-   {header: 'Remarks', key: 'Remarks'}
+   {header: 'Name of Admitted Persons with Health Supervisor Phone Number', key: 'Remarks'}
  ]
  
  
@@ -203,7 +203,7 @@ const token = useSelector((state) => state.userappdetails.TOKEN);
                 <th>Taken To The Hospital</th>
                 <th>Referral Cases</th>
                 <th>Admitted Cases</th>
-                <th>Remarks</th>
+                <th>Name of Admitted Persons with Health Supervisor Phone Number</th>
             </tr>
         </thead>
         <tbody>

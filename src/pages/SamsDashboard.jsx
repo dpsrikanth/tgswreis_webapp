@@ -3,6 +3,7 @@ import { _fetch } from "../libs/utils";
 import { useSelector } from 'react-redux';
 import Select from 'react-select';
 import DataTable from 'react-data-table-component';
+import { useNavigate } from "react-router-dom";
 
 const SamsDashboard = () => {
   const dataFetched = useRef(false);
@@ -10,6 +11,7 @@ const SamsDashboard = () => {
   const UserType = useSelector((state) => state.userappdetails.profileData.UserType);
   const ZoneId = useSelector((state) => state.userappdetails.profileData.ZoneId)
   const zones = useSelector((state) => state.userappdetails.ZONES_LIST || []);
+  const navigate = useNavigate();
   const [intialData, setInitialData] = useState({
     TotalSeatsAdmitted: undefined,
     TotalSanctionedSeats: undefined,
@@ -30,6 +32,8 @@ const SamsDashboard = () => {
   const [classes, setClasses] = useState([]);
   const [selectedClass, setSelectedClass] = useState('');
   const [studentAttendanceTotal, setStudentAttendanceTotal] = useState('')
+  const [studentCompleteDetails,setStudentCompleteDetails] = useState([]);
+  const [studentTotal,setStudentTotal] = useState();
 
   const dataTableCustomStyles = {
     headRow: {
@@ -55,6 +59,7 @@ const SamsDashboard = () => {
     if (!dataFetched.current) {
       fetchStudentAdmissionTotal();
       fetchStudentAttendanceTotal();
+      fetchStudentCompleteDetails();
       setClasses(classList.map(cls => ({ value: cls.ClassGroup, label: cls.ClassGroup })));
       dataFetched.current = true;
     }
@@ -64,6 +69,45 @@ const SamsDashboard = () => {
       setSelectedZoneId(zones[0].ZoneId);
     }
   }, [token]);
+
+
+const fetchStudentCompleteDetails = async () => {
+  try {
+
+    _fetch('studentsummary',null,false,token).then(res => {
+      if(res.status === 'success'){
+        setStudentTotal(res.data.totals.students);
+      } else {
+        toast.error('Error fetching student details');
+      }
+    })
+
+  } catch (error){
+    console.error('Error fetching student complete details',error)
+  }
+}
+
+
+
+const fetchStudentDetailsRefresh = async () => {
+  try {
+
+    _fetch('studentdetailsrefresh',null,false,token).then(res => {
+      if(res.status === 'success'){
+        fetchStudentCompleteDetails();
+      } else {
+        toast.error('Error refreshing data');
+      }
+    })
+
+  } catch (error){
+    console.error('Error refreshing data',error)
+  }
+}
+
+
+
+
 
   const fetchStudentAdmissionTotal = async () => {
 
@@ -330,12 +374,13 @@ const SamsDashboard = () => {
               <div className="card-box blue-bg shadow-sm">
                 <div className="d-flex justify-content-between align-items-center">
                   <div>
-                    <h6>Total Admissions</h6>
-                    <h4 className="fw-bold"><large>{intialData.TotalSeatsAdmitted}</large> / <small>{intialData.TotalSanctionedSeats}</small></h4>
+                    <h6>Total Students</h6>
+                    <h4 className="fw-bold" onClick={() => navigate('/viewstudents')} style={{cursor:'pointer'}}><large>{studentTotal}</large></h4>
                   </div>
                   <img src="img/admission_icon.png" alt="Admission Icon" />
                 </div>
                 <hr />
+                <button className="btn btn-primary" onClick={() => navigate('/studentreports')}>Student Reports</button>
               </div>
             </div>
             <div className="col-md-4">

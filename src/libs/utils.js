@@ -66,3 +66,8 @@ export const _fetch = async (url, payload = null, hasfile = false, token = null,
         throw error;
     }
 };
+
+
+export const getInitials = (fName = '', lName = '') =>
+  `${fName[0] || ''}${lName[0] || ''}`.toUpperCase();
+

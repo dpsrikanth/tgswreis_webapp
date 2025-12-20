@@ -24,6 +24,7 @@ const [topschoolsgeneral,setTopschoolsgeneral] = useState([]);
 const [fromDateConsolidated,setFromDateConsolidated] = useState('');
 const [toDateConsolidated,setToDateConsolidated] = useState('');
 const [consolidatedData,setConsolidatedData] = useState([])
+const [sickDate,setSickDate] = useState('')
 // const [fromDate,setFromDate] = useState('');
 // const [toDate,setToDate] = useState('');
 
@@ -50,6 +51,21 @@ const fetchSickStats = async () => {
     } catch (error){
         console.error('Error fetching sick stats',error);
     }
+}
+
+const fetchNotEnteredSick = async () => {
+  try{
+    const payload = {sickDate}
+  const res = await _fetch('notenteredsick',payload,false,token)
+  if(res.status === 'success' && Array.isArray(res.data) && res.data.length > 0){
+    await NotEnteredSickExcelReport(res.data)
+  }else{
+    toast.error(res.message)
+  }
+
+  }catch(error){
+    console.error('Error fetching Not Entered Sick Schools',error)
+  }
 }
 
 
@@ -130,7 +146,7 @@ const ConsolidatedSickExcelReport = async(data) => {
     {header: 'Temperature', key: 'Temperature'},
     {header: 'Action Taken', key: 'ActionTaken'},
     {header: 'Taken To The Hospital', key: 'TakenToTheHospital'},
-    {header: 'Remarks', key: 'Remarks'}
+    {header: 'Name of Admitted Persons with Health Supervisor Phone Number', key: 'Remarks'}
   ]
   
   
@@ -208,7 +224,91 @@ const ConsolidatedSickExcelReport = async(data) => {
 
 
 
-
+const NotEnteredSickExcelReport = async(data) => {
+  const workbook = new ExcelJS.Workbook();
+    
+    const borderStyle = {
+    top: {style:'thin'},
+    left:{style:'thin'},
+    bottom:{style: 'thin'},
+    right: {style: 'thin'}
+  }
+  
+  const customHeaders = [
+    {header: 'SchoolCode' , key: 'SchoolCode'},
+    {header: 'School Name' , key: 'SchoolName'},
+   
+  ]
+  
+  
+  const createSheet = (sheetName,headers,data) => {
+    const sheet = workbook.addWorksheet(sheetName);
+    const todayDate = new Date().toISOString().split('T')[0];
+    let titleRow;
+      titleRow = sheet.addRow([`Schools Not Entered Sick Details Report - ${sickDate}`]);
+    
+  
+    titleRow.font = {bold: 'true', size: 16}
+    titleRow.alignment = {horizontal: 'center'};
+    sheet.mergeCells(`A1:B1`);
+    sheet.addRow([]);
+  
+    const headerNames = headers.map(h => h.header);
+    const headerRow = sheet.addRow(headerNames);
+    headerRow.font = {bold: true};
+    headerRow.alignment = {horizontal: 'center'};
+  
+      headerRow.eachCell((cell) => {
+      cell.border = borderStyle;
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'D9E1F2' },
+      };
+    });
+  
+  
+         data.forEach((item) => {
+          const rowData = customHeaders.map(h => {
+           if (h.key === 'Date') {
+          return item.Date ? new Date(item.Date).toLocaleDateString('en-IN') : '-';
+        }
+        return item[h.key] != null ? item[h.key] : ''
+          })
+    
+          const row = sheet.addRow(rowData);
+          row.eachCell((cell) => {
+            cell.border = borderStyle;
+            cell.alignment = { vertical: 'middle', horizontal: 'center' };
+          });
+        });
+    
+        // Auto-fit column width
+        sheet.columns.forEach((column) => {
+          let maxLength = 7;
+          column.eachCell({ includeEmpty: true }, (cell) => {
+            const length = cell.value ? cell.value.toString().length : 0;
+            if (length > maxLength) maxLength = length;
+          });
+          column.width = maxLength + 2;
+        });
+    
+        return sheet;
+    };
+    
+    if(Array.isArray(data) && data.length > 0){
+      const headers = Object.keys(data[0]);
+      createSheet("Schools Not Entered",customHeaders,data);
+    } else {
+      toast.error(`No Entries for today's date`);
+    }
+    
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer],{
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    });
+    saveAs(blob,`SchoolsNotEnteredSickReport_${new Date().toISOString().split('T')[0]}.xlsx`);
+}
 
 
 let dailyTrendChartInstance = null;
@@ -491,6 +591,21 @@ useEffect(() => {
             </div>
           </div>
         </div>
+
+         <div className='col-sm-12'>
+          <div className='white-box shadow-sm pt-3'>
+            <h5 style={{color:'#cc1178'}} className='fw-bold'>Schools Not Entered Sick Details Report</h5>
+            <div className='row align-items-center'>
+              <div className='col-sm-3'>
+                <label className='form-label'>Select Date</label>
+                <input type='date' className='form-control' value={sickDate} onChange={(e) => setSickDate(e.target.value)} />
+              </div>
+              <div className='col-sm-3'>
+                <button className='btn btn-success mt-4' onClick={() => fetchNotEnteredSick()}>Download Report</button>
+              </div>
+            </div>
+            </div>
+            </div>
 
         <div className='col-sm-12'>
           <div className='white-box shadow-sm pt-2'>

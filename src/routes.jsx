@@ -45,6 +45,8 @@ import AttendanceandConsumptionReport from './pages/AttendanceandConsumptionRepo
 import DailyTourReport from './pages/DailyTourReport';
 import ConsolidatedTourReport from './pages/ConsolidatedTourReport';
 import OfficerWiseTourReport from './pages/OfficerWiseTourReport';
+import ViewStudents from './pages/ViewStudents';
+import StudentReports from './pages/StudentReports';
 const AppRoutes = () => {
   return (
     <Router>
@@ -306,6 +308,18 @@ const AppRoutes = () => {
           <ProtectedRoute>
             <OfficerWiseTourReport />
           </ProtectedRoute>
+        } />
+
+        <Route path="/viewstudents" element={
+          <ProtectedRoute>
+            <ViewStudents />
+          </ProtectedRoute>
+        } />
+
+        <Route path='/studentreports' element={
+         <ProtectedRoute>
+          <StudentReports />
+         </ProtectedRoute>
         } />
 
        
