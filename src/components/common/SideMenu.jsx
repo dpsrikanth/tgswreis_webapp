@@ -79,7 +79,7 @@ useEffect(() => {
             </div>
             </NavLink> ) : (null)}
 
-             {UserType === 'SuperAdmin' || UserType === 'Admin' || UserType === 'JointSecretary' ? ( <NavLink to="/sickdashboard">
+             {UserType === 'SuperAdmin' || UserType === 'Admin' || UserType === 'JointSecretary' || UserType === 'DCO' ? ( <NavLink to="/sickdashboard">
             <div className="d-flex flex-column justify-content-between align-items-center text-center">
                 <i class="bi bi-heart-pulse text-white" style={{fontSize:'24px'}}></i>
                 <span style={{fontSize:'12px'}}>Sick Report</span>
@@ -103,9 +103,9 @@ useEffect(() => {
 
 
                 {UserType === 'SuperAdmin' ? (  <NavLink to="/tourdiarydashboard">
-                <div className="d-flex flex-column justify-content-between align-items-center">
+                <div className="d-flex flex-column justify-content-between align-items-center text-center">
                 <i class="bi bi-geo-alt text-white" style={{fontSize:'24px'}}></i>
-                <span style={{fontSize:'12px'}}>Tour Diary</span>
+                <span style={{fontSize:'12px'}}>Inspection Module</span>
             </div>
             </NavLink> ) : (null)}
 
@@ -113,7 +113,7 @@ useEffect(() => {
               {UserType === 'Admin' || UserType === 'DCO' || UserType === 'SpecialOfficer' ? (  <NavLink to="/touruserdashboard">
                 <div className="d-flex flex-column justify-content-between align-items-center text-center">
                 <i class="bi bi-geo-alt text-white" style={{fontSize:'24px'}}></i>
-                <span style={{fontSize:'12px'}}>Tour Diary Dashboard</span>
+                <span style={{fontSize:'12px'}}>Inspection Dashboard</span>
             </div>
             </NavLink> ) : (null)}
 

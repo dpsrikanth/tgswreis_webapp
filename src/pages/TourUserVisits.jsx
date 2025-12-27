@@ -85,7 +85,7 @@ const MarkVisited = async () => {
                 fetchTourScheduleInd();
                 setVisitedId(null);
                toast.success(res.message);
-               navigate(`/uploadtourreports/${visitedId}`)
+               navigate(`/inspectionreportssubmission/${visitedId}`)
             } else {
                 toast.error(res.message);
             }
@@ -100,6 +100,43 @@ useEffect(() => {
 fetchTourScheduleInd();    
 
 },[])
+
+
+const DownloadInspectionPdfReport = async (TourDiaryId) => {
+  try {
+    const response = await fetch(
+      `${apiUrl}/inspection/pdf?TourDiaryId=${TourDiaryId}`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `token=${token}`
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to download PDF');
+    }
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Inspection_${TourDiaryId}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+
+  } catch (error) {
+    console.error('PDF download error:', error);
+    toast.error('Unable to download inspection report');
+  }
+};
+
+
 
 const isToday = (dateStr) => {
     const d = new Date(dateStr);
@@ -132,14 +169,14 @@ const openPhotoGallery = (tourDiaryId, photoList) => {
   return (
     <>
     <ToastContainer />
-      <h6 className="fw-bold mb-3"><a href="#"><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>My Scheduled Visits</h6>
+      <h6 className="fw-bold mb-3"><a href="#"><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>My Scheduled Inspections</h6>
 
       <ul className="nav nav-tabs" id="tourTabs">
   <li className="nav-item">
     <button className="nav-link active" data-bs-toggle="tab" data-bs-target="#upcoming">Upcoming</button>
   </li>
   <li className="nav-item">
-    <button className="nav-link" data-bs-toggle="tab" data-bs-target="#visited">Visited </button>
+    <button className="nav-link" data-bs-toggle="tab" data-bs-target="#notvisited">Not Visited</button>
   </li>
   <li className="nav-item">
     <button className="nav-link" data-bs-toggle="tab" data-bs-target="#completed">Completed </button>
@@ -155,7 +192,7 @@ const openPhotoGallery = (tourDiaryId, photoList) => {
       
 
                 <div className="white-box shadow-sm">
-    <h5>Upcoming Visits</h5>
+    <h5>Upcoming Inspections</h5>
 
     {planned.length ? planned.map(item => (
       <div key={item.TourDiaryId} className="card mb-3 shadow-sm border-sm">
@@ -197,12 +234,12 @@ const openPhotoGallery = (tourDiaryId, photoList) => {
     </div>
 
 
-     {/*VISITED */}
-    <div className="tab-pane fade" id="visited">
+     {/*NOT VISITED */}
+    <div className="tab-pane fade" id="notvisited">
       <div className="white-box shadow-sm">
-    <h5>Visited – Pending Upload</h5>
+    <h5>Not Visited Inspections</h5>
 
-    {visited.length ? visited.map(item => (
+    {notvisited.length ? notvisited.map(item => (
       <div key={item.TourDiaryId} className="card mb-3 shadow-sm border-sm">
         <div className="card-body d-flex justify-content-between align-items-start">
 
@@ -217,18 +254,18 @@ const openPhotoGallery = (tourDiaryId, photoList) => {
           </div>
 
           <div className="text-end">
-            <span className="badge bg-info mb-2">VISITED</span>
-            <div> 
+            <span className="badge bg-danger mb-2">NOT VISITED</span>
+            {/* <div> 
                 <button className="btn btn-primary btn-sm"
               onClick={() => navigate(`/uploadtourreports/${item.TourDiaryId}`)}>
               Upload Proof
             </button>
-            </div>
+            </div> */}
           </div>
 
         </div>
       </div>
-    )) : <div className="text-muted">No visited records</div>}
+    )) : <div className="text-muted">No Not visited records</div>}
   </div>
     </div>
 
@@ -237,7 +274,7 @@ const openPhotoGallery = (tourDiaryId, photoList) => {
     <div className="tab-pane fade" id="completed">
 
          <div className="white-box shadow-sm">
-    <h5>Completed Visits</h5>
+    <h5>Completed Inspections</h5>
 
     {completed.length ? completed.map(item => (
       <div key={item.TourDiaryId} className="card mb-3 shadow-sm border-sm">
@@ -255,7 +292,7 @@ const openPhotoGallery = (tourDiaryId, photoList) => {
              <span className="badge bg-success mb-2">COMPLETED</span>
             {/* Report */}
             <div className='d-flex gap-2 justify-content-end'>
-               {item.ReportPDF ? (
+               {/* {item.ReportPDF ? (
               <button className="btn btn-primary btn-sm mb-2"
                 onClick={() => {
                   setSelectedTourDiaryId(item.TourDiaryId);
@@ -264,7 +301,10 @@ const openPhotoGallery = (tourDiaryId, photoList) => {
                 }}>
                 View Report
               </button>
-            ) : <span className="text-muted small">No Report</span>}
+            ) : <span className="text-muted small">No Report</span>} */}
+
+           <button className='btn btn-primary btn-sm' onClick={() => DownloadInspectionPdfReport(item.TourDiaryId)}>Download Inspection PDF</button>
+
 
              {/* Photos */}
             {/* {item.PhotoAttachment && (
@@ -310,7 +350,7 @@ const openPhotoGallery = (tourDiaryId, photoList) => {
     <div className="tab-pane fade" id="cannotvisit">
 
         <div className="white-box shadow-sm">
-    <h5>Cannot Visit</h5>
+    <h5>Cannot Visit Inspections</h5>
 
     {cannotVisit.length ? cannotVisit.map(item => (
       <div key={item.TourDiaryId} className="card mb-3 shadow-sm border-sm">
@@ -391,7 +431,8 @@ const openPhotoGallery = (tourDiaryId, photoList) => {
       </div>
 
        {/* Cannot Visit Modal */}
-       {showCannotVisitModal && cannotVisitId && ( <div class="modal show fade" id="missedModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{ display: "block", backgroundColor: 'rgba(0,0,0,0.5)' }}>
+       {showCannotVisitModal && cannotVisitId && ( 
+       <div class="modal show fade" id="missedModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{ display: "block", backgroundColor: 'rgba(0,0,0,0.5)' }}>
         <div class="modal-dialog modal-md">
           <div class="modal-content">
             <div class="modal-header">
@@ -435,24 +476,23 @@ const openPhotoGallery = (tourDiaryId, photoList) => {
         <div class="modal-dialog modal-md">
           <div class="modal-content">
             <div class="modal-header">
-              <h1 class="modal-title fs-5" id="exampleModalLabel">Mark Visit Visited</h1>
+              <h1 class="modal-title fs-5" id="exampleModalLabel">Redirecting to Inspection Report</h1>
               <button type="button" class="btn-close" aria-label="Close" onClick={() => setShowMarkVisitModal(false)}></button>
             </div>
             <div class="modal-body">
                 <form>
                     <div class="row gy-3">
-                    
                      <p>Have you visited today's scheduled location?</p>
                     <div class="alert alert-info">
                         <i class="fas fa-info-circle me-2"></i>
-                        You'll be redirected to upload the report after marking complete.
+                        You'll be redirected to fill out proforma.
                     </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" onClick={() => setShowMarkVisitModal(false)}>Cancel</button>
-                <button type="button" class="btn btn-primary" onClick={() => MarkVisited()}>Yes, Mark Visited</button>
+                <button type="button" class="btn btn-primary" onClick={() => navigate(`/inspectionreportssubmission/${visitedId}`)}>Proceed</button>
             </div>
           </div>
         </div>

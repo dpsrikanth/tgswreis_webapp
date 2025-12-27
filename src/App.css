@@ -67,3 +67,14 @@ body {
   padding: 1em !important;
   border: none !important;
 }
+
+
+.blink {
+  animation: blink-animation 1.2s infinite;
+}
+
+@keyframes blink-animation {
+  0% { opacity: 1; }
+  50% { opacity: 0.6; }
+  100% { opacity: 1; }
+}

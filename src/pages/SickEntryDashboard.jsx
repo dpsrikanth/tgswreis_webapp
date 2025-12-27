@@ -14,6 +14,7 @@ const SickEntryDashboard = () => {
 
 const token = useSelector((state) => state.userappdetails.TOKEN);
 const ZoneId = useSelector((state) => state.userappdetails.profileData.ZoneId)
+const DistrictId = useSelector((state) => state.userappdetails.profileData.DistrictId)
 // const [zonewiseData,setZonewiseData] = useState([])
 const [generalCases,setGeneralCases] = useState(0);
 const [feverCases,setFeverCases] = useState(0);
@@ -25,6 +26,12 @@ const [fromDateConsolidated,setFromDateConsolidated] = useState('');
 const [toDateConsolidated,setToDateConsolidated] = useState('');
 const [consolidatedData,setConsolidatedData] = useState([])
 const [sickDate,setSickDate] = useState('')
+const [utmostEmergencyCount, setUtmostEmergencyCount] = useState(0)
+const [notEnteredCount, setNotEnteredCount] = useState(0)
+const [chronicStudentsCount,setChronicStudentsCount] = useState(0);
+const [healthSupervisorsCount,setHealthSupervisorsCount] = useState(0);
+const navigate = useNavigate();
+
 // const [fromDate,setFromDate] = useState('');
 // const [toDate,setToDate] = useState('');
 
@@ -33,9 +40,12 @@ const [sickDate,setSickDate] = useState('')
 
 const fetchSickStats = async () => {
     try {
-
-        const payload = {}
-        payload.ZoneId = ZoneId;
+      let payload = {}
+        if (DistrictId && DistrictId !== 0) {
+      payload.DistrictId = DistrictId;
+    } else if (ZoneId && ZoneId !== 0) {
+      payload.ZoneId = ZoneId;
+    }
 
         _fetch('sickstats',payload,false,token).then(res => {
             if(res.status === 'success'){
@@ -71,8 +81,16 @@ const fetchNotEnteredSick = async () => {
 
 const fetchTopSchoolsFever = async () => {
     try {
+         
+      let payload = {};
 
-       const payload = {ZoneId}
+    // Priority: District > Zone
+    if (DistrictId && DistrictId !== 0) {
+      payload.DistrictId = DistrictId;
+    } else if (ZoneId && ZoneId !== 0) {
+      payload.ZoneId = ZoneId;
+    }
+    // else admin → no filter (all zones)
 
         _fetch('topfeverschools',payload,false,token).then(res => {
             if(res.status === 'success'){
@@ -90,8 +108,15 @@ const fetchTopSchoolsFever = async () => {
 
 const fetchTopSchoolsGeneral = async () => {
     try {
-          const payload = {ZoneId}
-        _fetch('topgeneralschools',payload,false,token).then(res => {
+           let payload = {};
+
+    // Priority: District > Zone
+    if (DistrictId && DistrictId !== 0) {
+      payload.DistrictId = DistrictId;
+    } else if (ZoneId && ZoneId !== 0) {
+      payload.ZoneId = ZoneId;
+    }
+        _fetch('topfoorneschools',payload,false,token).then(res => {
             if(res.status === 'success'){
                 setTopschoolsgeneral(res.data);
             } else {
@@ -316,8 +341,12 @@ let dailyTrendChartInstance = null;
 const fetchDailyTrends = async(data) => {
   try{
 
-    const payload = {};
-    payload.ZoneId = ZoneId;
+    let payload = {}
+        if (DistrictId && DistrictId !== 0) {
+      payload.DistrictId = DistrictId;
+    } else if (ZoneId && ZoneId !== 0) {
+      payload.ZoneId = ZoneId;
+    }
 
     _fetch('sickdailytrends',payload,false,token).then(res => {
       if(res.status ==='success'){
@@ -378,6 +407,97 @@ const fetchDailyTrends = async(data) => {
   }
 }
 
+const fetchUtmostEmergency = async () => {
+  try {
+     let payload = {};
+
+    // Priority: District > Zone
+    if (DistrictId && DistrictId !== 0) {
+      payload.DistrictId = DistrictId;
+    } else if (ZoneId && ZoneId !== 0) {
+      payload.ZoneId = ZoneId;
+    }
+
+    const res = await _fetch('sickutmostemergency', payload, false, token)
+
+    if (res.status === 'success') {
+      setUtmostEmergencyCount(res.count || 0)
+    }
+  } catch (err) {
+    console.error('Error fetching utmost emergency', err)
+  }
+}
+
+
+
+const fetchChronicStudents = async () => {
+  try {
+     let payload = {};
+
+    // Priority: District > Zone
+    if (DistrictId && DistrictId !== 0) {
+      payload.DistrictId = DistrictId;
+    } else if (ZoneId && ZoneId !== 0) {
+      payload.ZoneId = ZoneId;
+    }
+
+    const res = await _fetch('chronicstudentslist', payload, false, token)
+
+    if (res.status === 'success') {
+      setChronicStudentsCount(res.data.length || 0)
+    }
+  } catch (err) {
+    console.error('Error fetching chronic students', err)
+  }
+}
+
+
+const fetchHealthSupervisorsList = async () => {
+  try {
+     let payload = {};
+
+    // Priority: District > Zone
+    if (DistrictId && DistrictId !== 0) {
+      payload.DistrictId = DistrictId;
+    } else if (ZoneId && ZoneId !== 0) {
+      payload.ZoneId = ZoneId;
+    }
+
+    const res = await _fetch('healthsupervisorslist', payload, false, token)
+
+    if (res.status === 'success') {
+      setHealthSupervisorsCount(res.data.length || 0)
+    }
+  } catch (err) {
+    console.error('Error fetching health supervisors count', err)
+  }
+}
+
+const fetchNotEnteredCount = async () => {
+  try {
+    const today = new Date().toISOString().split('T')[0]
+     let payload = {};
+
+    // Priority: District > Zone
+    if (DistrictId && DistrictId !== 0) {
+      payload.DistrictId = DistrictId;
+      payload.SickDate = today;
+    } else if (ZoneId && ZoneId !== 0) {
+      payload.ZoneId = ZoneId;
+      payload.SickDate = today;
+    } else {
+      payload.SickDate = today;
+    }
+
+    const res = await _fetch('notenteredsick', payload, false, token)
+
+    if (res.status === 'success') {
+      setNotEnteredCount(res.data.length || 0)
+    }
+  } catch (err) {
+    console.error('Error fetching not entered schools', err)
+  }
+}
 
 
 
@@ -387,6 +507,11 @@ useEffect(() => {
     fetchTopSchoolsFever();
     fetchTopSchoolsGeneral();
     fetchDailyTrends();
+
+  fetchUtmostEmergency()
+  fetchNotEnteredCount()
+  fetchChronicStudents()
+  fetchHealthSupervisorsList()
 },[])
 
 
@@ -395,12 +520,84 @@ useEffect(() => {
 
   return (
     <>
-    <h6 className="fw-bold mb-3"><a onClick={() => {navigate('/samsdashboard')}}><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>TGSWREIS Daily Sick Students Dashboard</h6>
+    <h6 className="fw-bold mb-3"><a onClick={() => {navigate('/samsdashboard')}}><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>TGSWREIS Health Command Centre Dashboard</h6>
 
       <div className="row g-3 mb-3 pt-3">
 
-        <div className="col-sm-12">
-            <div className="row g-3 mb-3">
+        <div className="row g-3">
+
+  {/* 🔴 Utmost Emergency */}
+  <div className="col-md-3">
+    <div
+      className={`white-box shadow-sm text-center 
+        ${utmostEmergencyCount > 0 ? 'bg-danger text-white blink' : ''}`}
+      style={{ cursor: utmostEmergencyCount > 0 ? 'pointer' : 'default' }}
+      onClick={() => {
+        if (utmostEmergencyCount > 0) {
+          navigate('/sick/utmost-emergency') // or drilldown page
+        }
+      }}
+    >
+      <h3 className="fw-bold">{utmostEmergencyCount}</h3>
+      <h6 className="fw-bold">Utmost Emergency</h6>
+      <small>Immediate Attention Required</small>
+    </div>
+  </div>
+
+  <div className="col-md-3">
+    <div
+      className={`white-box shadow-sm text-center 
+        ${chronicStudentsCount > 0 ? 'bg-primary text-white blink' : ''}`}
+      style={{ cursor: chronicStudentsCount > 0 ? 'pointer' : 'default' }}
+      onClick={() => {
+        if (chronicStudentsCount > 0) {
+          navigate('/sick/chronicstudentslist') // or drilldown page
+        }
+      }}
+    >
+      <h3 className="fw-bold">{chronicStudentsCount}</h3>
+      <h6 className="fw-bold">Chronic Students</h6>
+      <small>List of Students with Chronic Diseases</small>
+    </div>
+  </div>
+
+  <div className="col-md-3">
+    <div
+      className={`white-box shadow-sm text-center 
+        ${healthSupervisorsCount > 0 ? 'bg-success text-white blink' : ''}`}
+      style={{ cursor: healthSupervisorsCount > 0 ? 'pointer' : 'default' }}
+      onClick={() => {
+        if (healthSupervisorsCount > 0) {
+          navigate('/sick/healthsupervisorslist') // or drilldown page
+        }
+      }}
+    >
+      <h3 className="fw-bold">{healthSupervisorsCount}</h3>
+      <h6 className="fw-bold">Health Supervisors</h6>
+      <small>List of Health Supervisors</small>
+    </div>
+  </div>
+
+  {/* 🟡 Schools Not Entered */}
+  <div className="col-md-3">
+    <div
+      className="white-box shadow-sm text-center bg-warning"
+      style={{ cursor: 'pointer' }}
+      onClick={() => {
+        navigate('/sicknotentered') // optional list page
+      }}
+    >
+      <h3 className="fw-bold">{notEnteredCount}</h3>
+      <h6 className="fw-bold">Schools Not Entered</h6>
+      <small>Today</small>
+    </div>
+  </div>
+
+</div>
+
+
+        <div className="col-sm-12 mt-3">
+            <div className="row g-3">
         <div className="col-md-3">
           <a href="">
           <div className="white-box d-flex justify-content-between shadow-sm">
@@ -461,7 +658,7 @@ useEffect(() => {
 
     </div>
 
-    <div className="row g-3 mb-3">
+    <div className="row g-3 ">
        {/*Charts Section*/}
         <div className="col-sm-12">
             <div className="row gy-3">
@@ -476,15 +673,15 @@ useEffect(() => {
 
         <div className="col-sm-4">
             <div className="white-box shadow-sm h-100">
-                <h5 className="chart-title">Top 10 Schools by General Cases</h5>
+                <h5 className="chart-title">Top 10 Schools by Food Borne Cases</h5>
                 <div className="top-schools-list">
                   {Array.isArray(topschoolsgeneral) && topschoolsgeneral.length > 0 ? ( topschoolsgeneral.map((item,index) => (
                     <div className="school-item" key={index}>
                         <div>
-                            <div className="school-name">{item.PartnerName}</div>
+                            <div className="school-name">{item.SchoolName}</div>
                             {/* <div className="school-district">RangaReddy</div> */}
                         </div>
-                        <div className="complaint-count">{item.TotalGeneralCases}</div>
+                        <div className="complaint-count">{item.TotalFoorneCasesToday}</div>
                     </div>
                   ))) : (<div>No Sick Entries Entered</div>) }
                 </div>
@@ -500,10 +697,10 @@ useEffect(() => {
                    topschoolsfever.map((item,index) => (
                      <div className="school-item" key={index}>
                         <div>
-                            <div className="school-name">{item.PartnerName}</div>
+                            <div className="school-name">{item.SchoolName}</div>
                             {/* <div className="school-district">RangaReddy</div> */}
                         </div>
-                        <div className="complaint-count">{item.TotalFeverCases}</div>
+                        <div className="complaint-count">{item.TotalFeverCasesToday}</div>
                     </div>
 
                  ))
@@ -566,7 +763,7 @@ useEffect(() => {
             </div>
         </div> */}
 
-        <div className='col-sm-12'>
+        {/* <div className='col-sm-12'>
           <div className='white-box shadow-sm pt-3'>
             <h5 style={{color:'#cc1178'}} className='fw-bold'>Consolidated Sick Report</h5>
             <div className='row align-items-center'>
@@ -590,9 +787,9 @@ useEffect(() => {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
 
-         <div className='col-sm-12'>
+         {/* <div className='col-sm-12'>
           <div className='white-box shadow-sm pt-3'>
             <h5 style={{color:'#cc1178'}} className='fw-bold'>Schools Not Entered Sick Details Report</h5>
             <div className='row align-items-center'>
@@ -605,9 +802,9 @@ useEffect(() => {
               </div>
             </div>
             </div>
-            </div>
+            </div> */}
 
-        <div className='col-sm-12'>
+        <div className='col-sm-12 mt-3'>
           <div className='white-box shadow-sm pt-2'>
             <div className='row'>
               <div className='col-sm-12'>

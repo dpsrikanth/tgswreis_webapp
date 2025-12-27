@@ -266,7 +266,7 @@ const maxDate = format(endOfMonth(today),'yyyy-MM-dd');
                       <input type='text' className='form-control' disabled value={officersList.RoleDisplayName}></input>
                     </div>
                     {
-                      UserType === 'DCO' || 'SpecialOfficer' ? (<>
+                      (UserType === 'DCO' || UserType === 'SpecialOfficer') ? (<>
                        <div className='col-sm-3'>
                       <label className='form-label'>District</label>
                       <input type='text' className='form-control' disabled value={officersList.DistrictName}></input>

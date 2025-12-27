@@ -54,7 +54,7 @@ const customHeaders = [
   {header: 'Date Of Visit', key: 'DateOfVisit'},
   {header: 'Scheduled School' , key: 'ScheduledSchool'},
   {header: 'Status', key: 'Status'},
-  {header: 'Report Uploaded', key: 'ReportUploaded'},
+  {header: 'Report Submitted', key: 'ReportSubmitted'},
   {header: 'Photos Uploaded', key: 'PhotosUploaded'},
   {header: 'Not Visited Reason', key: 'NotVisitedReason'},
   {header: 'Not Visited Remarks', key: 'NotVisitedRemarks'}
@@ -147,12 +147,12 @@ saveAs(blob,`ConsolidatedTourReport_${new Date().toISOString().split('T')[0]}.xl
 
   return (
     <>
-    <h6 className="fw-bold mb-3"><a onClick={() => {navigate('/tourdiarydashboard')}}><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>Consolidated Tour Report</h6>
+    <h6 className="fw-bold mb-3"><a onClick={() => {navigate('/tourdiarydashboard')}}><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>Consolidated Inspection Report</h6>
    <div className='row'>
     <div className='col-sm-12'>
             <div className="white-box shadow-sm">
                 <div className="table-header">
-                    <h5><span className="pink fw-bold">Consolidated Tour Compliance Report</span></h5>
+                    <h5><span className="pink fw-bold">Consolidated Inspection Compliance Report</span></h5>
                     <div>
                        <button className='btn btn-success' onClick={() => ExcelReportTourConsolidated(tourReport)}>Excel Report</button>
                     </div>
@@ -185,7 +185,7 @@ saveAs(blob,`ConsolidatedTourReport_${new Date().toISOString().split('T')[0]}.xl
                       <th>Scheduled School</th>
                       <th>School Code</th>
                       <th>Status</th>
-                      <th>Report Uploaded</th>
+                      <th>Report Submitted</th>
                       <th>Photos Uploaded</th>
                       <th>Not Visited Reason</th>
                       <th>Not Visited Remarks</th>
@@ -202,7 +202,7 @@ saveAs(blob,`ConsolidatedTourReport_${new Date().toISOString().split('T')[0]}.xl
                             <td>{item.ScheduledSchool}</td>
                             <td>{item.SchoolCode}</td>
                             <td>{item.StatusText}</td>
-                            <td>{item.ReportUploaded}</td>
+                            <td>{item.ReportSubmitted}</td>
                             <td>{item.PhotosUploaded}</td>
                             <td>{item.NotVisitedReason}</td>
                             <td>{item.NotVisitedRemarks}</td>

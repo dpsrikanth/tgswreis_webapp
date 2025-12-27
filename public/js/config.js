@@ -77,6 +77,7 @@ const _gc = {
         sickstats: {url : 'http://localhost:9001/sickstats', method: 'GET'},
         topfeverschools: {url : 'http://localhost:9001/topschoolssickfever', method: 'GET'},
         topgeneralschools: {url : 'http://localhost:9001/topschoolssickgeneral', method: 'GET'},
+        topfoorneschools: {url : 'http://localhost:9001/topschoolssickfoorne', method: 'GET'},
         zonalreportsick: {url : 'http://localhost:9001/zonalreportsickbetween', method: 'GET'},
         sickdailytrends: {url : 'http://localhost:9001/dailytrendschart', method: 'GET'},
         sickentriesdrilldown: {url : 'http://localhost:9001/institutionswisebetween', method: 'GET'},
@@ -117,7 +118,17 @@ const _gc = {
         studentprofile: {url: 'http://localhost:9001/students/profile', method: 'GET'},
         studentlist: {url: 'http://localhost:9001/students/list', method: 'GET'},
         studentreport: {url: 'http://localhost:9001/students/reports', method: 'GET'},
-        notenteredsick: {url: 'http://localhost:9001/notenteredsickentries', method: 'GET'}
+        notenteredsick: {url: 'http://localhost:9001/notenteredsickentries', method: 'GET'},
+        inspectionreportsubmit: {url: 'http://localhost:9001/tour/inspectionreport', method: 'PATCH'},
+        inspectionpdf: {url: 'http://localhost:9001/inspection/pdf', method: 'GET'},
+        sickzonesummary: {url: 'http://localhost:9001/sick/zonesummary', method: 'GET'},
+        sickdistrictsummary: {url: 'http://localhost:9001/sick/districtsummary', method: 'GET'},
+        sickschoolsummary: {url: 'http://localhost:9001/sick/schoolsummary', method: 'GET'},
+        sickstudentslist: {url: 'http://localhost:9001/sick/students', method: 'GET'},
+        sickstudentprofile: {url: 'http://localhost:9001/sick/student-profile', method: 'GET'},
+        sickutmostemergency: {url: 'http://localhost:9001/sick/utmost-emergency', method: 'GET'},
+        chronicstudentslist: {url: 'http://localhost:9001/chronicstudentslist', method: 'GET'},
+        healthsupervisorslist: {url: 'http://localhost:9001/healthsupervisorslist', method: 'GET'}
     },
 };
 window.gc = _gc;

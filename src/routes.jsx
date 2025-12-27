@@ -47,6 +47,12 @@ import ConsolidatedTourReport from './pages/ConsolidatedTourReport';
 import OfficerWiseTourReport from './pages/OfficerWiseTourReport';
 import ViewStudents from './pages/ViewStudents';
 import StudentReports from './pages/StudentReports';
+import InspectionReportSubmission from './pages/InspectionReportSubmission';
+import SchoolsNotEnteredSickList from './pages/SchoolsNotEnteredSickList';
+import StudentSickList from './components/StudentSickList';
+import UtmostEmergencyList from './pages/UtmostEmergencyList';
+import ChronicStudentsList from './pages/ChronicStudentsList';
+import HealthSupervisorsList from './pages/HealthSupervisorsList';
 const AppRoutes = () => {
   return (
     <Router>
@@ -321,6 +327,39 @@ const AppRoutes = () => {
           <StudentReports />
          </ProtectedRoute>
         } />
+
+        <Route path='/inspectionreportssubmission/:TourDiaryId' element={
+          <ProtectedRoute>
+           <InspectionReportSubmission />
+          </ProtectedRoute>
+        } />
+
+
+        <Route path='/sicknotentered' element={
+          <ProtectedRoute>
+            <SchoolsNotEnteredSickList defaultDate={new Date().toISOString().split('T')[0]} />
+          </ProtectedRoute>
+        }/>
+
+        <Route path='/sick/utmost-emergency' element={
+        <ProtectedRoute>
+          <UtmostEmergencyList />
+        </ProtectedRoute>
+        } />
+
+        <Route path='/sick/chronicstudentslist' element={
+        <ProtectedRoute>
+          <ChronicStudentsList />
+        </ProtectedRoute>
+        } />
+
+
+        <Route path='/sick/healthsupervisorslist' element={
+        <ProtectedRoute>
+          <HealthSupervisorsList />
+        </ProtectedRoute>
+        } />
+
 
        
         </Route>

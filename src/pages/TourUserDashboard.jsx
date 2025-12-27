@@ -75,7 +75,7 @@ fetchUpcomingWeek();
 
         <div className="col-sm-12">
             <div className="row g-3 mb-3">
-        <div className="col-md-3">
+        <div className="col-md-4">
           <a href="">
           <div className="white-box d-flex justify-content-between shadow-sm">
             <div>
@@ -89,7 +89,7 @@ fetchUpcomingWeek();
           </div>
           </a>
         </div>
-        <div className="col-md-3">
+        <div className="col-md-4">
           <a href="">
           <div className="white-box d-flex justify-content-between shadow-sm">
             <div>
@@ -102,7 +102,7 @@ fetchUpcomingWeek();
           </div>
           </a>
         </div>
-        <div className="col-md-3">
+        <div className="col-md-4">
           <div className="white-box d-flex justify-content-between shadow-sm">
             <div>
               <h3 className="fw-bold text-danger">{NotVisited}</h3>
@@ -113,7 +113,7 @@ fetchUpcomingWeek();
             </div>
           </div>
         </div>
-        <div className="col-md-3">
+        {/* <div className="col-md-3">
           <div
             className="white-box d-flex justify-content-between shadow-sm">
             <div>
@@ -124,7 +124,7 @@ fetchUpcomingWeek();
              <i className="bi bi-hourglass-split text-primary" style={{fontSize:'28px'}}></i>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
         </div>
 

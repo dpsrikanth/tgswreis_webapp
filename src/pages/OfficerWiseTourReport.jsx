@@ -67,6 +67,41 @@ const OfficerWiseTourReport = () => {
   }
 
 
+  const DownloadInspectionPdfReport = async (TourDiaryId) => {
+    try {
+      const response = await fetch(
+        `${apiUrl}/inspection/pdf?TourDiaryId=${TourDiaryId}`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `token=${token}`
+          }
+        }
+      );
+  
+      if (!response.ok) {
+        throw new Error('Failed to download PDF');
+      }
+  
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+  
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Inspection_${TourDiaryId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+  
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+  
+    } catch (error) {
+      console.error('PDF download error:', error);
+      toast.error('Unable to download inspection report');
+    }
+  };
+
+
   const fetchOfficerWiseReport = async() => {
     try {
          const [year,month] = selectedMonth.split('-');
@@ -125,11 +160,9 @@ const ExcelReportOfficerWise = async (summary, visits,meta) => {
     { header: "Visit Target", key: "VisitTarget" },
     { header: "Total Visits", key: "TotalVisits" },
     { header: "Completed", key: "Completed" },
-    { header: "Pending Proof", key: "PendingProof" },
     { header: "Not Visited", key: "NotVisited" },
     { header: "Cannot Visit", key: "CannotVisit" },
     { header: "Additional Visits", key: "AdditionalVisits" },
-    { header: "Compliance %", key: "CompliancePercentage" },
   ];
 
   const sheetSummary = workbook.addWorksheet("Summary");
@@ -317,11 +350,9 @@ sheetVisits.addRow([]); // Blank row
                                     <th>Visit Target</th>
                                     <th>Total Visits</th>
                                     <th>Completed</th>
-                                    <th>Pending Proof</th>
                                     <th>Not Visited</th>
                                     <th>Cannot Visit</th>
                                     <th>Additional Visits</th>
-                                    <th>Compliance Percentage</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -329,17 +360,15 @@ sheetVisits.addRow([]); // Blank row
                                     <td>{summary.VisitTarget}</td>
                                     <td>{summary.TotalVisits}</td>
                                     <td>{summary.Completed}</td>
-                                    <td>{summary.PendingProof}</td>
                                     <td>{summary.NotVisited}</td>
                                     <td>{summary.CannotVisit}</td>
                                     <td>{summary.AdditionalVisits}</td>
-                                    <td>{summary.CompliancePercentage}</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                     <div className='col-sm-12'>
-                        <h6 className='fw-bold'>Scheduled Visits</h6>
+                        <h6 className='fw-bold'>Scheduled Inspections</h6>
                         <table className='table table-bordered'>
                             <thead>
                                 <tr>
@@ -365,7 +394,8 @@ sheetVisits.addRow([]); // Blank row
                                         <td><span className={getStatus(item.StatusText).badge}>{item.StatusText}</span></td>
                                         <td>
                                              <div className='d-flex gap-2 justify-content-end'>
-               {item.ReportPDF ? (
+                                               <button className='btn btn-primary btn-sm' onClick={() => DownloadInspectionPdfReport(item.TourDiaryId)}>Download Inspection PDF</button>
+               {/* {item.ReportPDF ? (
               <button className="btn btn-primary btn-sm mb-2"
                 onClick={() => {
                   setSelectedTourDiaryId(item.TourDiaryId);
@@ -374,7 +404,7 @@ sheetVisits.addRow([]); // Blank row
                 }}>
                 View Report
               </button>
-            ) : null}
+            ) : null} */}
 
              {/* Photos */}
             {/* {item.PhotoAttachment && (
@@ -393,7 +423,7 @@ sheetVisits.addRow([]); // Blank row
     const photosArray = JSON.parse(item.PhotoAttachment);
     return (
       <button
-        className="btn btn-primary btn-sm mb-2"
+        className="btn btn-primary btn-sm"
         onClick={() => openPhotoGallery(item.TourDiaryId, photosArray)}
       >
         View Photos ({photosArray.length})

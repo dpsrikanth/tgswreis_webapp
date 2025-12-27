@@ -20,8 +20,10 @@ const TourDiaryDashboard = () => {
   const [todayCompleted,setTodayCompleted] = useState(null);
   const [TotalPlanned,setTotalPlanned] = useState(null);
   const [TotalVisited,setTotalVisited] = useState(null);
+  const [TotalCannotVisit,setTotalCannotVisit] = useState(null);
   const [TotalNotVisited,setTotalNotVisited] = useState(null);
   const [TotalCompleted,setTotalCompleted] = useState(null);
+  const [yesNotVisited,setYesNotVisited] = useState([]);
   const navigate = useNavigate();
   
 
@@ -52,7 +54,7 @@ const TourDiaryDashboard = () => {
             return {label: 'Visited (Pending Proof)', badge: 'badge bg-warning text-dark'}
 
         case 3:
-            return { label: "Completed (Proof Uploaded)", badge: "badge bg-success" };
+            return { label: "Completed (Report Submitted)", badge: "badge bg-success" };
 
         case 4:
             return { label: "Not Visited", badge: "badge bg-danger" };
@@ -133,6 +135,7 @@ const fetchLowCompliance = async () => {
                 setTotalVisited(res.data[0].TotalVisited);
                 setTotalNotVisited(res.data[0].TotalNotVisited);
                 setTotalCompleted(res.data[0].TotalCompleted);
+                setTotalCannotVisit(res.data[0].TotalCannotVisit);
                 toast.success(res.message);
             }else {
                 toast.error(res.message);
@@ -141,6 +144,23 @@ const fetchLowCompliance = async () => {
 
     }catch(error){
         console.error('Error fetching today count',error)
+    }
+  }
+
+
+  const fetchYesterdayNotVisited = async () => {
+    try{
+
+      _fetch('yesterdaynotvisited',null,false,token).then(res => {
+        if(res.status === 'success'){
+          setYesNotVisited(res.data);
+        } else {
+          console.error(res.message);
+        }
+      })
+
+    } catch(error){
+      console.error('Error fetching Yesterday Not Visited Inspections')
     }
   }
 
@@ -156,7 +176,7 @@ useEffect(() => {
 
   return (
     <>
-    <h6 className="fw-bold mb-2"><a href="tsmess.html"><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>TGSWREIS Tour Monitor Dashboard</h6>
+    <h6 className="fw-bold mb-2"><a href="tsmess.html"><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>TGSWREIS Inspection Module Dashboard</h6>
       
 
       <div className="row g-3 mb-3 pt-2">
@@ -168,7 +188,7 @@ useEffect(() => {
           <div className="white-box d-flex justify-content-between shadow-sm">
             <div>
               <h3 className="fw-bold maroon">{TotalPlanned}</h3>
-              <h6 className="fw-bold">Total Planned Visits</h6>
+              <h6 className="fw-bold">Total Planned Inspections</h6>
             </div>
             <div className="text-end">
               <i className="bi bi-journal-text maroon" style={{fontSize:'28px'}}></i>
@@ -176,23 +196,7 @@ useEffect(() => {
           </div>
           </a>
         </div>
-        <div className="col-md-3">
-          <a href="">
-          <div
-            className="white-box d-flex justify-content-between shadow-sm"
-          >
-            <div>
-             
-              <h3 className="fw-bold text-warning">{TotalVisited}</h3>
-               <h6 className="fw-bold">Total Visited Visits</h6>
-            </div>
-            <div className="text-end">
-             <i className="bi bi-hourglass-split text-warning" style={{fontSize:'28px'}}></i>
-             
-            </div>
-          </div>
-          </a>
-        </div>
+        
         <div className="col-md-3">
           <div
             className="white-box d-flex justify-content-between shadow-sm"
@@ -200,7 +204,7 @@ useEffect(() => {
             <div>
             
               <h3 className="fw-bold text-success">{TotalCompleted}</h3>
-                <h6 className="fw-bold">Total Completed Visits</h6>
+                <h6 className="fw-bold">Total Completed Inspections</h6>
             </div>
             <div className="text-end">
               <i className="bi bi-check-circle-fill text-success" style={{fontSize:'28px'}}></i>
@@ -213,13 +217,30 @@ useEffect(() => {
             className="white-box d-flex justify-content-between shadow-sm">
             <div>
               <h3 className="fw-bold text-danger">{TotalNotVisited}</h3>
-              <h6 className="fw-bold">Total Not Visited Visits</h6>
+              <h6 className="fw-bold">Total Not Visited Inspections</h6>
             </div>
             <div className="text-end">
              <i className="bi bi-exclamation-triangle-fill text-danger" style={{fontSize:'28px'}}></i>
             </div>
           </div>
         </div>
+         <div className="col-md-3">
+          <a href="">
+          <div
+            className="white-box d-flex justify-content-between shadow-sm"
+          >
+            <div>
+             
+              <h3 className="fw-bold text-warning">{TotalCannotVisit}</h3>
+               <h6 className="fw-bold">Total Cannot Visit Inspections</h6>
+            </div>
+            <div className="text-end">
+             <i className="bi bi-hourglass-split text-warning" style={{fontSize:'28px'}}></i>
+             
+            </div>
+          </div>
+          </a>
+        </div> 
       </div>
         </div>
 
@@ -280,82 +301,12 @@ useEffect(() => {
             </div>
         </div> */}
 
-        <div className = "col-sm-4">
-            <div className="white-box shadow-sm">
-                <h5>Todays Totals</h5>
-                <div className="d-flex justify-content-between align-items-center shadow-sm border px-2 rounded">
-                 <div>Planned</div>
-                <div className="fw-bold maroon h3">{todayPlanned}</div>
-                 <div class="traffic-light maroon"></div>
-                </div>
-                <div className="d-flex justify-content-between align-items-center shadow-sm border px-2 rounded mt-2">
-                  <div>Visited</div>
-                <div className="fw-bold text-success h3">{todayVisited}</div>
-                <div class="traffic-light green"></div>
-                </div>
-                <div className="d-flex justify-content-between align-items-center shadow-sm border px-2 rounded mt-2">
-                  <div>Completed</div>
-                <div className="fw-bold text-success h3">{todayCompleted}</div>
-                <div class="traffic-light green"></div>
-                </div>
-                 <div className="d-flex justify-content-between align-items-center shadow-sm border px-2 rounded mt-2">
-                   <div>Not Visited</div>
-                <div className="fw-bold text-danger h3">{todayNotVisited}</div>
-                <div class="traffic-light red"></div>
-                 </div>
-
-                 
-                
-            </div>
-        </div>
-
-        <div className="col-sm-4">
-            <div className="white-box shadow-sm">
-                <h5 className="chart-title">Top 10 Officers with Low Complaince</h5>
-               {Array.isArray(lowCompliance) && lowCompliance.length > 0 ? (
-                       lowCompliance.map((item,index) => (
-                         <div className="school-item" key={index}>
-                        <div>
-                            <div className="school-name">{item.OfficerName}</div>
-                            <div className="school-district">{item.RoleDisplayName} - {item.Region}</div>
-                        </div>
-                        <div className="complaint-count">{item.TotalNonCompliant}</div>
-                    </div>
-                       ))
-
-                     
-                    ) : (<div>No Data available</div>)}
-                    
-            </div>
-        </div>
-
-        <div className="col-sm-4">
-            <div className="white-box shadow-sm">
-                <h5 className="chart-title">Top 10 Officers with High Complaince</h5>
-                <div className="top-schools-list">
-                    {Array.isArray(topCompliance) && topCompliance.length > 0 ? (
-                       topCompliance.map((item,index) => (
-                         <div className="school-item" key={index}>
-                        <div>
-                            <div className="school-name">{item.OfficerName}</div>
-                            <div className="school-district">{item.RoleDisplayName} - {item.Region}</div>
-                        </div>
-                        <div className="complaint-count">{item.TotalCompleted}</div>
-                    </div>
-                       ))
-
-                     
-                    ) : (<div>No Data available</div>)}
-                    
-                </div>
-            </div>
-        </div>
-
-       
-
-         <div className='col-sm-8'>
+        <div className='row'>
+          <div className='col-sm-8'>
+            <div className='row'>
+               <div className='col-sm-12'>
              <div className="white-box shadow-sm">
-                <h5 className="chart-title">Today's Scheduled Visits</h5>
+                <h5 className="chart-title">Today's Scheduled Inspections</h5>
                 <div className="row">
                     <div className="col-sm-12">
                       <div className='table-responsive'>
@@ -395,8 +346,40 @@ useEffect(() => {
                     </div>
                     </div>
                    </div>
+            </div>
+          </div>
+          <div className='col-sm-4'>
+            <div className='row gy-3'>
+             <div className = "col-sm-12">
+            <div className="white-box shadow-sm">
+                <h5>Todays Totals</h5>
+                <div className="d-flex justify-content-between align-items-center shadow-sm border px-2 rounded">
+                 <div>Planned</div>
+                <div className="fw-bold maroon h3">{todayPlanned}</div>
+                 <div class="traffic-light maroon"></div>
+                </div>
+                {/* <div className="d-flex justify-content-between align-items-center shadow-sm border px-2 rounded mt-2">
+                  <div>Visited</div>
+                <div className="fw-bold text-success h3">{todayVisited}</div>
+                <div class="traffic-light green"></div>
+                </div> */}
+                <div className="d-flex justify-content-between align-items-center shadow-sm border px-2 rounded mt-2">
+                  <div>Completed</div>
+                <div className="fw-bold text-success h3">{todayCompleted}</div>
+                <div class="traffic-light green"></div>
+                </div>
+                 <div className="d-flex justify-content-between align-items-center shadow-sm border px-2 rounded mt-2">
+                   <div>Not Visited</div>
+                <div className="fw-bold text-danger h3">{todayNotVisited}</div>
+                <div class="traffic-light red"></div>
+                 </div>
 
-                    <div className="col-sm-4">
+                 
+                
+            </div>
+        </div>
+
+         <div className="col-sm-12">
             <div className="white-box shadow-sm">
                 <h5 className="chart-title">Reports</h5>
                 <div className="row gy-2">
@@ -408,11 +391,11 @@ useEffect(() => {
                     </div> */}
                     <div className='col-sm-12 shadow-sm border rounded-3 p-3 d-flex gap-3 align-items-center' onClick={() => navigate('/dailytourreport')} style={{cursor:'pointer'}}>
                       <div className="report-icon"><i class="bi bi-suitcase-lg-fill"></i></div>
-                     <p className='mb-0'>Daily Tour Compliance Report</p>
+                     <p className='mb-0'>Daily Inspection Compliance Report</p>
                     </div>
                     <div className='col-sm-12 shadow-sm border rounded-3 p-3 d-flex gap-3 align-items-center' onClick={() => navigate('/consolidatedtourreport')} style={{cursor:'pointer'}}>
                       <div className="report-icon"><i class="bi bi-suitcase2-fill"></i></div>
-                     <p className='mb-0'>Consolidated Tour Compliance Report</p>
+                     <p className='mb-0'>Consolidated Inspection Compliance Report</p>
                     </div>
                     {/* <div className='col-sm-12 shadow-sm border rounded-3 p-3'  style={{cursor:'pointer'}}>
                      <p className='mb-0'>Designation Wise Report</p>
@@ -424,6 +407,62 @@ useEffect(() => {
                 </div>
             </div>
         </div> 
+            </div>
+          </div>
+        </div>
+
+        
+
+        {/* <div className="col-sm-4">
+            <div className="white-box shadow-sm">
+                <h5 className="chart-title">Top 10 Officers with Low Complaince</h5>
+                 <div>
+                {Array.isArray(lowCompliance) && lowCompliance.length > 0 ? (
+                       lowCompliance.map((item,index) => (
+                         <div className="school-item" key={index}>
+                        <div>
+                            <div className="school-name">{item.OfficerName}</div>
+                            <div className="school-district">{item.RoleDisplayName} - {item.Region}</div>
+                        </div>
+                        <div className="complaint-count">{item.TotalNonCompliant}</div>
+                    </div>
+                       ))
+
+                     
+                    ) : (<div>No Data available</div>)}
+                </div> 
+                
+                    
+            </div> 
+        </div> */}
+
+        {/* <div className="col-sm-4">
+            <div className="white-box shadow-sm">
+                <h5 className="chart-title">Yesterday's Not Visted Inspections</h5>
+                <div className="top-schools-list">
+                    {Array.isArray(topCompliance) && topCompliance.length > 0 ? (
+                       topCompliance.map((item,index) => (
+                         <div className="school-item" key={index}>
+                        <div>
+                            <div className="school-name">{item.OfficerName}</div>
+                            <div className="school-district">{item.RoleDisplayName} - {item.Region}</div>
+                        </div>
+                        <div className="complaint-count">{item.TotalCompleted}</div>
+                    </div>
+                       ))
+
+                     
+                    ) : (<div>No Data available</div>)}
+                    
+                </div>
+            </div>
+        </div> */}
+
+       
+
+        
+
+                   
             </div>
 
             
