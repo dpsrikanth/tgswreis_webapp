@@ -35,6 +35,7 @@ const InspectionReportSubmission = () => {
     const [accuracy,setAccuracy] = useState(null);
     const [reason,setReason] = useState('');
     const [loadingGeo,setLoadingGeo] = useState(true);
+    const hasRestoredRef = useRef(false);
     const navigate = useNavigate();
 
     const validateFiles = () => {
@@ -105,91 +106,229 @@ const InspectionReportSubmission = () => {
     academics: {
       title: 'Academics',
       questions: [
-        { id: '7', text: 'Question paper analysis of Unit test / Quarterly / Half yearly / Summative Assessment I & II' },
-        { id: '8', text: 'Is Principal maintaining the list of specific areas/difficult concepts in each subject or not?' },
-        { id: '9', text: 'No of Academic strategy meetings and the impact of meetings on teachers.' },
-        { id: '10', text: 'No. of Academic review meetings conducted by the principal' },
-        { id: '11', text: 'Outstanding achievements in scholastic activities' },
-        { id: '12', text: 'Outstanding achievements in Co-scholastic activities' },
-        { id: '13', text: 'Implementation of student calendar of events. Difficulty, if any?' },
-        { id: '14', text: 'Innovative activities' }
+        { id: '1', label:'1', text: 'Is a question paper analysis conducted for Unit Tests, Quarterly, Half-Yearly, and Summative Assessments I & II?' },
+        { id: '2', label: '2', text: 'Is the Principal maintaining a list of specific areas or difficult concepts in each subject?' },
+        { id: '3', label: '3', text: 'Are academic strategy meetings conducted, and is their impact on teachers reviewed? (Number of meetings conducted may be mentioned in the remarks.)' },
+        { id: '4', label: '4', text: 'Are academic review meetings conducted by the Principal? (Number of meetings conducted may be mentioned in the remarks.)' },
+        { id: '5', label: '5', text: 'Are there any outstanding achievements in scholastic activities? (Details may be mentioned in the remarks.)' },
+        { id: '6', label: '6', text: 'Are there any outstanding achievements in co-scholastic activities? (Details may be mentioned in the remarks.)'  },
+        { id: '7', label: '7', text: 'Implementation of student calendar of events. Difficulty, if any?' },
+        { id: '8', label: '8', text: 'Are innovative activities being implemented in the school? (Details may be mentioned in the remarks.)' }
       ]
     },
     administration: {
       title: 'Administration',
       questions: [
-        { id: '15', text: 'No of Students Admitted' },
-        { id: '16', text: 'No of Students Present' },
-        { id: '17', text: 'No of Students Absent' },
-        { id: '18', text: 'Total strength of staff' },
-        { id: '19', text: 'Total strength of staff present' },
-        { id: '20', text: 'Total strength of staff left without leave' },
-        { id: '21', text: 'Whether Principal is regular to school and attending prayer or not?' },
-        { id: '22', text: 'Whether movement register for staff & principal maintained?' },
-        { id: '23', text: 'Whether the Principal attending the class room observation or not?' },
-        { id: '24', text: 'Points noted during interaction with the students to know the teaching ability and communication skills of concerned teachers.' },
-        { id: '25', text: 'Class wise plan of action for improvement of future learners/higher achievers' },
-        { id: '26', text: 'Whether Principal is checking regular correction work of teachers and teaching dairy of the staff' },
-        { id: '27', text: 'Suggestions & Instructions given by the Principal to the individual teacher / lecturer on observation of class room.' }
+        { id: '9',label: '9', text: 'What is the number of students admitted? (Number may be mentioned in the remarks.)' },
+        { id: '10',label: '10', text: 'What is the number of students present? (Number may be mentioned in the remarks.)' },
+        { id: '11',label: '11', text: 'What is the number of students absent? (Number may be mentioned in the remarks.)' },
+        { id: '12',label: '12', text: 'What is the total strength of staff? (Number may be mentioned in the remarks.)' },
+        { id: '13',label: '13', text: 'What is the total number of staff present? (Number may be mentioned in the remarks.)' },
+        { id: '14',label: '14', text: 'What is the total number of staff who left without leave? (Number may be mentioned in the remarks.)' },
+        { id: '15',label: '15', text: 'Is the Principal regular to the school and attending the prayer?' },
+        { id: '16',label: '16', text: 'Is the movement register for staff and the Principal maintained?' },
+        { id: '17',label: '17', text: 'Is the Principal attending classroom observations?' },
+        { id: '18',label: '18', text: 'Are points noted during interaction with students to assess the teaching ability and communication skills of the concerned teachers?' },
+        { id: '19',label: '19', text: 'Is a class-wise plan of action prepared for the improvement of future learners and higher achievers?' },
+        { id: '20',label: '20', text: 'Is the Principal regularly checking the correction work of teachers and the teaching diary of the staff?' },
+        { id: '21',label: '21', text: 'Are suggestions and instructions given by the Principal to individual teachers or lecturers based on classroom observation?' }
       ]
     },
-    midDayMeal: {
-      title: 'Mid-Day Meal',
-      questions: [
-        { id: '28', text: 'Whether followed weekly menu & quality of food served' },
-        { id: '29', text: 'a. Is the Mess-Committee actively functioning' },
-        { id: '29_1', text: 'b. If so are they aware about weekly menu' },
-        { id: '29_2', text: 'c. No. of mess committee meetings conducted during this month' },
-        { id: '30', text: 'Observation of food preparation, dishwashing and hand washing area' },
-        { id: '31', text: 'Observation of storage of fruits, vegetables, provisions and rice' },
-        { id: '32', text: 'Maintenance of cleanliness in School building, dormitory and dining hall' },
-        { id: '33', text: 'Supply of water / Bhagiratha connection / RO plant' }
-      ]
+    mess: {
+  title: 'Mess',
+  questions: [
+    {
+      id: '22',
+      label: '22',
+      text: 'Is the weekly menu followed and is the quality of food served satisfactory?'
     },
-    hygiene: {
-      title: 'Hygiene & Maintenance',
-      questions: [
-        { id: '33_1', text: 'b. Regular Testing done or not?' },
-        { id: '33_2', text: 'c. How frequently?' },
-        { id: '34', text: 'Condition of Toilets / Bathrooms' },
-        { id: '35', text: 'Maintenance of Account related registers' },
-        { id: '36', text: 'Maintenance of Diet registers' },
-        { id: '37', text: 'Maintenance of Amenities registers' },
-        { id: '38', text: 'Maintenance of suggestion box' },
-        { id: '39', text: 'Whether all textbooks distributed to all the class students or not' },
-        { id: '40', text: 'Name of the amenities distribution to the student' }
-      ]
+    {
+      id: '23',
+      label: '23(a)',
+      text: 'Is the Mess Committee actively functioning?'
     },
-    communication: {
-      title: 'Communication & Feedback',
-      questions: [
-        { id: '41', text: 'Functioning of the Phone Mithra' },
-        { id: '42', text: 'Conducting of parents teachers meeting Yes or No' },
-        { id: '43', text: 'Feedback from the students' },
-        { id: '44', text: 'Grievances of the Staff' },
-        { id: '45', text: 'Functioning of Student councillors' },
-        { id: '46', text: 'a. Functioning of Social Media in the District' },
-        { id: '46_1', text: 'b. FRS implemented or not' },
-        { id: '47', text: 'General remarks and suggestions for improvement' }
-      ]
+    {
+      id: '23_1',
+      label: '23(b)',
+      text: 'If so, is the Mess Committee aware of the weekly menu?'
     },
-    infrastructure: {
-      title: 'Infrastructure',
-      questions: [
-        { id: '48', text: 'Computer lab & No of systems / Laptops / TABs available and working condition' },
-        { id: '49', text: 'CC Cameras functionality' },
-        { id: '50', text: 'Working condition of Incinerators' }
-      ]
+    {
+      id: '23_2',
+      label: '23(c)',
+      text: 'What is the number of Mess Committee meetings conducted during this month?'
     },
-    health: {
-      title: 'Health',
-      questions: [
-        { id: '51', text: 'a. Wellness room with amenities' },
-        { id: '51_1', text: 'b. Anonymous room maintained or not?' },
-        { id: '51_2', text: 'c. Whether the record is maintained or not?' },
-        { id: '52', text: 'Special diet for sick children provided or not?' }
-      ]
+    {
+      id: '24',
+      label: '24',
+      text: 'Are food preparation, dishwashing, and handwashing areas maintained properly?'
+    },
+    {
+      id: '25',
+      label: '25',
+      text: 'Is the storage of fruits, vegetables, provisions, and rice maintained properly?'
+    },
+    
+  ]
+},
+
+   hygiene: {
+  title: 'Hygiene & Maintenance',
+  questions: [
+    {
+      id: '26',
+      label: '26',
+      text: 'Is cleanliness maintained in the school building, dormitory, and dining hall?'
+    },
+    {
+      id: '27',
+      label: '27(a)',
+      text: 'Is an adequate water supply provided through Bhagiratha connection or RO plant?'
+    },
+    {
+      id: '27_1',
+      label: '27(b)',
+      text: 'Is regular testing of water being conducted?'
+    },
+    {
+      id: '27_2',
+      label: '27(c)',
+      text: 'How frequently is the testing of water conducted?'
+    },
+    {
+      id: '28',
+      label: '28',
+      text: 'Are the toilets and bathrooms maintained in good condition?'
+    },
+    {
+      id: '29',
+      label: '29',
+      text: 'Are account-related registers properly maintained?'
+    },
+    {
+      id: '30',
+      label: '30',
+      text: 'Are diet registers properly maintained?'
+    },
+    {
+      id: '31',
+      label: '31',
+      text: 'Are amenities registers properly maintained?'
+    },
+    {
+      id: '32',
+      label: '32',
+      text: 'Is the suggestion box properly maintained?'
+    },
+    {
+      id: '33',
+      label: '33',
+      text: 'Are all textbooks distributed to all class students?'
+    },
+    {
+      id: '34',
+      label: '34',
+      text: 'What are the names of the amenities distributed to the students?'
     }
+  ]
+},
+
+   communication: {
+  title: 'Communication & Feedback',
+  questions: [
+    {
+      id: '35',
+      label: '35',
+      text: 'Is the Phone Mithra functioning effectively?'
+    },
+    {
+      id: '36',
+      label: '36',
+      text: 'Are parent-teacher meetings being conducted?'
+    },
+    {
+      id: '37',
+      label: '37',
+      text: 'Any feedback from students?'
+    },
+    {
+      id: '38',
+      label: '38',
+      text: 'Any staff grievances?'
+    },
+    {
+      id: '39',
+      label: '39',
+      text: 'Are student councillors functioning effectively?'
+    },
+    {
+      id: '40',
+      label: '40(a)',
+      text: 'Is social media functioning effectively in the district?'
+    },
+    {
+      id: '40_1',
+      label: '40(b)',
+      text: 'Is FRS implemented?'
+    },
+    {
+      id: '41',
+      label: '41',
+      text: 'Are general remarks and suggestions for improvement recorded?'
+    }
+  ]
+},
+
+   infrastructure: {
+  title: 'Infrastructure',
+  questions: [
+    {
+      id: '42',
+      label: '42',
+      text: 'Is the computer lab functional, and are the available systems, laptops, and tablets in working condition?'
+    },
+    {
+      id: '43',
+      label: '43',
+      text: 'Are CCTV cameras functioning properly?'
+    },
+    {
+      id: '44',
+      label: '44',
+      text: 'Are the incinerators in proper working condition?'
+    }
+  ]
+},
+
+    health: {
+  title: 'Health',
+  questions: [
+    {
+      id: '45',
+      label: '45(a)',
+      text: 'Is a wellness room with adequate amenities available?'
+    },
+    {
+      id: '45_1',
+      label: '45(b)',
+      text: 'Is an anonymous room maintained?'
+    },
+    {
+      id: '45_2',
+      label: '45(c)',
+      text: 'Are records properly maintained?'
+    },
+    {
+      id: '46',
+      label: '46',
+      text: 'Is a special diet provided for sick children?'
+    }
+  ]
+},
+
+    photos: {
+    title: 'Photos',
+    questions: [] 
+  }
   };
 
   const handleResponseChange = (questionId,field,value) => {
@@ -304,13 +443,51 @@ if (!schoolLat || !schoolLong) return;
 }, [schoolLat, schoolLong]);
 
 
+useEffect(() => {
+ if(!hasRestoredRef.current) return;
+ if(!TourDiaryId) return;
+
+ if (
+    Object.keys(formData.responses).length === 0 &&
+    !arrivalTime &&
+    !departureTime
+  ) {
+    return;
+  }
+
+  const data = {
+    responses: formData.responses,
+    arrivalTime,
+    departureTime,
+  };
+
+  localStorage.setItem(
+    `inspection_draft_${TourDiaryId}`,
+    JSON.stringify(data)
+  );
+}, [formData.responses, arrivalTime, departureTime]);
+
+
+useEffect(() => {
+  if(!TourDiaryId) return;
+  const saved = localStorage.getItem(`inspection_draft_${TourDiaryId}`);
+  if (saved) {
+    const parsed = JSON.parse(saved);
+    setFormData({ responses: parsed.responses || {} });
+    setArrivalTime(parsed.arrivalTime || '');
+    setDepartureTime(parsed.departureTime || '');
+  }
+  hasRestoredRef.current = true
+}, []);
+
+
+
 
 const SubmitCaptureInfo =  async () => {
     try{
 
       const uploadedPhotos = await uploadPhotos();
 
-      const departureTime = new Date();
          const CapturedInfo = {
             generalInfo: {
                 officerName: officerName,
@@ -346,7 +523,10 @@ const SubmitCaptureInfo =  async () => {
         _fetch('inspectionreportsubmit',payload,false,token).then(res => {
             if(res.status === 'success'){
                 toast.success(res.message);
+                localStorage.removeItem(`inspection_draft_${TourDiaryId}`);
                 navigate('/touruservisits')
+            }else{
+              toast.error(res.message);
             }
         })
 
@@ -366,9 +546,11 @@ const isTimeValid = arrivalTime.trim() !== '' && departureTime.trim() !== '';
 
 const isTimeOrderValid = departureTime > arrivalTime;
 
-const canProceed = distance !== null && accuracy !== null && distance <= (700 + accuracy) && isTimeValid && isTimeOrderValid;
+const canProceed = distance !== null && accuracy !== null && distance <= (700 + accuracy) ;
 
-const canSubmit = isGeneralValid && answeredQuestions === totalQuestions && canProceed;
+const arePhotosValid = photos.length > 0;
+
+const canSubmit = isGeneralValid && answeredQuestions === totalQuestions && canProceed && isTimeValid && isTimeOrderValid && arePhotosValid;
 
 useEffect(() => {
 fetchTourInfo();
@@ -499,7 +681,7 @@ fetchTourInfo();
         <div className="card mb-3" key={question.id}>
           <div className="card-body">
             <p className="fw-semibold mb-3">
-              {question.id}. {question.text}
+              {question.label}. {question.text}
             </p>
 
             <div className="d-flex gap-4 mb-2">
@@ -555,6 +737,41 @@ fetchTourInfo();
   )
 )}
 
+{activeTab === 'photos' && (
+  <div className="card">
+    <div className="card-body">
+      <h4 className="fw-bold mb-3">Inspection Photos</h4>
+
+      <label className="form-label fw-semibold">
+        Upload Photos <span className="text-danger">(Max 3)</span>
+      </label>
+
+      <input
+        type="file"
+        className="form-control"
+        multiple
+        accept="image/*"
+        onChange={(e) => {
+          const selected = Array.from(e.target.files);
+          if (selected.length > 3) {
+            toast.error('Only 3 photos allowed');
+            e.target.value = '';
+            return;
+          }
+          setPhotos(selected);
+        }}
+      />
+
+      {photos.length > 0 && (
+        <div className="text-success small mt-2">
+          Selected: {photos.length} photo(s)
+        </div>
+      )}
+    </div>
+  </div>
+)}
+
+
 
 {/* <div className="border-top bg-light p-4 d-flex justify-content-between align-items-center">
   <div>
@@ -598,11 +815,11 @@ fetchTourInfo();
   </button>
 </div> */}
 
-<div className="border-top white-box shadow-sm p-4">
+<div className="border-top white-box shadow-sm p-4 mt-2">
   <div className="row align-items-end">
     
     {/* LEFT SIDE: Errors + Photo Upload */}
-    <div className="col-md-8">
+    {/* <div className="col-md-8">
       
       {Object.keys(errors).length > 0 && (
         <div className="alert alert-danger py-2 mb-3">
@@ -640,10 +857,10 @@ fetchTourInfo();
           </div>
         )}
       </div>
-    </div>
+    </div> */}
 
     {/* RIGHT SIDE: Submit Button */}
-    <div className="col-md-4 text-end mt-3 mt-md-0">
+    <div className="col-md-12 text-end mt-3 mt-md-0">
       <button
         className="btn btn-primary px-4 py-2 fw-semibold"
         disabled={!canSubmit}
@@ -654,7 +871,7 @@ fetchTourInfo();
     </div>
 
     <div className='col-sm-12'>
-      <div className="text-danger small mt-2">
+      <div className="text-danger small mt-2 fw-bold">
   Note: Please upload photos, enter arrival & departure time, and answer all questions
   (Yes/No with remarks) to enable the Submit Report button.
 </div>
