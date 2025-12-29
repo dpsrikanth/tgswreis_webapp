@@ -30,7 +30,7 @@ const navigate = useNavigate();
 const [showReportModal,setShowReportModal] = useState(false);
 const [showImagesModal,setShowImagesModal] = useState(false);
 const [selectedFileUrl,setSelectedFileUrl] = useState('');
-const apiUrl = import.meta.env.VITE_API_URL;
+const apiUrl = window.gc.cdn;
 
 
 const fetchTourScheduleInd = async () => {
@@ -163,9 +163,6 @@ const openPhotoGallery = (tourDiaryId, photoList) => {
   });
 };
 
-
-
-
   return (
     <>
     <ToastContainer />
@@ -199,7 +196,7 @@ const openPhotoGallery = (tourDiaryId, photoList) => {
         <div className="card-body d-flex justify-content-between align-items-start">
           <div>
             <span className="badge bg-secondary">
-              {item.DateOfVisit.split("T")[0]}
+              {new Date(item.DateOfVisit).toLocaleDateString('en-IN')}
             </span>
             <h6 className="mt-2 mb-1 fw-bold">
               {item.PartnerName.replace("TGSWREIS", "")}
@@ -245,7 +242,7 @@ const openPhotoGallery = (tourDiaryId, photoList) => {
 
           <div>
             <span className="badge bg-secondary">
-              {item.DateOfVisit.split("T")[0]}
+              {new Date(item.DateOfVisit).toLocaleDateString('en-IN')}
             </span>
             <h6 className="mt-2 mb-1 fw-bold">
               {item.PartnerName.replace("TGSWREIS", "")}
@@ -282,7 +279,7 @@ const openPhotoGallery = (tourDiaryId, photoList) => {
 
           <div>
             <span className="badge bg-secondary">
-              {item.DateOfVisit.split("T")[0]}
+              {new Date(item.DateOfVisit).toLocaleDateString('en-IN')}
             </span>
             <h6 className="mt-2 mb-1 fw-bold">{item.PartnerName}</h6>
             <p className="text-muted small mb-1">{item.Purpose}</p>
@@ -330,7 +327,7 @@ const openPhotoGallery = (tourDiaryId, photoList) => {
       </button>
     );
   })() : (
-    <span className="text-muted">Not Uploaded</span>
+    <span className="badge text-bg-secondary">Photos Not Uploaded</span>
   )}
 
 
@@ -358,7 +355,7 @@ const openPhotoGallery = (tourDiaryId, photoList) => {
 
           <div>
             <span className="badge bg-secondary">
-              {item.DateOfVisit.split("T")[0]}
+              {new Date(item.DateOfVisit).toLocaleDateString('en-IN')}
             </span>
             <h6 className="mt-2 mb-1 fw-bold">
               {item.PartnerName.replace("TGSWREIS","")}

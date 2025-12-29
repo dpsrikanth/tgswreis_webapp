@@ -100,12 +100,17 @@ const StudentSickProfile = ({ UserId, onBack }) => {
           <table className="table table-bordered">
             <thead className="table-light">
               <tr>
-                <th>Date</th>
-                <th>Health Issue</th>
+                <th>Health Issue Date</th>
+                <th>Sick From Date</th>
+                <th>Sick To Date</th>
+                <th>Health Issue Title</th>
+                <th>Health Issue Description</th>
+                <th>Action Taken</th>
                 <th>Category</th>
+                <th>Any Medical Emergencies</th>
                 <th>Temperature</th>
                 <th>Clinical Details</th>
-                <th>Action Taken</th>
+                {/* <th>Action Taken</th> */}
                 <th>Emergency Level</th>
               </tr>
             </thead>
@@ -124,19 +129,26 @@ const StudentSickProfile = ({ UserId, onBack }) => {
                         ? new Date(item.HealthIssueDate).toLocaleDateString('en-IN')
                         : '-'}
                     </td>
+                    <td>
+                      {item.SickFromDate ? new Date(item.SickFromDate).toLocaleDateString('en-IN') : '-'}
+                    </td>
+                    <td>
+                      {item.SickToDate ? new Date(item.SickToDate).toLocaleDateString('en-IN') : '-'}
+                    </td>
                     <td>{item.HealthIssueTitle}</td>
+                    <td>{item.HealthIssueDescription}</td>
+                    <td>{item.HealthActionTaken}</td>
                     <td>
                       {item.IsFever === 1
                         ? 'Fever'
                         : item.IsFoorneCase === 1
                         ? 'Food Borne'
-                        : item.EmergencyLevel
-                        ? 'Emergency'
-                        : 'General'}
+                        : '-' }
                     </td>
+                    <td>{item.IsMedicalEmergencies || '-'}</td>
                     <td>{item.ClinicalTemperature || '-'}</td>
                     <td>{item.ClinicalDetails || '-'}</td>
-                    <td>{item.ClinicalActionTaken || '-'}</td>
+                    {/* <td>{item.ClinicalActionTaken || '-'}</td> */}
                     <td>{item.EmergencyLevel || '-'}</td>
                   </tr>
                 ))

@@ -37,7 +37,7 @@ const ZoneSickReport = ({ onZoneClick }) => {
       <div className="row align-items-center mb-2">
         <div className="col-sm-6">
           <h5 className="fw-bold" style={{ color: '#cc1178' }}>
-            Zonal Wise Sick Report (Today)
+            Zonal Wise Sick Report
           </h5>
         </div>
       </div>

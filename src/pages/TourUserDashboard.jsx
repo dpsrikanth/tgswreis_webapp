@@ -10,6 +10,7 @@ const TourUserDashboard = () => {
   const token = useSelector((state) => state.userappdetails.TOKEN);
   const UserType = useSelector((state) => state.userappdetails.profileData.UserType);
   const UserId = useSelector((state) => state.userappdetails.profileData.Id);
+  const requiredVisits = useSelector((state) => state.userappdetails.profileData.MonthlyVisitTarget);
   const [completed,setCompleted] = useState(null);
   const [NotVisited,setNotVisited] = useState(null);
   const [complianceRate,setComplianceRate] = useState(null);
@@ -79,7 +80,7 @@ fetchUpcomingWeek();
           <a href="">
           <div className="white-box d-flex justify-content-between shadow-sm">
             <div>
-              <h3 className="fw-bold maroon">18</h3>
+              <h3 className="fw-bold maroon">{requiredVisits}</h3>
               <h6 className="fw-bold">Required This Month</h6>
             </div>
             <div className="text-end">

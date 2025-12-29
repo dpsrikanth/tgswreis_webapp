@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 import ZoneSickReport from './ZoneSickReport'
 import DistrictSickReport from './DistrictSickReport'
 import SchoolSickReport from './SchoolSickReport'
-import CategorySickReport from './CategorySickReport'
+
 import StudentSickList from './StudentSickList'
 import StudentSickProfile from './StudentSickProfile'
 import DailySickReport from './DailySickReport'
@@ -27,7 +27,10 @@ const isDistrictUser = ZoneId == null && DistrictId > 0
 
     const handleBack = () => {
         if (selectedStudent) setSelectedStudent(null)
-    else if (selectedCategory) setSelectedCategory(null)
+    else if (selectedCategory && selectedSchool){
+  setSelectedCategory(null)
+  setSelectedSchool(null)
+}
     else if (selectedSchool) setSelectedSchool(null)
     else if (selectedDistrict && !isDistrictUser) setSelectedDistrict(null)
     else if (selectedZone && isStateAdmin) setSelectedZone(null)
@@ -90,27 +93,20 @@ const isDistrictUser = ZoneId == null && DistrictId > 0
       {selectedDistrict && !selectedSchool && (
         <SchoolSickReport
           DistrictId={selectedDistrict.DistrictId}
-          onSchoolClick={(SchoolId, SchoolName, SchoolCode) =>
+          onSchoolClick={(SchoolId, SchoolName, SchoolCode,Category) =>{
             setSelectedSchool({ SchoolId, SchoolName, SchoolCode })
+            setSelectedCategory(Category)
+          }
           }
           onBack={handleBack}
         />
       )}
 
       {/* Level 4: Category */}
-      {selectedSchool && !selectedCategory && (
-        <CategorySickReport
-          SchoolId={selectedSchool.SchoolId}
-          SchoolName={selectedSchool.SchoolName}
-          onCategoryClick={(category) =>
-            setSelectedCategory(category)
-          }
-          onBack={handleBack}
-        />
-      )}
+     
 
       {/* Level 5: Student list */}
-      {selectedCategory && !selectedStudent && (
+      {selectedCategory && selectedSchool && !selectedStudent && (
         <StudentSickList
           SchoolId={selectedSchool.SchoolId}
           Category={selectedCategory}

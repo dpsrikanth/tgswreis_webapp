@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { _fetch } from '../libs/utils'
+import { useNavigate } from 'react-router-dom'
 
 const HealthSupervisorsList = ({ ZoneId, DistrictId }) => {
   const token = useSelector((state) => state.userappdetails.TOKEN)
   const [supervisors, setSupervisors] = useState([])
   const [loading, setLoading] = useState(false)
+  const navigate = useNavigate();
 
   const fetchSupervisors = async () => {
     try {
@@ -41,12 +43,23 @@ const HealthSupervisorsList = ({ ZoneId, DistrictId }) => {
 
   return (
     <>
-      <h5 className="fw-bold mb-3" style={{ color: '#cc1178' }}>
+    <div className='white-box shadow-sm'>
+      <div className="row align-items-center mb-3">
+        <div className='col-sm-6'>
+        <h5 className="fw-bold" style={{ color: '#cc1178' }}>
         Health Supervisors List
       </h5>
+        </div>
+        <div className="col-sm-6 text-end">
+          <button className="btn btn-secondary btn-sm" onClick={() => navigate('/sickdashboard')}>
+            Back
+          </button>
+        </div>
+      </div>
+      
 
       <div className="table-responsive">
-        <table className="table table-bordered table-striped">
+        <table className="table table-bordered">
           <thead className="table-light">
             <tr>
               <th>School</th>
@@ -89,6 +102,8 @@ const HealthSupervisorsList = ({ ZoneId, DistrictId }) => {
           </tbody>
         </table>
       </div>
+    </div>
+     
     </>
   )
 }

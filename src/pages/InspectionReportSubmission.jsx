@@ -486,6 +486,24 @@ useEffect(() => {
 const SubmitCaptureInfo =  async () => {
     try{
 
+        if(!canSubmit){
+        if(!isGeneralValid){
+          alert('Designation,VisitDate and Institution Name not available');
+        } else if(!(answeredQuestions === totalQuestions)){
+          alert(`Please answer all questions with yes/no and remarks Ans Questions: ${answeredQuestions} , Total Questions: ${totalQuestions}`)
+        } else if(!canProceed){
+          alert('Please undertake geo capture')
+        } else if(!isTimeValid){
+          alert('Please enter correct time of arrival and departure')
+        } else if(!isTimeOrderValid){
+          alert('Departure time should be greater than arrival time')
+        } else if(!arePhotosValid){
+          alert('Please upload atleast 1 photo')
+        }
+    
+      return;
+      }
+
       const uploadedPhotos = await uploadPhotos();
 
          const CapturedInfo = {
@@ -525,7 +543,7 @@ const SubmitCaptureInfo =  async () => {
                 toast.success(res.message);
                 localStorage.removeItem(`inspection_draft_${TourDiaryId}`);
                 navigate('/touruservisits')
-            }else{
+            } else{
               toast.error(res.message);
             }
         })
@@ -767,113 +785,37 @@ fetchTourInfo();
           Selected: {photos.length} photo(s)
         </div>
       )}
+
+       <button
+        className="btn btn-primary px-4 py-2 mt-3 fw-semibold"
+       
+        onClick={SubmitCaptureInfo}
+      >
+        Submit Report
+      </button>
     </div>
   </div>
 )}
 
 
 
-{/* <div className="border-top bg-light p-4 d-flex justify-content-between align-items-center">
-  <div>
-    {Object.keys(errors).length > 0 && (
-      <div className="alert alert-danger py-2 mb-0">
-        Please complete all required fields
-      </div>
-    )}
-  </div>
 
-   <div className='col-sm-12 pt-3'>
-                    <div className="mb-3">
-                      <label className="form-label">Photos <span className='fw-bold' style={{color:'red'}}>(Note: Only 3 photos allowed)</span></label>
-                      <input
-                        type="file"
-                        multiple accept="image/*"
-                        className="form-control"
-                        onChange={(e) => {
-                        const selected = Array.from(e.target.files);
-                        if(selected.length > 2){
-                            toast.error(`Only 3 photos allowed`);
-                            e.target.value = "";
-                            return;
-                        }
-                            setPhotos(selected)}
-                        }
-                            
-                      />
-                    
-                      {photos.length > 0 && (
-                        <div className="text-success small mt-1">
-                          Selected: {photos.length} files
-                        </div>
-                      )}
-                        
-                    </div>
-                    </div>
-
-  <button className="btn btn-primary px-4 py-2 fw-semibold" disabled={!canSubmit} onClick={SubmitCaptureInfo}>
-    Submit Report
-  </button>
-</div> */}
 
 <div className="border-top white-box shadow-sm p-4 mt-2">
   <div className="row align-items-end">
     
-    {/* LEFT SIDE: Errors + Photo Upload */}
-    {/* <div className="col-md-8">
-      
-      {Object.keys(errors).length > 0 && (
-        <div className="alert alert-danger py-2 mb-3">
-          Please complete all required fields
-        </div>
-      )}
-
-      <div className="mb-2">
-        <label className="form-label fw-semibold">
-          Inspection Photos{" "}
-          <span className="text-danger">(Max 3 photos)</span>
-        </label>
-
-        <input
-          type="file"
-          className="form-control"
-          multiple
-          accept="image/*"
-          onChange={(e) => {
-            const selected = Array.from(e.target.files);
-
-            if (selected.length > 3) {
-              toast.error('Only 3 photos are allowed');
-              e.target.value = '';
-              return;
-            }
-
-            setPhotos(selected);
-          }}
-        />
-
-        {photos.length > 0 && (
-          <div className="text-success small mt-1">
-            Selected: {photos.length} photo(s)
-          </div>
-        )}
-      </div>
-    </div> */}
+   
 
     {/* RIGHT SIDE: Submit Button */}
     <div className="col-md-12 text-end mt-3 mt-md-0">
-      <button
-        className="btn btn-primary px-4 py-2 fw-semibold"
-        disabled={!canSubmit}
-        onClick={SubmitCaptureInfo}
-      >
-        Submit Report
-      </button>
+     
     </div>
 
     <div className='col-sm-12'>
       <div className="text-danger small mt-2 fw-bold">
   Note: Please upload photos, enter arrival & departure time, and answer all questions
   (Yes/No with remarks) to enable the Submit Report button.
+    <p className='text-primary'>{`Answered Questions: ${answeredQuestions}`} / {`Total Questions: ${totalQuestions}`}</p>
 </div>
 
     </div>
@@ -898,8 +840,10 @@ fetchTourInfo();
       <>
         <p><strong>Your Location:</strong> {address}</p>
         <div className='row pb-3'>
-          <div className="col-sm-4"><strong>Your Latitude:</strong>{geo.latitude}</div>
-          <div className='col-sm-4'><strong>Your Longitude:</strong>{geo.longitude}</div>
+          <div className="col-sm-6"><strong>Your Latitude:</strong>{geo.latitude}</div>
+          <div className='col-sm-6'><strong>Your Longitude:</strong>{geo.longitude}</div>
+          <div className='col-sm-6'><strong>School Latitude:</strong>{schoolLat}</div>
+          <div className='col-sm-6'><strong>School Longitude:</strong>{schoolLong}</div>
         </div>
         <p><strong>Distance from Institution:</strong> {distance} meters</p>
         <p><strong>GPS Accuracy:</strong> ±{accuracy} meters</p>
@@ -914,6 +858,7 @@ fetchTourInfo();
     )}
             </div>
             <div class="modal-footer">
+              <button className='btn btn-danger' onClick={() => navigate('/touruservisits')}>Back</button>
               <button
   type="button"
   className="btn btn-outline-secondary me-2"

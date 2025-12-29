@@ -45,22 +45,37 @@ const StudentSickList = ({
     fetchStudents()
   }, [SchoolId, Category])
 
+  // const getCategoryLabel = () => {
+  //   switch (Category) {
+  //     case 'general':
+  //       return 'General Sick'
+  //     case 'fever':
+  //       return 'Fever Cases'
+  //     case 'foodborne':
+  //       return 'Food Borne'
+  //     case 'emergency':
+  //       return 'Emergency'
+  //     case 'atmost':
+  //       return 'Atmost Emergency'
+  //     default:
+  //       return ''
+  //   }
+  // }
+
   const getCategoryLabel = () => {
-    switch (Category) {
-      case 'general':
-        return 'General Sick'
-      case 'fever':
-        return 'Fever Cases'
-      case 'foodborne':
-        return 'Food Borne'
-      case 'emergency':
-        return 'Emergency'
-      case 'atmost':
-        return 'Atmost Emergency'
-      default:
-        return ''
-    }
+  switch (Category) {
+    case 'GENERAL_SICK': return 'General Sick'
+    case 'SENT_HOME': return 'Sent Home'
+    case 'REFERRED': return 'Referred to Hospital'
+    case 'ADMITTED': return 'Admitted to Hospital'
+    case 'FEVER': return 'Fever Cases'
+    case 'FOODBORNE': return 'Food Borne'
+    case 'EMERGENCY': return 'Emergency'
+    case 'ATMOST': return 'Atmost Emergency'
+    default: return ''
   }
+}
+
 
   return (
     <>
@@ -75,7 +90,7 @@ const StudentSickList = ({
             className="btn btn-secondary btn-sm"
             onClick={onBack}
           >
-            Back to Categories
+            Back to Schools
           </button>
         </div>
       </div>
@@ -85,10 +100,14 @@ const StudentSickList = ({
           <thead className="table-light">
             <tr>
               <th>Student Name</th>
-             
               <th>Gender</th>
-              <th>Health Date</th>
-              <th>Clinical Details</th>
+              <th>Health Issue Date</th>
+              <th>Sick From Date</th>
+              <th>Health Issue Title</th>
+              <th>Health Issue Description</th>
+              <th>Action Taken</th>
+              <th>Any Medical Emergencies</th>
+             
               <th>Action</th>
             </tr>
           </thead>
@@ -118,11 +137,12 @@ const StudentSickList = ({
                       ? new Date(item.HealthIssueDate).toLocaleDateString('en-IN')
                       : '-'}
                   </td>
-                  <td>
-                    {item.ClinicalDetails
-                      ? item.ClinicalDetails.slice(0, 40) + '...'
-                      : '-'}
-                  </td>
+                  <td>{item.SickFromDate ? new Date(item.SickFromDate).toLocaleDateString('en-IN') : '-'}</td>
+                  <td>{item.HealthIssueTitle}</td>
+                  <td>{item.HealthIssueDescription}</td>
+                  <td>{item.HealthActionTaken}</td>
+                  <td>{item.IsMedicalEmergencies}</td>
+                 
                   <td>
                     <button
                       className="btn btn-primary btn-sm"

@@ -47,8 +47,7 @@ const CategorySickReport = ({
             <div
               className={`card text-center border-${cat.color}`}
               style={{ cursor: 'pointer' }}
-              onClick={() => onCategoryClick(cat.key)}
-            >
+              onClick={() => onCategoryClick(cat.key)}>
               <div className={`card-body text-${cat.color}`}>
                 <h6 className="card-title">{cat.label}</h6>
                 <small>Click to view students</small>

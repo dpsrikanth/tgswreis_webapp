@@ -520,9 +520,9 @@ useEffect(() => {
 
   return (
     <>
-    <h6 className="fw-bold mb-3"><a onClick={() => {navigate('/samsdashboard')}}><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>TGSWREIS Health Command Centre Dashboard</h6>
+    <h6 className="fw-bold"><a onClick={() => {navigate('/samsdashboard')}}><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>TGSWREIS Health Command Centre Dashboard</h6>
 
-      <div className="row g-3 mb-3 pt-3">
+      <div className="row g-3 mb-3">
 
         <div className="row g-3">
 

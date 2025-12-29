@@ -327,7 +327,7 @@ useEffect(() => {
                                 todaySchedule.map((item,index) => (
                                     <tr key={index}>
                                         <td>{index + 1}</td>
-                                        <td>{item.DateOfVisit.split('T')[0]}</td>
+                                        <td>{new Date(item.DateOfVisit).toLocaleDateString('en-IN')}</td>
                                         <td>{item.OfficerName}</td>
                                         <td>{item.RoleDisplayName} - {item.Region}</td>
                                         <td>{item.PartnerName.replace('TGSWREIS','')}</td>

@@ -1,4 +1,5 @@
 const _gc = {
+    cdn: 'http://localhost:9001',
     urls: {
         login: { url: "http://localhost:9001/login", method: "POST" },
         logout: { url: "http://localhost:9001/logout", method: "POST" },
