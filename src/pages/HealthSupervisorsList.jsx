@@ -62,11 +62,14 @@ const HealthSupervisorsList = ({ ZoneId, DistrictId }) => {
         <table className="table table-bordered">
           <thead className="table-light">
             <tr>
+              <th>S.No</th>
+               <th>Zone</th>
+                 <th>District</th>
+              <th>School Code</th>
               <th>School</th>
-              <th>District</th>
-              <th>Zone</th>
+               <th>Principal Contact Number</th>
               <th>Supervisor Name</th>
-              <th>Mobile Number</th>
+              <th>HS Mobile Number</th>
             </tr>
           </thead>
           <tbody>
@@ -85,9 +88,15 @@ const HealthSupervisorsList = ({ ZoneId, DistrictId }) => {
             ) : (
               supervisors.map((item, index) => (
                 <tr key={index}>
+                  <td>{index+1}</td>
+                   <td>{item.ZoneName}</td>
+                    <td>{item.DistrictName}</td>
+                  <td>{item.SchoolCode}</td>
                   <td>{item.SchoolName}</td>
-                  <td>{item.DistrictName}</td>
-                  <td>{item.ZoneName}</td>
+                   <td>{item.PrincipalContact}</td>
+                 
+                 
+                 
                   <td className="fw-bold">
                     {item.HealthSupervisorName}
                   </td>

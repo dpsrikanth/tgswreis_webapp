@@ -107,7 +107,6 @@ const StudentSickList = ({
               <th>Health Issue Description</th>
               <th>Action Taken</th>
               <th>Any Medical Emergencies</th>
-             
               <th>Action</th>
             </tr>
           </thead>

@@ -79,7 +79,7 @@ useEffect(() => {
             </div>
             </NavLink> ) : (null)}
 
-             {UserType === 'SuperAdmin' || UserType === 'Admin' || UserType === 'JointSecretary' || UserType === 'DCO' ? ( <NavLink to="/sickdashboard">
+             {UserType === 'SuperAdmin' || UserType === 'Admin' || UserType === 'JointSecretary' || UserType === 'DCO' || UserType === 'HealthAdmin' ? ( <NavLink to="/sickdashboard">
             <div className="d-flex flex-column justify-content-between align-items-center text-center">
                 <i class="bi bi-heart-pulse text-white" style={{fontSize:'24px'}}></i>
                 <span style={{fontSize:'12px'}}>Sick Report</span>

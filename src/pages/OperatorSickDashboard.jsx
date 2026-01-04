@@ -8,15 +8,12 @@ import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react';
 import ExcelJS from 'exceljs';
 import {saveAs} from 'file-saver';
-import DrilldownReport from '../components/DrilldownReport';
-import OperatorHealthView from '../components/OperatorHealthView';
 
-const SickEntryDashboard = () => {
 
+const OperatorSickDashboard = () => {
 const token = useSelector((state) => state.userappdetails.TOKEN);
 const ZoneId = useSelector((state) => state.userappdetails.profileData.ZoneId)
 const DistrictId = useSelector((state) => state.userappdetails.profileData.DistrictId)
-const UserType = useSelector((state) => state.userappdetails.profileData.UserType)
 // const [zonewiseData,setZonewiseData] = useState([])
 const [generalCases,setGeneralCases] = useState(0);
 const [feverCases,setFeverCases] = useState(0);
@@ -502,7 +499,6 @@ const fetchNotEnteredCount = async () => {
   }
 }
 
-
 const fetchRecoveredCount = async () => {
   try {
     const today = new Date().toISOString().split('T')[0]
@@ -531,6 +527,8 @@ const fetchRecoveredCount = async () => {
 
 
 
+
+
 useEffect(() => {
     
     fetchSickStats();
@@ -542,16 +540,15 @@ useEffect(() => {
   fetchNotEnteredCount()
   fetchChronicStudents()
   fetchHealthSupervisorsList()
-  fetchRecoveredCount()
+  fetchRecoveredCount();
 },[])
-
 
 
 
 
   return (
     <>
-    <h6 className="fw-bold"><a onClick={() => {navigate('/samsdashboard')}}><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>TGSWREIS Health Command Centre Dashboard</h6>
+     <h6 className="fw-bold"><a onClick={() => {navigate('/samsdashboard')}}><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>TGSWREIS Health Command Centre Dashboard</h6>
 
       <div className="row g-3 mb-3">
 
@@ -626,18 +623,17 @@ useEffect(() => {
 
    <div className="col-md-3">
     <div
-      className="white-box shadow-sm text-center bg-info"
+      className="white-box shadow-sm text-center bg-warning"
       style={{ cursor: 'pointer' }}
       onClick={() => {
         navigate('/sick/recovered') // optional list page
       }}
     >
       <h3 className="fw-bold">{recoveredCount}</h3>
-      <h6 className="fw-bold">Students Recovered</h6>
+      <h6 className="fw-bold">Students Recovered Today</h6>
       <small>Today</small>
     </div>
   </div>
-
 
 </div>
 
@@ -676,11 +672,10 @@ useEffect(() => {
         </div>
         <div className="col-md-3">
           <div
-            className="white-box d-flex justify-content-between shadow-sm" 
-            style={{ cursor: 'pointer' }}
-            onClick={() => {
-              navigate('/sick/referred')
-            }}>
+            className="white-box d-flex justify-content-between shadow-sm"  style={{ cursor: 'pointer' }}
+      onClick={() => {
+        navigate('/sick/referred') 
+      }}>
             <div>
               <h3 className="fw-bold text-success">{referralCases ?? 0}</h3>
                 <h6 className="fw-bold">Referral Cases</h6>
@@ -692,9 +687,8 @@ useEffect(() => {
         </div>
         <div className="col-md-3">
           <div
-            className="white-box d-flex justify-content-between shadow-sm"
-            style={{ cursor: 'pointer' }}
-            onClick={() => {
+            className="white-box d-flex justify-content-between shadow-sm"  style={{ cursor: 'pointer' }}
+      onClick={() => {
         navigate('/sick/admitted') 
       }}>
             <div>
@@ -862,11 +856,7 @@ useEffect(() => {
           <div className='white-box shadow-sm pt-2'>
             <div className='row'>
               <div className='col-sm-12'>
-                  {UserType === 'HealthAdmin' ? (
-      <OperatorHealthView />
-    ) : (
-      <DrilldownReport />
-    )}
+                 
                 </div>
             </div>
           </div>
@@ -879,7 +869,8 @@ useEffect(() => {
        
       </div>
     </>
+    
   )
 }
 
-export default SickEntryDashboard
+export default OperatorSickDashboard

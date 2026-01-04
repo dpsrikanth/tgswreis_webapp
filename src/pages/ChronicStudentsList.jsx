@@ -68,6 +68,7 @@ const ChronicStudentsList = ({ ZoneId, DistrictId }) => {
               <th>District</th>
               <th>Zone</th>
               <th>Chronic Condition</th>
+              <th>Treatment Given</th>
               <th>Last Updated</th>
             </tr>
           </thead>
@@ -95,6 +96,7 @@ const ChronicStudentsList = ({ ZoneId, DistrictId }) => {
                   <td className="fw-bold text-danger">
                     {item.ChronicDisease}
                   </td>
+                  <td>{item.ChronicTreatment || '-'}</td>
                   <td>
                     {item.LastSyncedAt
                       ? new Date(item.LastSyncedAt).toLocaleDateString('en-IN')

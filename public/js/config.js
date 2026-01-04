@@ -129,7 +129,12 @@ const _gc = {
         sickstudentprofile: {url: 'http://localhost:9001/sick/student-profile', method: 'GET'},
         sickutmostemergency: {url: 'http://localhost:9001/sick/utmost-emergency', method: 'GET'},
         chronicstudentslist: {url: 'http://localhost:9001/chronicstudentslist', method: 'GET'},
-        healthsupervisorslist: {url: 'http://localhost:9001/healthsupervisorslist', method: 'GET'}
+        healthsupervisorslist: {url: 'http://localhost:9001/healthsupervisorslist', method: 'GET'},
+        studentsrecovered: {url: 'http://localhost:9001/sick/studentsrecovered', method: 'GET'},
+        studentsadmitted: {url: 'http://localhost:9001/sick/admitted', method: 'GET'},
+        studentsreferred: {url: 'http://localhost:9001/sick/referred', method: 'GET'},
+        operatorzonesummary: {url: 'http://localhost:9001/sick/operator/zones', method: 'GET'},
+        operatorstudentsbyzone: {url: 'http://localhost:9001/sick/operator/studentsbyzone', method: 'GET'},
     },
 };
 window.gc = _gc;

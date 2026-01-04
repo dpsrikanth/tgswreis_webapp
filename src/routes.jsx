@@ -53,6 +53,12 @@ import StudentSickList from './components/StudentSickList';
 import UtmostEmergencyList from './pages/UtmostEmergencyList';
 import ChronicStudentsList from './pages/ChronicStudentsList';
 import HealthSupervisorsList from './pages/HealthSupervisorsList';
+import LeaveApply from './pages/LeaveApply';
+import LeaveApproval from './pages/LeaveApproval';
+import StudentsRecoveredList from './pages/StudentsRecoveredList';
+import StudentsReferredList from './pages/StudentsReferredList';
+import OperatorSickDashboard from './pages/OperatorSickDashboard';
+import StudentsAdmittedList from './pages/StudentsAdmittedList';
 const AppRoutes = () => {
   return (
     <Router>
@@ -360,8 +366,38 @@ const AppRoutes = () => {
         </ProtectedRoute>
         } />
 
+        <Route path='/leaveapply' element={<ProtectedRoute>
+          <LeaveApply />
+        </ProtectedRoute>} />
 
-       
+        <Route path='/leaveapproval' element={
+          <ProtectedRoute>
+            <LeaveApproval />
+          </ProtectedRoute>
+        } />
+
+        <Route path='/sick/recovered' element={<ProtectedRoute>
+          <StudentsRecoveredList defaultDate={new Date().toISOString().split('T')[0]} />
+        </ProtectedRoute>} />
+
+        <Route path='/sick/admitted' element={
+          <ProtectedRoute>
+            <StudentsAdmittedList />
+          </ProtectedRoute>
+        } />
+
+        <Route path = '/sick/referred' element={
+          <ProtectedRoute>
+            <StudentsReferredList />
+          </ProtectedRoute>
+        } />
+
+        <Route path='/hccdashboard' element={
+          <ProtectedRoute>
+            <OperatorSickDashboard />
+          </ProtectedRoute>
+        } />
+
         </Route>
       </Routes>
     </Router>

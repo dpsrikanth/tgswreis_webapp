@@ -148,7 +148,7 @@ fetchUpcomingWeek();
 
        <div className='col-sm-6'>
         <div className='white-box shadow-sm'>
-          <h5 className=''>Upcoming Visits</h5>
+          <h5 className=''>Upcoming Visits for the next 7 days</h5>
           <table className='table table-bordered'>
             <thead>
               <tr>
@@ -164,7 +164,7 @@ fetchUpcomingWeek();
               {Array.isArray(upcomingTours) && upcomingTours.length > 0 ? (upcomingTours.map((item,index) => (
               <tr key={item.index}>
                 <td>{index+1}</td>
-                <td>{item.DateOfVisit.split('T')[0]}</td>
+                <td>{new Date(item.DateOfVisit).toLocaleDateString('en-IN')}</td>
                 <td>{item.PartnerName}</td>
                 <td>{item.SchoolCode}</td>
                 <td><span className='badge bg-primary'>PLANNED</span></td>

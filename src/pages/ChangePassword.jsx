@@ -33,7 +33,7 @@ const ChangePassword = () => {
         e.preventDefault();
         if (!validate()) return;
         const payload = { currentPassword: form.oldPassword, newPassword: form.newPassword };
-        _fetch("change-password", payload, false, token).then(res => {
+        _fetch("changepassword", payload, false, token).then(res => {
             if (res.status === "success") {
                 toast.success("Password changed successfully!");
                 setForm({ oldPassword: "", newPassword: "", confirmPassword: "" });

@@ -84,6 +84,26 @@ const StudentSickProfile = ({ UserId, onBack }) => {
             Clinical History
           </button>
         </li>
+         <li className="nav-item">
+    <button className={`nav-link ${activeTab === 'hospital' ? 'active' : ''}`}
+      onClick={() => setActiveTab('hospital')}>
+      Hospital / Referral
+    </button>
+  </li>
+
+  <li className="nav-item">
+    <button className={`nav-link ${activeTab === 'sickground' ? 'active' : ''}`}
+      onClick={() => setActiveTab('sickground')}>
+      Sent Home on Sick Grounds
+    </button>
+  </li>
+
+  <li className="nav-item">
+    <button className={`nav-link ${activeTab === 'insect' ? 'active' : ''}`}
+      onClick={() => setActiveTab('insect')}>
+      Insect Bite
+    </button>
+  </li>
         <li className="nav-item">
           <button
             className={`nav-link ${activeTab === 'chronic' ? 'active' : ''}`}
@@ -158,6 +178,63 @@ const StudentSickProfile = ({ UserId, onBack }) => {
         </div>
       )}
 
+      {activeTab === 'hospital' && (
+  <div className="card p-3">
+    {clinicalHistory.ReferredHospitalName && (
+      <>
+        <h6 className="fw-bold text-warning">Referral Details</h6>
+        <p><b>Hospital:</b> {clinicalHistory.ReferredHospitalName}</p>
+        <p><b>Date:</b> {clinicalHistory.ReferralHospitalDate}</p>
+        <p><b>Reason:</b> {clinicalHistory.RefrralHospitalReason}</p>
+        <p><b>Status:</b> {clinicalHistory.ReferredHospitalStatus}</p>
+        <hr />
+      </>
+    )}
+
+    {clinicalHistory.HospitalAdmittedName && (
+      <>
+        <h6 className="fw-bold text-danger">Admission Details</h6>
+        <p><b>Hospital:</b> {clinicalHistory.HospitalAdmittedName}</p>
+        <p><b>Doctor:</b> {clinicalHistory.HospitalAdmittedDoctorName}</p>
+        <p><b>Diagnosis:</b> {clinicalHistory.HospitalAdmittedDiagnosis}</p>
+        <p><b>Discharge Date:</b> {clinicalHistory.DischargeDate}</p>
+        <p><b>Summary:</b> {clinicalHistory.DischargSummary}</p>
+      </>
+    )}
+  </div>
+)}
+
+
+{activeTab === 'sickground' && (
+  <div className="card p-3">
+    <p><b>Sent Home Date:</b> {clinicalHistory.SickGroundHomeDate}</p>
+    <p><b>Parent Name:</b> {clinicalHistory.SickGroundParentName}</p>
+    <p><b>Contact:</b> {clinicalHistory.SickGroundContactNo}</p>
+    <p><b>Remarks:</b> {clinicalHistory.SickGroundRemarks}</p>
+    <p><b>Family Feedback:</b> {clinicalHistory.SickGroundFamilyHealthFeedback}</p>
+    <p><b>Health Status:</b> {clinicalHistory.SickGroundHealthStatus}</p>
+  </div>
+)}
+
+
+{activeTab === 'insect' && (
+  <div className="card p-3">
+    {clinicalHistory.InsectByte === 1 ? (
+      <>
+        <p><b>Details:</b> {clinicalHistory.InsectByteDetails}</p>
+        <p><b>Treatment:</b> {clinicalHistory.InsectTreatment}</p>
+        <p><b>Recovered Date:</b> {clinicalHistory.RecoveredDate}</p>
+      </>
+    ) : (
+      <p>No insect bite reported.</p>
+    )}
+  </div>
+)}
+
+
+
+      
+
       {/* Chronic Conditions */}
       {activeTab === 'chronic' && (
         <div className="table-responsive">
@@ -165,6 +242,7 @@ const StudentSickProfile = ({ UserId, onBack }) => {
             <thead className="table-light">
               <tr>
                 <th>Condition</th>
+                <th>Treatment Given</th>
                 <th>Last Synced On</th>
               </tr>
             </thead>
@@ -179,6 +257,7 @@ const StudentSickProfile = ({ UserId, onBack }) => {
                 chronicConditions.map((item, index) => (
                   <tr key={index}>
                     <td>{item.ChronicDisease}</td>
+                    <td>{item.ChronicTreatment || '-'}</td>
                     <td>
                       {item.LastSyncedAt
                         ? new Date(item.LastSyncedAt).toLocaleDateString('en-IN')

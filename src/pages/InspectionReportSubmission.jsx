@@ -58,6 +58,8 @@ const InspectionReportSubmission = () => {
             toast.error('Please select atleast one photo');
             return;
         }
+
+        validateFiles();
     
         const formData = new FormData();
     
@@ -67,12 +69,13 @@ const InspectionReportSubmission = () => {
     });
     
         try {
-            _fetch('uploadtourphotos',formData,true,token).then(res => {
-                if (res.status !== 'success') {
-    throw new Error(res.message || 'Photo upload failed');
+            const res = await _fetch('uploadtourphotos', formData, true, token);
+
+  if (res.status !== 'success') {
+    throw new Error(res.message);
   }
-  return res.data;
-            })
+
+  return res.data; // array of filenames
     
         } catch(error){
             console.error('Error fetching Photos',error);
@@ -486,6 +489,41 @@ useEffect(() => {
 const SubmitCaptureInfo =  async () => {
     try{
 
+      const getMissingDetails = () => {
+  const missing = [];
+
+  Object.entries(sections).forEach(([tabKey, section]) => {
+    section.questions.forEach(q => {
+      const r = formData.responses[q.id];
+      if (!r?.answer || !r?.remarks || r.remarks.trim() === '') {
+        missing.push({
+          tab: tabKey,
+          question: `${q.label}. ${q.text}`
+        });
+      }
+    });
+  });
+
+  return missing;
+};
+
+
+const missing = getMissingDetails();
+
+if (missing.length > 0) {
+  const firstMissingTab = missing[0].tab;
+  setActiveTab(firstMissingTab);
+  scrollToTop();
+
+  toast.error(
+    `Please complete pending questions in "${sections[firstMissingTab].title}" tab`
+  );
+
+  return;
+}
+
+
+
         if(!canSubmit){
         if(!isGeneralValid){
           alert('Designation,VisitDate and Institution Name not available');
@@ -575,6 +613,80 @@ fetchTourInfo();
 },[])
 
 
+
+
+const tabOrder = [
+  'general',
+  'academics',
+  'administration',
+  'mess',
+  'hygiene',
+  'communication',
+  'infrastructure',
+  'health',
+  'photos'
+];
+
+
+const scrollToTop = () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+
+const goToNextTab = () => {
+  const currentIndex = tabOrder.indexOf(activeTab);
+  if (currentIndex === -1) return;
+
+  const nextTab = tabOrder[currentIndex + 1];
+  if (nextTab) {
+    setActiveTab(nextTab);
+    scrollToTop();
+  }
+};
+
+const getTabStatus = () => {
+  const status = {};
+
+  tabOrder.forEach(tabKey => {
+
+    // ✅ GENERAL INFO
+    if (tabKey === 'general') {
+      status.general =
+        designation?.trim() &&
+        DateOfVisit &&
+        institutionName?.trim() &&
+        arrivalTime &&
+        departureTime &&
+        departureTime > arrivalTime;
+      return;
+    }
+
+    // ✅ PHOTOS
+    if (tabKey === 'photos') {
+      status.photos = photos.length > 0;
+      return;
+    }
+
+    // ✅ QUESTION-BASED TABS
+    const section = sections[tabKey];
+    if (!section) return;
+
+    const allAnswered = section.questions.every(q => {
+      const r = formData.responses[q.id];
+      return r?.answer && r?.remarks?.trim();
+    });
+
+    status[tabKey] = allAnswered;
+  });
+
+  return status;
+};
+
+
+const tabStatus = getTabStatus();
+
+
+
   return (
     <>
       <ToastContainer />
@@ -588,6 +700,9 @@ fetchTourInfo();
         onClick={() => setActiveTab('general')}
       >
         General Info
+         {tabStatus.general && (
+    <span className="ms-2 text-success">✔</span>
+  )}
       </button>
     </li>
 
@@ -596,9 +711,14 @@ fetchTourInfo();
       <li className="nav-item" key={key}>
         <button
           className={`nav-link ${activeTab === key ? 'active fw-semibold text-primary' : ''}`}
-          onClick={() => setActiveTab(key)}
+          onClick={() => {setActiveTab(key)
+            scrollToTop();
+          }}
         >
           {section.title}
+          {tabStatus[key] && (
+    <span className="ms-2 text-success">✔</span>
+  )}
         </button>
       </li>
     ))}
@@ -695,8 +815,16 @@ fetchTourInfo();
     <div key={key}>
       <h4 className="fw-bold mb-4">{section.title}</h4>
 
-      {section.questions.map((question) => (
-        <div className="card mb-3" key={question.id}>
+      {section.questions.map((question) => {
+        
+        const isIncomplete =
+  !formData.responses[question.id]?.answer ||
+  !formData.responses[question.id]?.remarks?.trim();
+
+      return (
+
+     
+        <div className={`card mb-3 ${isIncomplete ? 'border-danger' : ''}`} key={question.id}>
           <div className="card-body">
             <p className="fw-semibold mb-3">
               {question.label}. {question.text}
@@ -750,9 +878,21 @@ fetchTourInfo();
             />
           </div>
         </div>
-      ))}
+)})}
+
     </div>
   )
+)}
+
+{activeTab !== 'photos' && (
+  <div className="text-end mt-4">
+    <button
+      className="btn btn-outline-primary px-4"
+      onClick={goToNextTab}
+    >
+      Next →
+    </button>
+  </div>
 )}
 
 {activeTab === 'photos' && (

@@ -178,14 +178,16 @@ const fetchTourScheduleNew = async () => {
           TourDiaryId: r.TourDiaryId,
           VisitDate: r.DateOfVisit.split('T')[0],
           SchoolId: r.SchoolId,
-          Purpose: r.Purpose || ''
+          Purpose: r.Purpose || '',
+          Status: r.Status
         }));
 
         const emptyRow = {
           TourDiaryId: null,
           VisitDate: '',
           SchoolId: '',
-          Purpose: ''
+          Purpose: '',
+          Status: 1
         };
 
         while(filledRows.length < requiredVisits){
@@ -232,8 +234,12 @@ const today = new Date();
 const year = today.getFullYear();
 const month = today.getMonth();
 
-const minDate = format(startOfMonth(today),'yyyy-MM-dd');
+const minDate = format(today,'yyyy-MM-dd');
 const maxDate = format(endOfMonth(today),'yyyy-MM-dd');
+
+const isRowLocked = (row) => {
+  return row.Status === 3 || row.Status === 4
+}
 
 
 
@@ -344,6 +350,7 @@ const maxDate = format(endOfMonth(today),'yyyy-MM-dd');
                                 value={row.VisitDate}
                                 min={minDate}
                                 max={maxDate}
+                                disabled = {isRowLocked(row)}
                                 onChange = {(e) => updateRow(index,'VisitDate',e.target.value)}
                                  />
                              </td>
@@ -352,6 +359,7 @@ const maxDate = format(endOfMonth(today),'yyyy-MM-dd');
         isClearable
         isSearchable
         options={schoolOptions}
+        isDisabled = {isRowLocked(row)}
         value={schoolOptions.find(s => s.value === row.SchoolId) || null}
         onChange={(opt) => updateRow(index, "SchoolId", opt ? opt.value : "")}
       />
@@ -361,12 +369,13 @@ const maxDate = format(endOfMonth(today),'yyyy-MM-dd');
         rows={2}
         className="form-control"
         value={row.Purpose}
+        disabled = {isRowLocked(row)}
         onChange={(e) => updateRow(index, "Purpose", e.target.value)}
       />
                              </td>
                              <td>
                                   {/* REMOVE BUTTON ONLY FOR EXTRA ROWS */}
-      {index >= requiredVisits && (
+      {index >= requiredVisits && !isRowLocked(row) && row.Status !== 1 && (
         <button 
           className="btn btn-danger btn-sm"
           onClick={() => removeRow(index)}
