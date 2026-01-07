@@ -57,8 +57,9 @@ import LeaveApply from './pages/LeaveApply';
 import LeaveApproval from './pages/LeaveApproval';
 import StudentsRecoveredList from './pages/StudentsRecoveredList';
 import StudentsReferredList from './pages/StudentsReferredList';
-import OperatorSickDashboard from './pages/OperatorSickDashboard';
 import StudentsAdmittedList from './pages/StudentsAdmittedList';
+import DCOWiseReport from './pages/DCOWiseReport';
+import MyTourReport from './pages/MyTourReport';
 const AppRoutes = () => {
   return (
     <Router>
@@ -392,10 +393,17 @@ const AppRoutes = () => {
           </ProtectedRoute>
         } />
 
-        <Route path='/hccdashboard' element={
+
+        <Route path = '/tour/dcowisereport' element ={
           <ProtectedRoute>
-            <OperatorSickDashboard />
+            <DCOWiseReport />
           </ProtectedRoute>
+        } />
+
+        <Route path = '/tour/myreport' element={
+           <ProtectedRoute>
+            <MyTourReport />
+           </ProtectedRoute>
         } />
 
         </Route>

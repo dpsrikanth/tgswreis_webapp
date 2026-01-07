@@ -24,6 +24,8 @@ const TourDiaryDashboard = () => {
   const [TotalNotVisited,setTotalNotVisited] = useState(null);
   const [TotalCompleted,setTotalCompleted] = useState(null);
   const [yesNotVisited,setYesNotVisited] = useState([]);
+  const [todayCannotVisit,setTodayCannotVisit] = useState(null);
+  const [todayPending,setTodayPending] = useState(null);
   const navigate = useNavigate();
   
 
@@ -114,6 +116,8 @@ const fetchLowCompliance = async () => {
                 setTodayVisited(res.data[0].TotalVisitedToday);
                 setTodayNotVisited(res.data[0].TotalNotVisitedToday);
                 setTodayCompleted(res.data[0].TotalCompletedToday);
+                setTodayCannotVisit(res.data[0].TotalCannotVisitToday)
+                setTodayPending(res.data[0].PendingToday);
                 toast.success(res.message);
             }else {
                 toast.error(res.message);
@@ -132,7 +136,6 @@ const fetchLowCompliance = async () => {
         _fetch('countuseradmin',null,false,token).then(res => {
             if(res.status === 'success'){
                 setTotalPlanned(res.data[0].TotalPlanned);
-                setTotalVisited(res.data[0].TotalVisited);
                 setTotalNotVisited(res.data[0].TotalNotVisited);
                 setTotalCompleted(res.data[0].TotalCompleted);
                 setTotalCannotVisit(res.data[0].TotalCannotVisit);
@@ -183,59 +186,76 @@ useEffect(() => {
 
         <div className="col-sm-12">
             <div className="row g-3 mb-3">
-        <div className="col-md-3">
+        <div className="col-md-4">
           <a href="">
           <div className="white-box d-flex justify-content-between shadow-sm">
             <div>
-              <h3 className="fw-bold maroon">{TotalPlanned}</h3>
-              <h6 className="fw-bold">Total Planned Inspections</h6>
+              <h3 className="fw-bold text-primary">{todayPlanned}</h3>
+              <h6 className="fw-bold">Today Planned Inspections</h6>
             </div>
             <div className="text-end">
-              <i className="bi bi-journal-text maroon" style={{fontSize:'28px'}}></i>
+              <div class="traffic-light primary"></div>
             </div>
           </div>
           </a>
         </div>
         
-        <div className="col-md-3">
+        <div className="col-md-4">
           <div
             className="white-box d-flex justify-content-between shadow-sm"
           >
             <div>
             
-              <h3 className="fw-bold text-success">{TotalCompleted}</h3>
-                <h6 className="fw-bold">Total Completed Inspections</h6>
+              <h3 className="fw-bold text-success">{todayCompleted}</h3>
+                <h6 className="fw-bold">Today Completed Inspections</h6>
             </div>
             <div className="text-end">
-              <i className="bi bi-check-circle-fill text-success" style={{fontSize:'28px'}}></i>
+               <div class="traffic-light green"></div>
       
             </div>
           </div>
         </div>
-        <div className="col-md-3">
+        <div className="col-md-4">
           <div
             className="white-box d-flex justify-content-between shadow-sm">
             <div>
-              <h3 className="fw-bold text-danger">{TotalNotVisited}</h3>
-              <h6 className="fw-bold">Total Not Visited Inspections</h6>
+              <h3 className="fw-bold text-danger">{todayNotVisited}</h3>
+              <h6 className="fw-bold">Today Not Visited Inspections</h6>
             </div>
             <div className="text-end">
-             <i className="bi bi-exclamation-triangle-fill text-danger" style={{fontSize:'28px'}}></i>
+              <div class="traffic-light red"></div>
             </div>
           </div>
         </div>
-         <div className="col-md-3">
+         <div className="col-md-4">
           <a href="">
           <div
             className="white-box d-flex justify-content-between shadow-sm"
           >
             <div>
              
-              <h3 className="fw-bold text-warning">{TotalCannotVisit}</h3>
-               <h6 className="fw-bold">Total Cannot Visit Inspections</h6>
+              <h3 className="fw-bold maroon">{todayCannotVisit}</h3>
+               <h6 className="fw-bold">Today Cannot Visit Inspections</h6>
             </div>
             <div className="text-end">
-             <i className="bi bi-hourglass-split text-warning" style={{fontSize:'28px'}}></i>
+             <div class="traffic-light maroon"></div>
+             
+            </div>
+          </div>
+          </a>
+        </div> 
+        <div className="col-md-4">
+          <a href="">
+          <div
+            className="white-box d-flex justify-content-between shadow-sm"
+          >
+            <div>
+             
+              <h3 className="fw-bold text-warning">{todayPending}</h3>
+               <h6 className="fw-bold">Today Pending Inspections</h6>
+            </div>
+            <div className="text-end">
+              <div class="traffic-light yellow"></div>
              
             </div>
           </div>
@@ -336,7 +356,7 @@ useEffect(() => {
                                     </tr>
                                 ))
                               ) : (
-                                <div>No Data available</div>
+                                <div>No Visits Scheduled Today</div>
                               )}
                             </tbody>
                         </table>
@@ -350,7 +370,7 @@ useEffect(() => {
           </div>
           <div className='col-sm-4'>
             <div className='row gy-3'>
-             <div className = "col-sm-12">
+             {/* <div className = "col-sm-12">
             <div className="white-box shadow-sm">
                 <h5>Todays Totals</h5>
                 <div className="d-flex justify-content-between align-items-center shadow-sm border px-2 rounded">
@@ -358,11 +378,7 @@ useEffect(() => {
                 <div className="fw-bold maroon h3">{todayPlanned}</div>
                  <div class="traffic-light maroon"></div>
                 </div>
-                {/* <div className="d-flex justify-content-between align-items-center shadow-sm border px-2 rounded mt-2">
-                  <div>Visited</div>
-                <div className="fw-bold text-success h3">{todayVisited}</div>
-                <div class="traffic-light green"></div>
-                </div> */}
+               
                 <div className="d-flex justify-content-between align-items-center shadow-sm border px-2 rounded mt-2">
                   <div>Completed</div>
                 <div className="fw-bold text-success h3">{todayCompleted}</div>
@@ -377,7 +393,7 @@ useEffect(() => {
                  
                 
             </div>
-        </div>
+        </div> */}
 
          <div className="col-sm-12">
             <div className="white-box shadow-sm">

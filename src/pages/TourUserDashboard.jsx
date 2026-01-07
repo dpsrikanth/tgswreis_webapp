@@ -13,6 +13,7 @@ const TourUserDashboard = () => {
   const requiredVisits = useSelector((state) => state.userappdetails.profileData.MonthlyVisitTarget);
   const [completed,setCompleted] = useState(null);
   const [NotVisited,setNotVisited] = useState(null);
+  const [planned,setPlanned] = useState(null);
   const [complianceRate,setComplianceRate] = useState(null);
   const [upcomingTours,setUpcomingTours] = useState([]);
   const navigate = useNavigate();
@@ -28,6 +29,7 @@ const fetchCountTotals = async () => {
       setCompleted(res.data[0].TotalCompleted);
       setNotVisited(res.data[0].TotalNotVisited);
       setComplianceRate(res.data[0].ComplianceRate)
+      setPlanned(res.data[0].TotalPlanned);
       toast.success(res.message);
     } else {
       toast.error(res.message);
@@ -70,13 +72,13 @@ fetchUpcomingWeek();
   return (
     <>
     
-    <h6 className="fw-bold mb-1"><a href="tsmess.html"><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>Tour Diary Dashboard</h6>
+    <h6 className="fw-bold mb-1"><a href="tsmess.html"><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>Inspection Dashboard</h6>
 
       <div className="row g-3 mb-3 pt-2">
 
         <div className="col-sm-12">
             <div className="row g-3 mb-3">
-        <div className="col-md-4">
+        <div className="col-md-3">
           <a href="">
           <div className="white-box d-flex justify-content-between shadow-sm">
             <div>
@@ -90,12 +92,26 @@ fetchUpcomingWeek();
           </div>
           </a>
         </div>
-        <div className="col-md-4">
+         <div className="col-md-3">
+          <a href="">
+          <div className="white-box d-flex justify-content-between shadow-sm">
+            <div>
+              <h3 className="fw-bold text-primary">{requiredVisits}</h3>
+              <h6 className="fw-bold">Planned/Yet to Visit This Month</h6>
+            </div>
+            <div className="text-end">
+              <i className="bi bi-journal-text text-primary" style={{fontSize:'28px'}}></i>
+           
+            </div>
+          </div>
+          </a>
+        </div>
+        <div className="col-md-3">
           <a href="">
           <div className="white-box d-flex justify-content-between shadow-sm">
             <div>
               <h3 className="fw-bold text-success">{completed}</h3>
-               <h6 className="fw-bold">Completed</h6>
+               <h6 className="fw-bold">Completed This Month</h6>
             </div>
             <div className="text-end">
              <i className="bi bi-check-circle-fill text-success" style={{fontSize:'28px'}}></i>
@@ -103,11 +119,11 @@ fetchUpcomingWeek();
           </div>
           </a>
         </div>
-        <div className="col-md-4">
+        <div className="col-md-3">
           <div className="white-box d-flex justify-content-between shadow-sm">
             <div>
               <h3 className="fw-bold text-danger">{NotVisited}</h3>
-                <h6 className="fw-bold">Not Visited</h6>
+                <h6 className="fw-bold">Not Visited This Month</h6>
             </div>
             <div className="text-end">
               <i className="bi bi-exclamation-triangle-fill text-danger" style={{fontSize:'28px'}}></i>
@@ -191,6 +207,24 @@ fetchUpcomingWeek();
                   </div>
             </div>
        </div>
+
+        <div className="col-sm-12">
+            <div className="white-box shadow-sm">
+                <h5 className="chart-title">Reports</h5>
+                <div className="row gy-2">
+                  
+                     <div className='col-sm-12 shadow-sm border rounded-3 p-3 d-flex gap-3 align-items-center' onClick={() => navigate('/tour/myreport')}  style={{cursor:'pointer'}}>
+                        <div className="report-icon"><i class="bi bi-file-earmark-person-fill"></i></div>
+                     <p className='mb-0'>My Inspection Report</p>
+                    </div>
+
+                {UserType === 'Admin' && (<div className='col-sm-12 shadow-sm border rounded-3 p-3 d-flex gap-3 align-items-center' onClick={() => navigate('/tour/dcowisereport')}  style={{cursor:'pointer'}}>
+                        <div className="report-icon"><i class="bi bi-file-earmark-text-fill"></i></div>
+                     <p className='mb-0'>DCO Wise Report</p>
+                    </div>)}     
+                </div>
+            </div>
+        </div> 
             </div>
         </div>
        

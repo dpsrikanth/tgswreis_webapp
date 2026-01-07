@@ -135,6 +135,9 @@ const _gc = {
         studentsreferred: {url: 'http://localhost:9001/sick/referred', method: 'GET'},
         operatorzonesummary: {url: 'http://localhost:9001/sick/operator/zones', method: 'GET'},
         operatorstudentsbyzone: {url: 'http://localhost:9001/sick/operator/studentsbyzone', method: 'GET'},
+        dcosbyzone: {url: 'http://localhost:9001/tour/dcosbyzone', method: 'GET'},
+        mytourreport: {url: 'http://localhost:9001/tour/mytourreport', method: 'GET'},
+        dcowisereport: {url: 'http://localhost:9001/tour/dcowisereport', method: 'GET'},
     },
 };
 window.gc = _gc;

@@ -14,153 +14,67 @@ import { format } from "date-fns";
 import Select from 'react-select';
 
 
-const OfficerWiseTourReport = () => {
-  const token = useSelector((state) => state.userappdetails.TOKEN);
-  const UserType = useSelector((state) => state.userappdetails.profileData.UserType);
-  const UserId = useSelector((state) => state.userappdetails.profileData.Id);
-  const ZoneId = useSelector((state) => state.userappdetails.profileData.ZoneId);
-  const DistrictId = useSelector((state) => state.userappdetails.profileData.DistrictId);
+const DCOWiseReport = () => {
+     const token = useSelector((state) => state.userappdetails.TOKEN);
+      const UserType = useSelector((state) => state.userappdetails.profileData.UserType);
+      const UserId = useSelector((state) => state.userappdetails.profileData.Id);
+      const ZoneId = useSelector((state) => state.userappdetails.profileData.ZoneId);
+      const DistrictId = useSelector((state) => state.userappdetails.profileData.DistrictId);
 
-  const [officersList,setOfficersList] = useState([]);
-  const [selectedOfficerId,setSelectedOfficerId] = useState(null);
-  const [designation,setDesignation] = useState('');
-  const [summary,setSummary] = useState('')
-  const [visits,setVisits] = useState([]);
-  const [selectedMonth,setSelectedMonth] = useState('')
-  const [showReportModal,setShowReportModal] = useState(false);
-  const [showImagesModal,setShowImagesModal] = useState(false);
-  const [selectedFileUrl,setSelectedFileUrl] = useState('');
-  const [selectedTourDiaryId,setSelectedTourDiaryId] = useState(null);
-  const [fromDate,setFromDate] = useState('');
-  const [toDate,setToDate] = useState('');
-  const [selectedOfficers, setSelectedOfficers] = useState([]);  
-  const apiUrl = window.gc.cdn;
+       const [officersList,setOfficersList] = useState([]);
+       const [selectedOfficerId,setSelectedOfficerId] = useState(null);
+       const [designation,setDesignation] = useState('');
+       const [summary,setSummary] = useState('')
+       const [visits,setVisits] = useState([]);
+       const [selectedMonth,setSelectedMonth] = useState('')
+       const [showReportModal,setShowReportModal] = useState(false);
+       const [showImagesModal,setShowImagesModal] = useState(false);
+       const [selectedFileUrl,setSelectedFileUrl] = useState('');
+       const [selectedTourDiaryId,setSelectedTourDiaryId] = useState(null);
+       const [fromDate,setFromDate] = useState('');
+       const [toDate,setToDate] = useState('');
+       const [selectedOfficers, setSelectedOfficers] = useState([]);  
+       const apiUrl = window.gc.cdn;
+     
+       const officerOptions = officersList.map(o => ({
+         value: o.UserId,
+         label: `${o.OfficerName} (${o.DistrictName})`
+       }));
 
-  const officerOptions = officersList.map(o => ({
-    value: o.UserId,
-    label: o.OfficerName
-  }));
-
-
-  const roleOptions = [
-  { value: 'ALL', label: 'All Roles' },
-  { value: 'DCO', label: 'District Coordinator' },
-  { value: 'Admin', label: 'Zonal Officer' },
-  { value: 'MultiZone', label: 'Multi Zone Officer' },
-  { value: 'StateOfficer', label: 'State Officer' },
-  { value: 'SpecialOfficer', label: 'Special Officer' },  
-];
-
-const [selectedRoles, setSelectedRoles] = useState([
-  { value: 'ALL', label: 'All Roles' }
-]);
-
-
-  const openPhotoGallery = (tourDiaryId, photoList) => {
-  const images = photoList.map((img, index) => ({
-    src: `${apiUrl}/uploads/tourdiary/${tourDiaryId}/photos/${img}`,
-    thumb: `${apiUrl}/uploads/tourdiary/${tourDiaryId}/photos/${img}`,
-    caption: `Photo ${index + 1}`,
-  }));
-
-  Fancybox.show(images, {
-    Thumbs: {
-      autoStart: true,
-    },
-  });
-};
+        const openPhotoGallery = (tourDiaryId, photoList) => {
+         const images = photoList.map((img, index) => ({
+           src: `${apiUrl}/uploads/tourdiary/${tourDiaryId}/photos/${img}`,
+           thumb: `${apiUrl}/uploads/tourdiary/${tourDiaryId}/photos/${img}`,
+           caption: `Photo ${index + 1}`,
+         }));
+       
+         Fancybox.show(images, {
+           Thumbs: {
+             autoStart: true,
+           },
+         });
+       };
 
 
-  
-
-  const fetchOfficersList = async () => {
-    try{
-        const roles = selectedRoles.map(r => r.value);
-        const Roles = `${roles.join(',')}`
-        const payload = {Roles}
-
-        _fetch('getofficersbydesig',payload,false,token).then(res => {
-            if(res.status === 'success'){
-                setOfficersList(res.data);
-            }else {
-                toast.error('Error fetching Officers list')
-            }
-        })
-
-    }catch(error){
-        console.error('Error fetching Officers list by desgination',error);
-    }
-  }
+        const fetchDCOSbyZone = async () => {
+           try{
+               const payload = {ZoneId}
+       
+               _fetch('dcosbyzone',payload,false,token).then(res => {
+                   if(res.status === 'success'){
+                       setOfficersList(res.data);
+                   }else {
+                       toast.error('Error fetching Officers list')
+                   }
+               })
+       
+           }catch(error){
+               console.error('Error fetching Officers list by Zone',error);
+           }
+         }
 
 
-  const DownloadInspectionPdfReport = async (TourDiaryId) => {
-    try {
-      const response = await fetch(
-        `${apiUrl}/inspection/pdf?TourDiaryId=${TourDiaryId}`,
-        {
-          method: 'GET',
-          headers: {
-            Authorization: `token=${token}`
-          }
-        }
-      );
-  
-      if (!response.ok) {
-        throw new Error('Failed to download PDF');
-      }
-  
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-  
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `Inspection_${TourDiaryId}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-  
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-  
-    } catch (error) {
-      console.error('PDF download error:', error);
-      toast.error('Unable to download inspection report');
-    }
-  };
-
-
-  const fetchOfficerWiseReport = async() => {
-    if (!fromDate || !toDate) {
-    toast.warning('Please select From and To dates');
-    return;
-  }
-
-    const roles = selectedRoles.map(r => r.value);
-        const Roles = `${roles.join(',')}`
-
-    try {
-        const payload = 
-        {
-        FromDate: fromDate,
-        ToDate: toDate,
-        Roles,
-        OfficerIds: selectedOfficers.map(o => o.value),
-        ZoneId
-        }
-
-        _fetch('officerwisereport',payload,false,token).then(res => {
-            if(res.status === 'success'){
-                setSummary(res.summary);
-                setVisits(res.visits);
-            }
-        })
-
-    } catch(error){
-        console.error('Error fetching Officer Wise Report',error)
-    }
-  }
-
-
-    const getStatus = (status) => {
+          const getStatus = (status) => {
     switch(status){
         case 'Planned': 
         return {badge: 'badge bg-primary'};
@@ -183,12 +97,51 @@ const [selectedRoles, setSelectedRoles] = useState([
     
 }
 
+const fetchDCOWiseReport = async () => {
+  if (!fromDate || !toDate) {
+    toast.warning('Please select From and To dates');
+    return;
+  }
 
-const ExcelReportOfficerWise = async (summary = [], visits = [], meta = {}) => {
+  try {
+
+    const officerIdsToSend =
+  selectedOfficers.length > 0
+    ? selectedOfficers.map(o => o.value)
+    : officersList.map(o => o.UserId);
+
+    const payload = {
+      FromDate: fromDate,
+      ToDate: toDate,
+      OfficerIds: officerIdsToSend,
+      ZoneId
+    };
+
+    const res = await _fetch(
+      'dcowisereport',
+      payload,
+      false,
+      token
+    );
+
+    if (res.status === 'success') {
+      setSummary(res.summary);
+      setVisits(res.visits);
+    } else {
+      toast.error('Failed to fetch report');
+    }
+  } catch (err) {
+    console.error(err);
+    toast.error('Error fetching DCO Wise Report');
+  }
+};
+
+const ExcelReportDCOWise = async (
+  summary = [],
+  visits = [],
+  meta = {}
+) => {
   const {
-    designation = selectedRoles.some(r => r.value === 'ALL')
-    ? 'All Roles'
-    : selectedRoles.map(r => r.label).join(', '),
     officers = [],
     fromDate,
     toDate
@@ -200,6 +153,7 @@ const ExcelReportOfficerWise = async (summary = [], visits = [], meta = {}) => {
   }
 
   const workbook = new ExcelJS.Workbook();
+  const todayDate = format(new Date(), 'dd-MM-yyyy');
 
   const borderStyle = {
     top: { style: "thin" },
@@ -208,28 +162,28 @@ const ExcelReportOfficerWise = async (summary = [], visits = [], meta = {}) => {
     right: { style: "thin" },
   };
 
-  const todayDate = format(new Date(), 'dd-MM-yyyy');
-
   /* =====================================================
-     SHEET 1: SUMMARY
+     SHEET 1: DCO SUMMARY
   ===================================================== */
-  const sheetSummary = workbook.addWorksheet("Summary");
+  const sheetSummary = workbook.addWorksheet("DCO Summary");
 
-  sheetSummary.addRow([`Role: ${designation}`]).font = { bold: true };
+  sheetSummary.addRow([`Report Type: DCO Wise Inspection Compliance`]).font = { bold: true };
   sheetSummary.addRow([
-    `Officers: ${
-      officers.length ? officers.map(o => o.label).join(', ') : 'All Officers'
+    `DCOs: ${
+      officers.length
+        ? officers.map(o => o.label).join(', ')
+        : 'All DCOs'
     }`
   ]).font = { bold: true };
   sheetSummary.addRow([`From Date: ${fromDate}`]).font = { bold: true };
   sheetSummary.addRow([`To Date: ${toDate}`]).font = { bold: true };
-  sheetSummary.addRow([`Report Generated: ${todayDate}`]).font = { bold: true };
+  sheetSummary.addRow([`Generated On: ${todayDate}`]).font = { bold: true };
   sheetSummary.addRow([]);
 
   const summaryHeaders = [
-    { header: "Officer Name", key: "OfficerName" },
-    { header: "Designation", key: "RoleDisplayName" },
-    { header: "Visit Target", key: "VisitTarget" },
+    { header: "DCO Name", key: "OfficerName" },
+    { header: "District", key: "DistrictName" },
+    { header: "Monthly Visit Target", key: "VisitTarget" },
     { header: "Total Scheduled Visits", key: "TotalVisits" },
     { header: "Completed", key: "Completed" },
     { header: "Not Visited", key: "NotVisited" },
@@ -259,33 +213,35 @@ const ExcelReportOfficerWise = async (summary = [], visits = [], meta = {}) => {
     });
   });
 
-  sheetSummary.columns.forEach(col => (col.width = 20));
+  sheetSummary.columns.forEach(col => (col.width = 22));
 
   /* =====================================================
      SHEET 2: VISIT DETAILS
   ===================================================== */
-  const sheetVisits = workbook.addWorksheet("Visit Details");
+  const sheetVisits = workbook.addWorksheet("Inspection Details");
 
-  sheetVisits.addRow([`Role: ${designation}`]).font = { bold: true };
+  sheetVisits.addRow([`Report Type: DCO Wise Inspection Details`]).font = { bold: true };
   sheetVisits.addRow([
-    `Officers: ${
-      officers.length ? officers.map(o => o.label).join(', ') : 'All Officers'
+    `DCOs: ${
+      officers.length
+        ? officers.map(o => o.label).join(', ')
+        : 'All DCOs'
     }`
   ]).font = { bold: true };
   sheetVisits.addRow([`From Date: ${fromDate}`]).font = { bold: true };
   sheetVisits.addRow([`To Date: ${toDate}`]).font = { bold: true };
-  sheetVisits.addRow([`Report Generated: ${todayDate}`]).font = { bold: true };
+  sheetVisits.addRow([`Generated On: ${todayDate}`]).font = { bold: true };
   sheetVisits.addRow([]);
 
   const visitHeaders = [
     "S.No",
-    "Officer Name",
-    "Designation",
+    "DCO Name",
+    "District",
     "Visit Date",
     "School",
     "School Code",
     "Photos Uploaded",
-    "Report Uploaded",
+    "Report Submitted",
     "Status",
   ];
 
@@ -305,8 +261,10 @@ const ExcelReportOfficerWise = async (summary = [], visits = [], meta = {}) => {
     const row = sheetVisits.addRow([
       index + 1,
       item.OfficerName || '-',
-      `${item.RoleDisplayName || ''} ${item.ZoneName || item.DistrictName || ''}`,
-      item.VisitDate ? format(new Date(item.VisitDate), 'dd-MM-yyyy') : '-',
+      item.DistrictName || '-',
+      item.VisitDate
+        ? format(new Date(item.VisitDate), 'dd-MM-yyyy')
+        : '-',
       item.PartnerName?.replace('TGSWREIS', '') || '-',
       item.SchoolCode || '-',
       item.PhotosUploaded || 'No',
@@ -321,7 +279,7 @@ const ExcelReportOfficerWise = async (summary = [], visits = [], meta = {}) => {
   });
 
   sheetVisits.columns.forEach(column => {
-    let maxLength = 12;
+    let maxLength = 14;
     column.eachCell({ includeEmpty: true }, cell => {
       maxLength = Math.max(
         maxLength,
@@ -332,96 +290,43 @@ const ExcelReportOfficerWise = async (summary = [], visits = [], meta = {}) => {
   });
 
   /* =====================================================
-     EXPORT
+     EXPORT FILE
   ===================================================== */
   const buffer = await workbook.xlsx.writeBuffer();
   saveAs(
     new Blob([buffer], {
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     }),
-    `OfficerWiseTourReport_${todayDate}.xlsx`
+    `DCO_Wise_Inspection_Report_${todayDate}.xlsx`
   );
 };
 
 
-
-
-  useEffect(() => {
-    if(selectedRoles){
-        fetchOfficersList();
+useEffect(
+    () => {
+        fetchDCOSbyZone()
     }
-  },[selectedRoles])
-
-
-  useEffect(() => {
-    if(UserType === 'Admin'){
-      setDesignation('DCO');
-      fetchOfficersList();
-    }
-  },[UserType])
-
-
-  useEffect(() => {
-  setSelectedOfficers([]);
-}, [officersList]);
-
+,[ZoneId])
 
   return (
     <>
-    <div className='row'>
+    <ToastContainer/>
+     <div className='row'>
         <div className='col-sm-12'>
             <div className='white-box shadow-sm'>
                 <div className='table-header'>
-                 <h5 className="chart-title">Officer Wise Compliance Report</h5>
+                 <h5 className="chart-title">DCO Wise Inspection Compliance Report</h5>
                  <div>
-                      <button className='btn btn-success' onClick={() => ExcelReportOfficerWise(summary, visits, {
-  selectedRoles,
-  officers: selectedOfficers,
-  fromDate,
-  toDate
-})}>Excel Report</button>
+                      <button className='btn btn-success' onClick={() =>
+    ExcelReportDCOWise(summary, visits, {
+      officers: selectedOfficers,
+      fromDate,
+      toDate
+    })
+  }>Excel Report</button>
                  </div>
                 </div>
                 <div className='row align-items-center'>
-               {/* {UserType === 'SuperAdmin' || UserType === 'StateOfficer' && (<div className='col-sm-3'>
-                        <label className='form-label'>Select Role</label>
-                   
-                        <select className='form-select' value={designation} onChange={(e) => setDesignation(e.target.value)}>
-                            <option value=''>Please Select</option>
-                             <option value='SpecialOfficer'>Special Officer</option>
-                            <option value='StateOfficer'>State Officer</option>
-                            <option value='MultiZone'>Multi Zone Officer</option>
-                             <option value='Admin'>Zonal Officer</option>
-                            <option value='DCO'>District Coordinator</option>
-                        </select> 
-                    </div> )} */}
-                    {/* <div className='col-sm-3'>
-                        <label className='form-label'>Select Officer</label>
-                        <select className='form-select' value={selectedOfficerId} onChange={(e) => setSelectedOfficerId(e.target.value)}>
-                            <option value=''>--Select--</option>
-                            {officersList.map((item,index) => (
-                                <option key={item.UserId} value={item.UserId}>{item.OfficerName}</option>
-                            ))}
-                        </select>
-                    </div> */}
-                     <div className='col-sm-3'>
-                      <label className='form-label'>Select Roles</label>
-                       <Select
-  isMulti
-  options={roleOptions}
-  value={selectedRoles}
-  onChange={(selected) => {
-    if (selected.some(r => r.value === 'ALL')) {
-      setSelectedRoles([{ value: 'ALL', label: 'All Roles' }]);
-    } else {
-      setSelectedRoles(selected);
-    }
-  }}
-  closeMenuOnSelect={false}
-/>
-                     </div>
-                   
-
 
                     {UserType !== 'DCO' && (
   <div className="col-sm-3">
@@ -439,15 +344,12 @@ const ExcelReportOfficerWise = async (summary = [], visits = [], meta = {}) => {
     />
 
     <small className="text-muted">
-      Leave empty to include all
+     Leave empty to include all DCOs in this zone
     </small>
   </div>
 )}
 
-                    {/* <div className='col-sm-3'>
-                        <label className='form-label'>Select Month</label>
-                        <input type="month" className='form-control' value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value)} />
-                    </div> */}
+                 
                     <div className="col-sm-3">
   <label className="form-label">From Date</label>
   <input
@@ -468,7 +370,7 @@ const ExcelReportOfficerWise = async (summary = [], visits = [], meta = {}) => {
   />
 </div>
                     <div className='col-sm-12 text-center'>
-                        <button className='btn btn-primary mt-4' onClick={() => fetchOfficerWiseReport()}>Fetch</button>
+                        <button className='btn btn-primary mt-4' onClick={() => fetchDCOWiseReport()}>Fetch</button>
                         
                     </div>
                 </div>
@@ -478,9 +380,9 @@ const ExcelReportOfficerWise = async (summary = [], visits = [], meta = {}) => {
                         <table className='table table-bordered'>
                             <thead>
                                 <tr>
-                                    <th>S.No</th>
                                     <th>Officer Name</th>
                                     <th>Designation</th>
+                                    <th>District Name</th>
                                     <th>Monthly Visit Target</th>
                                     <th>Total Scheduled Visits</th>
                                     <th>Completed</th>
@@ -492,9 +394,9 @@ const ExcelReportOfficerWise = async (summary = [], visits = [], meta = {}) => {
                             <tbody>
                                {Array.isArray(summary) && summary.length > 0 ? (  summary.map((item,index) => (
                                 <tr key={index}>
-                                  <td>{index + 1}</td>
                                     <td>{item.OfficerName}</td>
-                                    <th>{item.RoleDisplayName} - {item.ZoneName || item.DistrictName}</th>
+                                    <td>District Coordinator</td>
+                                    <td>{item.DistrictName}</td>
                                     <td>{item.VisitTarget}</td>
                                     <td>{item.TotalVisits}</td>
                                     <td>{item.Completed}</td>
@@ -538,29 +440,7 @@ const ExcelReportOfficerWise = async (summary = [], visits = [], meta = {}) => {
                                         <td>
                                              <div className='d-flex gap-2 justify-content-end'>
                                          {item.ReportSubmitted === 'Yes' && ( <button className='btn btn-primary btn-sm' onClick={() => DownloadInspectionPdfReport(item.TourDiaryId)}>Download Inspection PDF</button>)}     
-               {/* {item.ReportPDF ? (
-              <button className="btn btn-primary btn-sm mb-2"
-                onClick={() => {
-                  setSelectedTourDiaryId(item.TourDiaryId);
-                  setSelectedFileUrl(`${apiUrl}/uploads/tourdiary/${item.TourDiaryId}/reports/${item.ReportPDF}`);
-                  setShowReportModal(true);
-                }}>
-                View Report
-              </button>
-            ) : null} */}
-
-             {/* Photos */}
-            {/* {item.PhotoAttachment && (
-              <div>
-                <button className="btn btn-secondary btn-sm"
-                  onClick={() => { setSelectedTourDiaryId(item.TourDiaryId); setShowImagesModal(true); }}>
-                  Photos
-                </button>
-                <small className="text-muted ms-1">
-                  ({JSON.parse(item.PhotoAttachment).length}) photos
-                </small>
-              </div>
-            )} */}
+              
            
   {item.PhotoAttachment ? (() => {
     const photosArray = JSON.parse(item.PhotoAttachment);
@@ -626,4 +506,4 @@ const ExcelReportOfficerWise = async (summary = [], visits = [], meta = {}) => {
   )
 }
 
-export default OfficerWiseTourReport
+export default DCOWiseReport

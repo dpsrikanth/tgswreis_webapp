@@ -42,7 +42,7 @@ useEffect(() => {
                 <img src="img/email_icon.png" alt="" />
             </NavLink> */}
 
-            {UserType === 'SuperAdmin' || UserType === 'Admin' ? (<NavLink to="/tickets">
+            {UserType === 'SuperAdmin' || UserType === 'Admin' || UserType === 'StateOfficer' ? (<NavLink to="/tickets">
             <div className="d-flex flex-column justify-content-between align-items-center">
                 <i class="bi bi-journal-check text-white" style={{fontSize:'24px'}}></i>
                 <span style={{fontSize:'12px'}}>Tickets</span>
@@ -57,7 +57,7 @@ useEffect(() => {
             </div>
             </NavLink> ) : (<span></span>)}
 
-           {UserType === 'SuperAdmin' || UserType === 'Admin' ? ( <NavLink to="/tsmess">
+           {UserType === 'SuperAdmin' || UserType === 'Admin' || UserType === 'StateOfficer' ? ( <NavLink to="/tsmess">
             <div className="d-flex flex-column justify-content-between align-items-center">
                 <i class="bi bi-egg text-white" style={{fontSize:'24px'}}></i>
                 <span style={{fontSize:'12px'}}>TG Diet</span>
@@ -79,7 +79,7 @@ useEffect(() => {
             </div>
             </NavLink> ) : (null)}
 
-             {UserType === 'SuperAdmin' || UserType === 'Admin' || UserType === 'JointSecretary' || UserType === 'DCO' || UserType === 'HealthAdmin' ? ( <NavLink to="/sickdashboard">
+             {UserType === 'SuperAdmin' || UserType === 'Admin' || UserType === 'JointSecretary' || UserType === 'DCO' || UserType === 'HealthAdmin' || UserType === 'StateOfficer' ? ( <NavLink to="/sickdashboard">
             <div className="d-flex flex-column justify-content-between align-items-center text-center">
                 <i class="bi bi-heart-pulse text-white" style={{fontSize:'24px'}}></i>
                 <span style={{fontSize:'12px'}}>Sick Report</span>
@@ -102,36 +102,36 @@ useEffect(() => {
             </NavLink> ) : (null)} */}
 
 
-                {UserType === 'SuperAdmin' ? (  <NavLink to="/tourdiarydashboard">
+                {UserType === 'SuperAdmin' || UserType === 'StateOfficer' ? (  <NavLink to="/tourdiarydashboard">
                 <div className="d-flex flex-column justify-content-between align-items-center text-center">
                 <i class="bi bi-geo-alt text-white" style={{fontSize:'24px'}}></i>
-                <span style={{fontSize:'12px'}}>Inspection Module</span>
+                <span style={{fontSize:'12px'}}>Inspection Admin Module</span>
             </div>
             </NavLink> ) : (null)}
 
 
-              {UserType === 'Admin' || UserType === 'DCO' || UserType === 'SpecialOfficer' ? (  <NavLink to="/touruserdashboard">
+              {UserType === 'Admin' || UserType === 'DCO' || UserType === 'SpecialOfficer' || UserType === 'MultiZone' || UserType === 'StateOfficer' ? (  <NavLink to="/touruserdashboard">
                 <div className="d-flex flex-column justify-content-between align-items-center text-center">
                 <i class="bi bi-geo-alt text-white" style={{fontSize:'24px'}}></i>
                 <span style={{fontSize:'12px'}}>Inspection Dashboard</span>
             </div>
             </NavLink> ) : (null)}
 
-              {UserType === 'Admin' || UserType === 'DCO' || UserType === 'SpecialOfficer' ? (  <NavLink to="/tourdiaryschedule">
+              {UserType === 'Admin' || UserType === 'DCO' || UserType === 'SpecialOfficer' || UserType === 'MultiZone' || UserType === 'StateOfficer' ? (  <NavLink to="/tourdiaryschedule">
                 <div className="d-flex flex-column justify-content-between align-items-center text-center">
                 <i class="bi bi-calendar2-week text-white" style={{fontSize:'24px'}}></i>
                 <span style={{fontSize:'12px'}}>Create Schedule</span>
             </div>
             </NavLink> ) : (null)}
 
-              {UserType === 'Admin' || UserType === 'DCO' || UserType === 'SpecialOfficer' ? (  <NavLink to="/touruservisits">
+              {UserType === 'Admin' || UserType === 'DCO' || UserType === 'SpecialOfficer' || UserType === 'MultiZone' || UserType === 'StateOfficer' ? (  <NavLink to="/touruservisits">
                 <div className="d-flex flex-column justify-content-between align-items-center text-center">
                 <i class="bi bi-eye text-white" style={{fontSize:'24px'}}></i>
                 <span style={{fontSize:'12px'}}>View Visits</span>
             </div>
             </NavLink> ) : (null)}
 
-             {UserType === 'SuperAdmin' ? (  <NavLink to="/complaintdashboard">
+             {UserType === 'SuperAdmin' || UserType === 'StateOfficer' ? (  <NavLink to="/complaintdashboard">
                 <div className="d-flex flex-column justify-content-between align-items-center">
                 <i class="bi bi-telephone-inbound text-white" style={{fontSize:'24px'}}></i>
                 <span style={{fontSize:'12px'}}>Phone Mitra</span>
@@ -140,7 +140,7 @@ useEffect(() => {
             
             </NavLink> ) : (null)}
 
-            {UserType === 'CallCentre' ? (<NavLink to="/complaintentry">
+            {UserType === 'CallCentre'  ? (<NavLink to="/complaintentry">
                 <div className="d-flex flex-column justify-content-between align-items-center">
                 <i class="bi bi-telephone-inbound text-white" style={{fontSize:'24px'}}></i>
                 <span style={{fontSize:'12px'}}>Phone Mitra</span>

@@ -247,13 +247,13 @@ const isRowLocked = (row) => {
     <>
     
     <ToastContainer/>
-     <h6 className="fw-bold mb-3"><a href="tsmess.html"><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>Tour Diary Management</h6>
+     <h6 className="fw-bold mb-3"><a href="tsmess.html"><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>Inspection Schedule Management</h6>
      
       <div className="row gy-3">
 
         <div className="col-sm-12">
             <div className="white-box shadow-sm">
-                <h5>Add New Tour Schedule</h5>
+                <h5>Add New Inspection Schedule</h5>
                 <div className="row gy-3">
                     <div className="col-sm-4">
                         <label className="form-label">Officer Name</label>

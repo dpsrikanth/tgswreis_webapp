@@ -146,7 +146,9 @@ const Login = () => {
                         SuperAdmin: '/samsdashboard',
                         DCO: '/touruserdashboard',
                         SpecialOfficer: '/touruserdashboard',
-                        HealthAdmin: '/sickdashboard'
+                        HealthAdmin: '/sickdashboard',
+                        MultiZone: '/touruserdashboard',
+                        StateOfficer: '/touruserdashboard'
                     }
 
                     const successState = { state: { type: "success", message: "Login successful" } };
