@@ -494,7 +494,10 @@ const ExcelReportOfficerWise = async (summary = [], visits = [], meta = {}) => {
                                 <tr key={index}>
                                   <td>{index + 1}</td>
                                     <td>{item.OfficerName}</td>
-                                    <th>{item.RoleDisplayName} - {item.ZoneName || item.DistrictName}</th>
+                                    <th>{item.RoleDisplayName}  {(item.RoleDisplayName === 'Zonal Officer' ||
+    item.RoleDisplayName === 'District Coordinator') && (
+      <> - {item.ZoneName || item.DistrictName}</>
+  )}</th>
                                     <td>{item.VisitTarget}</td>
                                     <td>{item.TotalVisits}</td>
                                     <td>{item.Completed}</td>
@@ -528,7 +531,10 @@ const ExcelReportOfficerWise = async (summary = [], visits = [], meta = {}) => {
                                     <tr>
                                         <td>{index + 1}</td>
                                         <td>{item.OfficerName}</td>
-                                        <td>{item.RoleDisplayName} - {item.ZoneName || item.DistrictName}</td>
+                                        <td>{item.RoleDisplayName}  {(item.RoleDisplayName === 'Zonal Officer' ||
+    item.RoleDisplayName === 'District Coordinator') && (
+      <> - {item.ZoneName || item.DistrictName}</>
+  )}</td>
                                         <td>{item.VisitDate}</td>
                                         <td>{item.PartnerName.replace('TGSWREIS','')}</td>
                                         <td>{item.SchoolCode}</td>
@@ -538,29 +544,7 @@ const ExcelReportOfficerWise = async (summary = [], visits = [], meta = {}) => {
                                         <td>
                                              <div className='d-flex gap-2 justify-content-end'>
                                          {item.ReportSubmitted === 'Yes' && ( <button className='btn btn-primary btn-sm' onClick={() => DownloadInspectionPdfReport(item.TourDiaryId)}>Download Inspection PDF</button>)}     
-               {/* {item.ReportPDF ? (
-              <button className="btn btn-primary btn-sm mb-2"
-                onClick={() => {
-                  setSelectedTourDiaryId(item.TourDiaryId);
-                  setSelectedFileUrl(`${apiUrl}/uploads/tourdiary/${item.TourDiaryId}/reports/${item.ReportPDF}`);
-                  setShowReportModal(true);
-                }}>
-                View Report
-              </button>
-            ) : null} */}
-
-             {/* Photos */}
-            {/* {item.PhotoAttachment && (
-              <div>
-                <button className="btn btn-secondary btn-sm"
-                  onClick={() => { setSelectedTourDiaryId(item.TourDiaryId); setShowImagesModal(true); }}>
-                  Photos
-                </button>
-                <small className="text-muted ms-1">
-                  ({JSON.parse(item.PhotoAttachment).length}) photos
-                </small>
-              </div>
-            )} */}
+              
            
   {item.PhotoAttachment ? (() => {
     const photosArray = JSON.parse(item.PhotoAttachment);

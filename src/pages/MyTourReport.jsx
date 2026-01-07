@@ -73,6 +73,41 @@ const MyTourReport = () => {
 }
 
 
+  const DownloadInspectionPdfReport = async (TourDiaryId) => {
+    try {
+      const response = await fetch(
+        `${apiUrl}/inspection/pdf?TourDiaryId=${TourDiaryId}`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `token=${token}`
+          }
+        }
+      );
+  
+      if (!response.ok) {
+        throw new Error('Failed to download PDF');
+      }
+  
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+  
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Inspection_${TourDiaryId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+  
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+  
+    } catch (error) {
+      console.error('PDF download error:', error);
+      toast.error('Unable to download inspection report');
+    }
+  };
+
+
 const fetchMyTourReport = async () => {
   if (!fromDate || !toDate) {
     toast.warning('Please select From and To dates');

@@ -96,7 +96,7 @@ fetchUpcomingWeek();
           <a href="">
           <div className="white-box d-flex justify-content-between shadow-sm">
             <div>
-              <h3 className="fw-bold text-primary">{requiredVisits}</h3>
+              <h3 className="fw-bold text-primary">{planned}</h3>
               <h6 className="fw-bold">Planned/Yet to Visit This Month</h6>
             </div>
             <div className="text-end">
