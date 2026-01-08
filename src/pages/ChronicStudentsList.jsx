@@ -69,6 +69,8 @@ const ChronicStudentsList = ({ ZoneId, DistrictId }) => {
               <th>Zone</th>
               <th>Chronic Condition</th>
               <th>Treatment Given</th>
+              <th>HS Name</th>
+              <th>HS Contact</th>
               <th>Last Updated</th>
             </tr>
           </thead>
@@ -97,6 +99,8 @@ const ChronicStudentsList = ({ ZoneId, DistrictId }) => {
                     {item.ChronicDisease}
                   </td>
                   <td>{item.ChronicTreatment || '-'}</td>
+                  <td>{item.HealthSupervisorName}</td>
+                  <td>{item.HealthSupervisorMobile}</td>
                   <td>
                     {item.LastSyncedAt
                       ? new Date(item.LastSyncedAt).toLocaleDateString('en-IN')

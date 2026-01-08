@@ -98,6 +98,8 @@ const StudentsReferredList = () => {
               <th>Referral Date</th>
               <th>Reason for Referral</th>
               <th>Follow Up Status</th>
+              <th>HS Name</th>
+              <th>HS Contact</th>
               <th>Rejoined School Date</th>
             </tr>
           </thead>
@@ -126,6 +128,8 @@ const StudentsReferredList = () => {
                   <td>{s.ReferralHospitalDate}</td>
                   <td>{s.RefrralHospitalReason}</td>
                   <td>{s.ReferredHospitalStatus}</td>
+                  <td>{s.HealthSupervisorName}</td>
+                  <td>{s.HealthSupervisorMobile}</td>
                   <td>{s.SchoolRejoinDate}</td>
                 </tr>
               ))

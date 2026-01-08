@@ -420,6 +420,13 @@ useEffect(() => {
                         <div className="report-icon"><i class="bi bi-file-earmark-person-fill"></i></div>
                      <p className='mb-0'>Officer Wise Report</p>
                     </div>
+
+                    {UserType === 'SuperAdmin' && (
+                      <div className='col-sm-12 shadow-sm border rounded-3 p-3 d-flex gap-3 align-items-center' onClick={() => navigate('/schoolscontact')}  style={{cursor:'pointer'}}>
+                        <div className="report-icon"><i class="bi bi-geo-fill"></i></div>
+                     <p className='mb-0'>Update Latitude and Longitude of School</p>
+                    </div>
+                    )}
                 </div>
             </div>
         </div> 

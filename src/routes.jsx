@@ -60,6 +60,7 @@ import StudentsReferredList from './pages/StudentsReferredList';
 import StudentsAdmittedList from './pages/StudentsAdmittedList';
 import DCOWiseReport from './pages/DCOWiseReport';
 import MyTourReport from './pages/MyTourReport';
+import ZonalWiseTourReport from './pages/ZonalWiseTourReport';
 const AppRoutes = () => {
   return (
     <Router>
@@ -404,6 +405,12 @@ const AppRoutes = () => {
            <ProtectedRoute>
             <MyTourReport />
            </ProtectedRoute>
+        } />
+
+        <Route path = '/tour/zonalwisetourreport' element={
+         <ProtectedRoute>
+          <ZonalWiseTourReport />
+         </ProtectedRoute>
         } />
 
         </Route>

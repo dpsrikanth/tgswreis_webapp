@@ -24,7 +24,7 @@ const OperatorZoneSummary = ({ onZoneSelect }) => {
   { label: 'Fever', key: 'Fever', value: 'FEVER' },
   { label: 'Admitted', key: 'Admitted', value: 'ADMITTED', danger: true },
   { label: 'Referred', key: 'Referred', value: 'REFERRED' },
-  { label: 'Emergency', key: 'Emergency', value: 'EMERGENCY', danger: true },
+  {label: 'Sent Home', key: 'SentHome', value: 'SENT_HOME'}
 ]
 
 

@@ -91,19 +91,19 @@ const StudentsAdmittedList = () => {
         <table className="table table-bordered">
           <thead className="table-light">
             <tr>
-              <th>Student Name</th>
-              <th>School Code</th>
-              <th>School Name</th>
               <th>Zone</th>
               <th>District</th>
-              <th>Hospital Admitted Name</th>
-              <th>Hospital Admitted Date</th>
-              <th>Doctor Name</th>
-              <th>Doctor Diagnosis</th>
+              <th>School Code</th>
+              <th>School Name</th>
+              <th>HS Name</th>
+              <th>HS Contact</th>
+              <th>Student Name</th>
+              <th>Name of Hospital</th>
+              <th>Date of Admission</th>
+              <th>Diagnosis</th>
               <th>Doctor Remarks</th>
-              <th>Discharge Date</th>
-              <th>Discharge Summary</th>
-              <th>School Rejoin Date</th>
+              <th>Date of Discharge</th>
+              <th>School Rejoined Date</th>
             </tr>
           </thead>
           <tbody>
@@ -122,18 +122,18 @@ const StudentsAdmittedList = () => {
             ) : (
               students.map((s) => (
                 <tr key={s.SchoolID}>
-                  <td>{s.FName}</td>
-                  <td>{s.SchoolCode}</td>
-                  <td>{s.SchoolName}</td>
                   <td>{s.ZoneName}</td>
                   <td>{s.DistrictName}</td>
+                  <td>{s.SchoolCode}</td>
+                  <td>{s.SchoolName}</td>
+                  <td>{s.HealthSupervisorName}</td>
+                  <td>{s.HealthSupervisorMobile}</td>
+                  <td>{s.FName}</td>
                   <td>{s.HospitalAdmittedName}</td>
                   <td>{s.HospitalAdmittedDate}</td>
-                  <td>{s.HospitalAdmittedDoctorName}</td>
                   <td>{s.HospitalAdmittedDiagnosis}</td>
                   <td>{s.HospitalAdmittedRemarks}</td>
                   <td>{s.DischargeDate}</td>
-                  <td>{s.DischargSummary}</td>
                   <td>{s.SchoolRejoinDate}</td>
                 </tr>
               ))

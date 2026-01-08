@@ -6,9 +6,9 @@ const CATEGORY_BUTTONS = [
   { label: 'All', value: null },
   { label: 'General', value: 'GENERAL' },
   { label: 'Fever', value: 'FEVER' },
+  {label: 'Sent Home', value: 'SENT_HOME'},
   { label: 'Admitted', value: 'ADMITTED' },
-  { label: 'Referred', value: 'REFERRED' },
-  { label: 'Emergency', value: 'EMERGENCY' },
+  { label: 'Referred', value: 'REFERRED' }
 ]
 
 const OperatorStudentList = ({
@@ -31,7 +31,10 @@ const OperatorStudentList = ({
   const fetchStudents = async () => {
     const payload = {
       ZoneId,
-      Category: selectedCategory
+    }
+
+    if(selectedCategory){
+      payload.Category = selectedCategory;
     }
 
     const res = await _fetch(

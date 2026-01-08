@@ -138,6 +138,8 @@ const _gc = {
         dcosbyzone: {url: 'http://localhost:9001/tour/dcosbyzone', method: 'GET'},
         mytourreport: {url: 'http://localhost:9001/tour/mytourreport', method: 'GET'},
         dcowisereport: {url: 'http://localhost:9001/tour/dcowisereport', method: 'GET'},
+        zosbymultizone: {url: 'http://localhost:9001/tour/zonalofficersbymultizone', method: 'GET'},
+        zonalwisetourreport: {url: 'http://localhost:9001/tour/zonalwisereport', method: 'GET'}
     },
 };
 window.gc = _gc;

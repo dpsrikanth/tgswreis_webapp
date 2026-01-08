@@ -42,14 +42,16 @@ const handleInputChange = (index,field,newValue) => {
     setSchoolContacts(updatedContacts)
 }
 
-const updateSchoolContact = async (schoolCode, contactNumber,ContacteMailAddress) => {
+const updateSchoolContact = async (schoolCode, contactNumber,ContacteMailAddress,Latitude,Longitude) => {
 
     try {
 
     const payload = {
         schoolCode: schoolCode,
         ContactMobile : contactNumber,
-        ContacteMailAddress : ContacteMailAddress
+        ContacteMailAddress : ContacteMailAddress,
+        Latitude: Latitude,
+        Longitude: Longitude
     }
 
     
@@ -72,12 +74,12 @@ const updateSchoolContact = async (schoolCode, contactNumber,ContacteMailAddress
   return (
    <>
    <ToastContainer/>
-    <h6 className="fw-bold mb-3"><a onClick={() => navigate('/samsdashboard')} style={{cursor:'pointer'}}><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>Edit School Contacts</h6>
+    <h6 className="fw-bold mb-3"><a onClick={() => navigate('/samsdashboard')} style={{cursor:'pointer'}}><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>Edit School Details</h6>
     <div className='row'>
         <div className='col-sm-12'>
              <div className="white-box shadow-sm">
                 <div className="table-header">
-                    <h5><span className="pink fw-bold">School Contact Details</span></h5>
+                    <h5><span className="pink fw-bold">School Details</span></h5>
                 </div>
                 <div className='text-end'>
                     <button className='btn btn-success' onClick={() => navigate('/zonescontact')}>Update Zone Contacts</button>
@@ -89,6 +91,8 @@ const updateSchoolContact = async (schoolCode, contactNumber,ContacteMailAddress
                         <th style={{width:'200px'}}>School Name</th>
                         <th>School Contact</th>
                         <th>School Email</th>
+                        <th>Latitude</th>
+                        <th>Longitude</th>
                         <th>Action</th>
                     </tr>
                     </thead>
@@ -104,7 +108,13 @@ const updateSchoolContact = async (schoolCode, contactNumber,ContacteMailAddress
                                     <input type='text' className='form-control' value={item.ContacteMailAddress} onChange={(e) => handleInputChange(index,"ContacteMailAddress",e.target.value)}/>
                                 </td>
                                 <td>
-                                    <button className='btn btn-primary' onClick={() => updateSchoolContact(item.SchoolCode,item.ContactMobile,item.ContacteMailAddress)}>Update</button>
+                                     <input type='text' className='form-control' value={item.Latitude} onChange={(e) => handleInputChange(index,"Latitude",e.target.value)}/>
+                                </td>
+                                  <td>
+                                     <input type='text' className='form-control' value={item.Longitude} onChange={(e) => handleInputChange(index,"Longitude",e.target.value)}/>
+                                </td>
+                                <td>
+                                    <button className='btn btn-primary' onClick={() => updateSchoolContact(item.SchoolCode,item.ContactMobile,item.ContacteMailAddress,item.Latitude,item.Longitude)}>Update</button>
                                 </td>
                             </tr>
                         ))}
