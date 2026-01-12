@@ -59,11 +59,7 @@ const InspectionReportSubmission = () => {
             return;
         }
 
-        const isValid = validateFiles();
-
-        if(!isValid){
-          return null;
-        }
+        validateFiles();
     
         const formData = new FormData();
     
@@ -555,10 +551,6 @@ if (missing.length > 0) {
       }
 
       const uploadedPhotos = await uploadPhotos();
-
-      if(!uploadPhotos){
-        return;
-      }
 
          const CapturedInfo = {
             generalInfo: {
