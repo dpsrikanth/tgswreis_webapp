@@ -401,6 +401,7 @@ useEffect(
     type="date"
     className="form-control"
     value={toDate}
+    min={fromDate}
     onChange={(e) => setToDate(e.target.value)}
   />
 </div>

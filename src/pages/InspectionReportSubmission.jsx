@@ -59,7 +59,11 @@ const InspectionReportSubmission = () => {
             return;
         }
 
-        validateFiles();
+        const isValid = validateFiles();
+
+        if(!isValid){
+          return null;
+        }
     
         const formData = new FormData();
     
@@ -272,12 +276,8 @@ const InspectionReportSubmission = () => {
       id: '40_1',
       label: '40(b)',
       text: 'Is FRS implemented?'
-    },
-    {
-      id: '41',
-      label: '41',
-      text: 'Are general remarks and suggestions for improvement recorded?'
     }
+   
   ]
 },
 
@@ -286,17 +286,17 @@ const InspectionReportSubmission = () => {
   questions: [
     {
       id: '42',
-      label: '42',
+      label: '41',
       text: 'Is the computer lab functional, and are the available systems, laptops, and tablets in working condition?'
     },
     {
       id: '43',
-      label: '43',
+      label: '42',
       text: 'Are CCTV cameras functioning properly?'
     },
     {
       id: '44',
-      label: '44',
+      label: '43',
       text: 'Are the incinerators in proper working condition?'
     }
   ]
@@ -307,25 +307,37 @@ const InspectionReportSubmission = () => {
   questions: [
     {
       id: '45',
-      label: '45(a)',
+      label: '44(a)',
       text: 'Is a wellness room with adequate amenities available?'
     },
     {
       id: '45_1',
-      label: '45(b)',
+      label: '44(b)',
       text: 'Is an anonymous room maintained?'
     },
     {
       id: '45_2',
-      label: '45(c)',
+      label: '44(c)',
       text: 'Are records properly maintained?'
     },
     {
       id: '46',
-      label: '46',
+      label: '45',
       text: 'Is a special diet provided for sick children?'
-    }
+    },
+    
   ]
+},
+
+remarks: {
+title: 'Final Remarks',
+questions: [
+   {
+      id: '41',
+      label: '46',
+      text: 'Any final general remarks and suggestions by the visiting officer?'
+    }
+]
 },
 
     photos: {
@@ -544,6 +556,10 @@ if (missing.length > 0) {
 
       const uploadedPhotos = await uploadPhotos();
 
+      if(!uploadPhotos){
+        return;
+      }
+
          const CapturedInfo = {
             generalInfo: {
                 officerName: officerName,
@@ -624,6 +640,7 @@ const tabOrder = [
   'communication',
   'infrastructure',
   'health',
+  'remarks',
   'photos'
 ];
 
@@ -955,7 +972,7 @@ const tabStatus = getTabStatus();
       <div className="text-danger small mt-2 fw-bold">
   Note: Please upload photos, enter arrival & departure time, and answer all questions
   (Yes/No with remarks) to enable the Submit Report button.
-    <p className='text-primary'>{`Answered Questions: ${answeredQuestions}`} / {`Total Questions: ${totalQuestions}`}</p>
+    <p className='text-primary'>{`Answered Questions: ${answeredQuestions}`} / {`Total Questions: ${totalQuestions}`} (Inclusive of Sub questions)</p>
 </div>
 
     </div>
