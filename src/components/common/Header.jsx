@@ -14,6 +14,7 @@ const Header = () => {
     const dispatch = useDispatch();
     const token = useSelector((state) => state.userappdetails.TOKEN);
     const RoleDisplayName = useSelector((state) => state.userappdetails.profileData.RoleDisplayName)
+    const DisplayName = useSelector((state) => state.userappdetails.profileData.DisplayName)
     //date and time
     const updateDateTime = () => {
         const now = new Date();
@@ -87,7 +88,7 @@ const Header = () => {
                 <div className="profile-menu" id="profileMenu" style={{ display: "none", position: "absolute", right: "10px", top: "60px", background: "white", boxShadow: "0 0 10px rgba(0,0,0,0.1)", borderRadius: "10px", padding: "10px", width: "200px", zIndex: 9 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "10px 0" }}>
                     <img src="img/profile_icon.png" style={{ width: "40px", height: "40px" }} />
-                    <span>{RoleDisplayName}</span>
+                    <span>{DisplayName}-{RoleDisplayName}</span>
                 </div>
                 <hr style={{ margin: "0px" }} />
                 <div style={{ padding: "10px" }}>

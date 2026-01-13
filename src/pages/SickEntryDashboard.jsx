@@ -551,11 +551,20 @@ useEffect(() => {
 
   return (
     <>
-    <h6 className="fw-bold"><a onClick={() => {navigate('/samsdashboard')}}><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>TGSWREIS Health Command Centre Dashboard</h6>
+    <div className='d-flex justify-content-between'>
+<h6 className="fw-bold"><a onClick={() => {navigate('/samsdashboard')}}><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>TGSWREIS Health Command Centre Dashboard</h6>
+<div>
+<a className='btn btn-primary me-2' href='images/HOSPITAL ADMINISTRATION.xlsx' download>Hospital Administration</a>
+ <a className='btn btn-primary me-2' href='images/TVVP ALL SUPERINTENDENTS PHONE NUMBER.xlsx' download>TVVP All Superintendents</a>
+  <a className='btn btn-primary' href='https://docs.google.com/spreadsheets/d/1WhKnfiNwaOj6HArB98hLSEr6PIJtnBTy1k8kWeKNOFM/edit?gid=0#gid=0' target='_blank'>DMHOs CCs DPOs and DDMs</a>
+</div>
+    </div>
+    
 
       <div className="row g-3 mb-3">
 
         <div className="row g-3">
+         
 
   {/* 🔴 Utmost Emergency */}
   <div className="col-md-3">
