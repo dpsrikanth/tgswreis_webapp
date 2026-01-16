@@ -33,7 +33,14 @@ const [notEnteredCount, setNotEnteredCount] = useState(0)
 const [chronicStudentsCount,setChronicStudentsCount] = useState(0);
 const [healthSupervisorsCount,setHealthSupervisorsCount] = useState(0);
 const [recoveredCount,setRecoveredCount] = useState(0);
+const [noSickCount,setNoSickCount] = useState(0);
 const navigate = useNavigate();
+const [sickStats,SetSickStats] = useState({
+  general: 0,
+  fever: 0,
+  referral: 0,
+  admitted: 0
+})
 
 // const [fromDate,setFromDate] = useState('');
 // const [toDate,setToDate] = useState('');
@@ -52,10 +59,16 @@ const fetchSickStats = async () => {
 
         _fetch('sickstats',payload,false,token).then(res => {
             if(res.status === 'success'){
-                setGeneralCases(res.data[0].General);
-                setFeverCases(res.data[0].Fever);
-                setReferralCases(res.data[0].ReferralCases);
-                setAdmittedCases(res.data[0].AdmittedCases);
+                // setGeneralCases(res.data[0].General);
+                // setFeverCases(res.data[0].Fever);
+                // setReferralCases(res.data[0].ReferralCases);
+                // setAdmittedCases(res.data[0].AdmittedCases);
+                SetSickStats({
+                  general: res.data[0].General,
+                  fever: res.data[0].Fever,
+                  referral: res.data[0].ReferralCases,
+                  admitted: res.data[0].AdmittedCases
+                })
             } else {
                 console.error('Error fetching sick stats')
             }
@@ -492,10 +505,11 @@ const fetchNotEnteredCount = async () => {
       payload.SickDate = today;
     }
 
-    const res = await _fetch('notenteredsick', payload, false, token)
+    const res = await _fetch('sickdailystatuscounts', payload, false, token)
 
     if (res.status === 'success') {
-      setNotEnteredCount(res.data.length || 0)
+      setNotEnteredCount(res.data.notEntered || 0);
+      setNoSickCount(res.data.noSickConfirmed || 0);
     }
   } catch (err) {
     console.error('Error fetching not entered schools', err)
@@ -532,18 +546,33 @@ const fetchRecoveredCount = async () => {
 
 
 useEffect(() => {
-    
-    fetchSickStats();
-    fetchTopSchoolsFever();
+
+  const loadDashboard = async () => {
+    await Promise.all([
+     fetchSickStats(),
+     fetchUtmostEmergency(),
+     fetchNotEnteredCount()
+    ]);
+
+
+   requestIdleCallback(() => {
+ fetchTopSchoolsFever();
     fetchTopSchoolsGeneral();
     fetchDailyTrends();
-
-  fetchUtmostEmergency()
-  fetchNotEnteredCount()
-  fetchChronicStudents()
+     fetchChronicStudents()
   fetchHealthSupervisorsList()
   fetchRecoveredCount()
-},[])
+   })
+
+  }
+    
+    
+   
+loadDashboard();
+  
+  
+ 
+},[]);
 
 
 
@@ -604,7 +633,7 @@ useEffect(() => {
   <div className="col-md-3">
     <div
       className={`white-box shadow-sm text-center 
-        ${healthSupervisorsCount > 0 ? 'bg-success text-white blink' : ''}`}
+        ${healthSupervisorsCount > 0 ? 'bg-secondary text-white blink' : ''}`}
       style={{ cursor: healthSupervisorsCount > 0 ? 'pointer' : 'default' }}
       onClick={() => {
         if (healthSupervisorsCount > 0) {
@@ -629,6 +658,19 @@ useEffect(() => {
     >
       <h3 className="fw-bold">{notEnteredCount}</h3>
       <h6 className="fw-bold">Schools Not Entered</h6>
+      <small>Today</small>
+    </div>
+  </div>
+   <div className="col-md-3">
+    <div
+      className="white-box shadow-sm text-center bg-success text-white"
+      style={{ cursor: 'pointer' }}
+      onClick={() => {
+        navigate('/sick/nosickstudents') // optional list page
+      }}
+    >
+      <h3 className="fw-bold">{noSickCount}</h3>
+      <h6 className="fw-bold">No Sick Students Schools</h6>
       <small>Today</small>
     </div>
   </div>
@@ -657,7 +699,7 @@ useEffect(() => {
           <a href="">
           <div className="white-box d-flex justify-content-between shadow-sm">
             <div>
-              <h3 className="fw-bold maroon">{generalCases ?? 0}</h3>
+              <h3 className="fw-bold maroon">{sickStats.general ?? 0}</h3>
               <h6 className="fw-bold">General Sick Cases</h6>
             </div>
             <div className="text-end">
@@ -673,7 +715,7 @@ useEffect(() => {
           >
             <div>
              
-              <h3 className="fw-bold" style={{color:'#FFA500'}}>{feverCases ?? 0}</h3>
+              <h3 className="fw-bold" style={{color:'#FFA500'}}>{sickStats.fever ?? 0}</h3>
                <h6 className="fw-bold">Fever Cases</h6>
             </div>
             <div className="text-end">
@@ -691,7 +733,7 @@ useEffect(() => {
               navigate('/sick/referred')
             }}>
             <div>
-              <h3 className="fw-bold text-success">{referralCases ?? 0}</h3>
+              <h3 className="fw-bold text-success">{sickStats.referral ?? 0}</h3>
                 <h6 className="fw-bold">Referral Cases</h6>
             </div>
             <div className="text-end">
@@ -707,7 +749,7 @@ useEffect(() => {
         navigate('/sick/admitted') 
       }}>
             <div>
-              <h3 className="fw-bold text-danger">{admittedCases ?? 0}</h3>
+              <h3 className="fw-bold text-danger">{sickStats.admitted ?? 0}</h3>
               <h6 className="fw-bold">Admitted Cases</h6>
             </div>
             <div className="text-end">

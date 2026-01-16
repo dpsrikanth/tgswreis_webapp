@@ -107,6 +107,7 @@ const StudentSickList = ({
               <th>Health Issue Description</th>
               <th>Action Taken</th>
               <th>Any Medical Emergencies</th>
+              <th>Is Student In Wellness Center</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -141,6 +142,7 @@ const StudentSickList = ({
                   <td>{item.HealthIssueDescription}</td>
                   <td>{item.HealthActionTaken}</td>
                   <td>{item.IsMedicalEmergencies}</td>
+                  <td>{item.StudentInWellnessCenter}</td>
                  
                   <td>
                     <button

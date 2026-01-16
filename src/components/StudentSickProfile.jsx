@@ -132,6 +132,7 @@ const StudentSickProfile = ({ UserId, onBack }) => {
                 <th>Clinical Details</th>
                 {/* <th>Action Taken</th> */}
                 <th>Emergency Level</th>
+                <th>Is Student In Wellness Center</th>
               </tr>
             </thead>
             <tbody>
@@ -170,6 +171,7 @@ const StudentSickProfile = ({ UserId, onBack }) => {
                     <td>{item.ClinicalDetails || '-'}</td>
                     {/* <td>{item.ClinicalActionTaken || '-'}</td> */}
                     <td>{item.EmergencyLevel || '-'}</td>
+                    <tdd>{item.StudentInWellnessCenter}</tdd>
                   </tr>
                 ))
               )}
@@ -197,6 +199,7 @@ const StudentSickProfile = ({ UserId, onBack }) => {
         <p><b>Hospital:</b> {clinicalHistory.HospitalAdmittedName}</p>
         <p><b>Doctor:</b> {clinicalHistory.HospitalAdmittedDoctorName}</p>
         <p><b>Diagnosis:</b> {clinicalHistory.HospitalAdmittedDiagnosis}</p>
+        <p><b>General Remarks:</b> {clinicalHistory.AdmittedHospitalRemarks}</p>
         <p><b>Discharge Date:</b> {clinicalHistory.DischargeDate}</p>
         <p><b>Summary:</b> {clinicalHistory.DischargSummary}</p>
       </>

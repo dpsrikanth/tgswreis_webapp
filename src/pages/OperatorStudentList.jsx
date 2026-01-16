@@ -106,6 +106,7 @@ const OperatorStudentList = ({
               <th>Health Issue Description</th>
               <th>Health Action Taken</th>
               <th>Any Medical Emergencies</th>
+              <th>Is Student in Wellness Center</th>
             </tr>
           </thead>
           <tbody>
@@ -132,6 +133,7 @@ const OperatorStudentList = ({
                   <td>{s.HealthIssueDescription}</td>
                   <td>{s.HealthActionTaken}</td>
                   <td>{s.IsMedicalEmergencies}</td>
+                  <td>{s.StudentInWellnessCenter}</td>
               </tr>
             ))}
 
