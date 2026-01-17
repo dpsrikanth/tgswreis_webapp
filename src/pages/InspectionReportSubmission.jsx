@@ -37,6 +37,9 @@ const InspectionReportSubmission = () => {
     const [loadingGeo,setLoadingGeo] = useState(true);
     const hasRestoredRef = useRef(false);
     const navigate = useNavigate();
+    const [academicReportFile, setAcademicReportFile] = useState(null);
+    const [sections,setSections] = useState({});
+
 
     const validateFiles = () => {
         // if(report && report.size > 3 * 1024 * 1024){
@@ -53,6 +56,8 @@ const InspectionReportSubmission = () => {
         return true;
     }
 
+
+
     const uploadPhotos = async () => {
         if(!photos.length){
             toast.error('Please select atleast one photo');
@@ -64,8 +69,8 @@ const InspectionReportSubmission = () => {
         const formData = new FormData();
     
         formData.append('TourDiaryId',TourDiaryId);
-        photos.forEach((file) => {
-      formData.append("photos", file);
+        photos.forEach((p) => {
+      formData.append("photos", p.file);
     });
     
         try {
@@ -80,6 +85,32 @@ const InspectionReportSubmission = () => {
         } catch(error){
             console.error('Error fetching Photos',error);
         }
+    }
+
+
+    const uploadAcademicReport = async () => {
+       const fd = new FormData();
+  fd.append('TourDiaryId', TourDiaryId);
+  fd.append('report', academicReportFile);
+
+  try{
+    const res = await _fetch(
+    'uploadtourreport',
+    fd,
+    true,
+    token
+  );
+
+  if(res.status !== 'success'){
+    throw new Error(res.message);
+  }
+
+  return res.file;
+
+  } catch (error){
+    console.error('Error uploading academic report')
+  }
+ 
     }
 
     const fetchTourInfo = async () => {
@@ -105,242 +136,325 @@ const InspectionReportSubmission = () => {
         }
     }
 
-      const sections = {
-    academics: {
-      title: 'Academics',
-      questions: [
-        { id: '1', label:'1', text: 'Is a question paper analysis conducted for Unit Tests, Quarterly, Half-Yearly, and Summative Assessments I & II?' },
-        { id: '2', label: '2', text: 'Is the Principal maintaining a list of specific areas or difficult concepts in each subject?' },
-        { id: '3', label: '3', text: 'Are academic strategy meetings conducted, and is their impact on teachers reviewed? (Number of meetings conducted may be mentioned in the remarks.)' },
-        { id: '4', label: '4', text: 'Are academic review meetings conducted by the Principal? (Number of meetings conducted may be mentioned in the remarks.)' },
-        { id: '5', label: '5', text: 'Are there any outstanding achievements in scholastic activities? (Details may be mentioned in the remarks.)' },
-        { id: '6', label: '6', text: 'Are there any outstanding achievements in co-scholastic activities? (Details may be mentioned in the remarks.)'  },
-        { id: '7', label: '7', text: 'Implementation of student calendar of events. Difficulty, if any?' },
-        { id: '8', label: '8', text: 'Are innovative activities being implemented in the school? (Details may be mentioned in the remarks.)' }
-      ]
-    },
-    administration: {
-      title: 'Administration',
-      questions: [
-        { id: '9',label: '9', text: 'What is the number of students admitted? (Number may be mentioned in the remarks.)' },
-        { id: '10',label: '10', text: 'What is the number of students present? (Number may be mentioned in the remarks.)' },
-        { id: '11',label: '11', text: 'What is the number of students absent? (Number may be mentioned in the remarks.)' },
-        { id: '12',label: '12', text: 'What is the total strength of staff? (Number may be mentioned in the remarks.)' },
-        { id: '13',label: '13', text: 'What is the total number of staff present? (Number may be mentioned in the remarks.)' },
-        { id: '14',label: '14', text: 'What is the total number of staff who left without leave? (Number may be mentioned in the remarks.)' },
-        { id: '15',label: '15', text: 'Is the Principal regular to the school and attending the prayer?' },
-        { id: '16',label: '16', text: 'Is the movement register for staff and the Principal maintained?' },
-        { id: '17',label: '17', text: 'Is the Principal attending classroom observations?' },
-        { id: '18',label: '18', text: 'Are points noted during interaction with students to assess the teaching ability and communication skills of the concerned teachers?' },
-        { id: '19',label: '19', text: 'Is a class-wise plan of action prepared for the improvement of future learners and higher achievers?' },
-        { id: '20',label: '20', text: 'Is the Principal regularly checking the correction work of teachers and the teaching diary of the staff?' },
-        { id: '21',label: '21', text: 'Are suggestions and instructions given by the Principal to individual teachers or lecturers based on classroom observation?' }
-      ]
-    },
-    mess: {
-  title: 'Mess',
-  questions: [
-    {
-      id: '22',
-      label: '22',
-      text: 'Is the weekly menu followed and is the quality of food served satisfactory?'
-    },
-    {
-      id: '23',
-      label: '23(a)',
-      text: 'Is the Mess Committee actively functioning?'
-    },
-    {
-      id: '23_1',
-      label: '23(b)',
-      text: 'If so, is the Mess Committee aware of the weekly menu?'
-    },
-    {
-      id: '23_2',
-      label: '23(c)',
-      text: 'What is the number of Mess Committee meetings conducted during this month?'
-    },
-    {
-      id: '24',
-      label: '24',
-      text: 'Are food preparation, dishwashing, and handwashing areas maintained properly?'
-    },
-    {
-      id: '25',
-      label: '25',
-      text: 'Is the storage of fruits, vegetables, provisions, and rice maintained properly?'
-    },
+//       const sections = {
+//     academics: {
+//       title: 'Academics',
+//       questions: [
+//         { id: '1', label:'1', text: 'Is a question paper analysis conducted for Unit Tests, Quarterly, Half-Yearly, and Summative Assessments I & II?' },
+//         { id: '2', label: '2', text: 'Is the Principal maintaining a list of specific areas or difficult concepts in each subject?' },
+//         { id: '3', label: '3', text: 'Are academic strategy meetings conducted, and is their impact on teachers reviewed? (Number of meetings conducted may be mentioned in the remarks.)' },
+//         { id: '4', label: '4', text: 'Are academic review meetings conducted by the Principal? (Number of meetings conducted may be mentioned in the remarks.)' },
+//         { id: '5', label: '5', text: 'Are there any outstanding achievements in scholastic activities? (Details may be mentioned in the remarks.)' },
+//         { id: '6', label: '6', text: 'Are there any outstanding achievements in co-scholastic activities? (Details may be mentioned in the remarks.)'  },
+//         { id: '7', label: '7', text: 'Implementation of student calendar of events. Difficulty, if any?' },
+//         { id: '8', label: '8', text: 'Are innovative activities being implemented in the school? (Details may be mentioned in the remarks.)' },
+//         {id: '47', label: '9(a)', text: 'Number of Text Books received (2025–26)', type: 'number'},
+//         {id: '47_1', label: '9(b)', text: 'Number of books in good condition', type: 'number'},
+//         {id: '47_2', label: '9(c)', text: 'Number of books in scrap', type: 'number'},
+//       ]
+//     },
+//     academicReport: {
+//   title: 'Academic Books Report',
+//   questions: []
+// },
+//     administration: {
+//       title: 'Administration',
+//       questions: [
+//         { id: '9',label: '10', text: 'What is the number of students admitted? (Number may be mentioned in the remarks.)' },
+//         { id: '10',label: '11', text: 'What is the number of students present? (Number may be mentioned in the remarks.)' },
+//         { id: '11',label: '12', text: 'What is the number of students absent? (Number may be mentioned in the remarks.)' },
+//         { id: '12',label: '13', text: 'What is the total strength of staff? (Number may be mentioned in the remarks.)' },
+//         { id: '13',label: '14', text: 'What is the total number of staff present? (Number may be mentioned in the remarks.)' },
+//         { id: '14',label: '15', text: 'What is the total number of staff who left without leave? (Number may be mentioned in the remarks.)' },
+//         { id: '15',label: '16', text: 'Is the Principal regular to the school and attending the prayer?' },
+//         { id: '16',label: '17', text: 'Is the movement register for staff and the Principal maintained?' },
+//         { id: '17',label: '18', text: 'Is the Principal attending classroom observations?' },
+//         { id: '18',label: '19', text: 'Are points noted during interaction with students to assess the teaching ability and communication skills of the concerned teachers?' },
+//         { id: '19',label: '20', text: 'Is a class-wise plan of action prepared for the improvement of future learners and higher achievers?' },
+//         { id: '20',label: '21', text: 'Is the Principal regularly checking the correction work of teachers and the teaching diary of the staff?' },
+//         { id: '21',label: '22', text: 'Are suggestions and instructions given by the Principal to individual teachers or lecturers based on classroom observation?' }
+//       ]
+//     },
+//     mess: {
+//   title: 'Mess',
+//   questions: [
+//     {
+//       id: '22',
+//       label: '23',
+//       text: 'Is the weekly menu followed and is the quality of food served satisfactory?'
+//     },
+//     {
+//       id: '23',
+//       label: '24(a)',
+//       text: 'Is the Mess Committee actively functioning?'
+//     },
+//     {
+//       id: '23_1',
+//       label: '24(b)',
+//       text: 'If so, is the Mess Committee aware of the weekly menu?'
+//     },
+//     {
+//       id: '23_2',
+//       label: '24(c)',
+//       text: 'What is the number of Mess Committee meetings conducted during this month?',
+//       type: 'number'
+//     },
+//     {
+//       id: '24',
+//       label: '25',
+//       text: 'Are food preparation, dishwashing, and handwashing areas maintained properly?'
+//     },
+//     {
+//       id: '25',
+//       label: '26',
+//       text: 'Is the storage of fruits, vegetables, provisions, and rice maintained properly?'
+//     },
     
-  ]
-},
+//   ]
+// },
 
-   hygiene: {
-  title: 'Hygiene & Maintenance',
-  questions: [
-    {
-      id: '26',
-      label: '26',
-      text: 'Is cleanliness maintained in the school building, dormitory, and dining hall?'
-    },
-    {
-      id: '27',
-      label: '27(a)',
-      text: 'Is an adequate water supply provided through Bhagiratha connection or RO plant?'
-    },
-    {
-      id: '27_1',
-      label: '27(b)',
-      text: 'Is regular testing of water being conducted?'
-    },
-    {
-      id: '27_2',
-      label: '27(c)',
-      text: 'How frequently is the testing of water conducted?'
-    },
-    {
-      id: '28',
-      label: '28',
-      text: 'Are the toilets and bathrooms maintained in good condition?'
-    },
-    {
-      id: '29',
-      label: '29',
-      text: 'Are account-related registers properly maintained?'
-    },
-    {
-      id: '30',
-      label: '30',
-      text: 'Are diet registers properly maintained?'
-    },
-    {
-      id: '31',
-      label: '31',
-      text: 'Are amenities registers properly maintained?'
-    },
-    {
-      id: '32',
-      label: '32',
-      text: 'Is the suggestion box properly maintained?'
-    },
-    {
-      id: '33',
-      label: '33',
-      text: 'Are all textbooks distributed to all class students?'
-    },
-    {
-      id: '34',
-      label: '34',
-      text: 'What are the names of the amenities distributed to the students?'
-    }
-  ]
-},
+//    hygiene: {
+//   title: 'Hygiene & Maintenance',
+//   questions: [
+//     {
+//       id: '26',
+//       label: '27',
+//       text: 'Is cleanliness maintained in the school building, dormitory, and dining hall?'
+//     },
+//     {
+//       id: '27',
+//       label: '28(a)',
+//       text: 'Is an adequate water supply provided through Bhagiratha connection or RO plant?'
+//     },
+//     {
+//       id: '27_1',
+//       label: '28(b)',
+//       text: 'Is regular testing of water being conducted?'
+//     },
+//     {
+//       id: '27_2',
+//       label: '28(c)',
+//       text: 'How frequently is the testing of water conducted?'
+//     },
+//     {
+//       id: '28',
+//       label: '29',
+//       text: 'Are the toilets and bathrooms maintained in good condition?'
+//     },
+//     {
+//       id: '29',
+//       label: '30',
+//       text: 'Are account-related registers properly maintained?'
+//     },
+//     {
+//       id: '30',
+//       label: '31',
+//       text: 'Are diet registers properly maintained?'
+//     },
+//     {
+//       id: '31',
+//       label: '32',
+//       text: 'Are amenities registers properly maintained?'
+//     },
+//     {
+//       id: '32',
+//       label: '33',
+//       text: 'Is the suggestion box properly maintained?'
+//     },
+//     {
+//       id: '33',
+//       label: '34',
+//       text: 'Are all textbooks distributed to all class students?'
+//     },
+//     {
+//       id: '34',
+//       label: '35',
+//       text: 'What are the names of the amenities distributed to the students?'
+//     }
+//   ]
+// },
 
-   communication: {
-  title: 'Communication & Feedback',
-  questions: [
-    {
-      id: '35',
-      label: '35',
-      text: 'Is the Phone Mithra functioning effectively?'
-    },
-    {
-      id: '36',
-      label: '36',
-      text: 'Are parent-teacher meetings being conducted?'
-    },
-    {
-      id: '37',
-      label: '37',
-      text: 'Any feedback from students?'
-    },
-    {
-      id: '38',
-      label: '38',
-      text: 'Any staff grievances?'
-    },
-    {
-      id: '39',
-      label: '39',
-      text: 'Are student councillors functioning effectively?'
-    },
-    {
-      id: '40',
-      label: '40(a)',
-      text: 'Is social media functioning effectively in the district?'
-    },
-    {
-      id: '40_1',
-      label: '40(b)',
-      text: 'Is FRS implemented?'
-    }
+//    communication: {
+//   title: 'Communication & Feedback',
+//   questions: [
+//     {
+//       id: '35',
+//       label: '36',
+//       text: 'Is the Phone Mithra functioning effectively?'
+//     },
+//     {
+//       id: '36',
+//       label: '37',
+//       text: 'Are parent-teacher meetings being conducted?'
+//     },
+//     {
+//       id: '37',
+//       label: '38',
+//       text: 'Any feedback from students?'
+//     },
+//     {
+//       id: '38',
+//       label: '39',
+//       text: 'Any staff grievances?'
+//     },
+//     {
+//       id: '39',
+//       label: '40',
+//       text: 'Are student councillors functioning effectively?'
+//     },
+//     {
+//       id: '40',
+//       label: '41(a)',
+//       text: 'Is social media functioning effectively in the district?'
+//     },
+//     {
+//       id: '40_1',
+//       label: '41(b)',
+//       text: 'Is FRS implemented?'
+//     }
    
-  ]
-},
+//   ]
+// },
 
-   infrastructure: {
-  title: 'Infrastructure',
-  questions: [
-    {
-      id: '42',
-      label: '41',
-      text: 'Is the computer lab functional, and are the available systems, laptops, and tablets in working condition?'
-    },
-    {
-      id: '43',
-      label: '42',
-      text: 'Are CCTV cameras functioning properly?'
-    },
-    {
-      id: '44',
-      label: '43',
-      text: 'Are the incinerators in proper working condition?'
-    }
-  ]
-},
+//    infrastructure: {
+//   title: 'Infrastructure',
+//   questions: [
+//     {
+//       id: '42',
+//       label: '42',
+//       text: 'Is the computer lab functional, and are the available systems, laptops, and tablets in working condition?'
+//     },
+//     {
+//       id: '43',
+//       label: '43',
+//       text: 'Are CCTV cameras functioning properly?'
+//     },
+//     {
+//       id: '44',
+//       label: '44',
+//       text: 'Are the incinerators in proper working condition?'
+//     },
+//     {
+//       id: '48',
+//       label: '45(a)',
+//       text: 'No. of dual desks received',
+//       type: 'number'
+//     },
+//     {
+//       id: '48_1',
+//       label: '45(b)',
+//       text: 'No. of dual desks in good condition',
+//       type: 'number'
+//     },
+//     {
+//       id: '48_2',
+//   label: '45(c)',
+//   text: 'No. of dual desks in scrap',
+//   type: 'number'
+//     },
+//     { id: '49', label: '46(a)', text: 'No. of chairs received', type: 'number' },
+//     { id: '49_1', label: '46(b)', text: 'No. of chairs in good condition', type: 'number' },
+//     { id: '49_2', label: '46(c)', text: 'No. of chairs in scrap', type: 'number' },
 
-    health: {
-  title: 'Health',
-  questions: [
-    {
-      id: '45',
-      label: '44(a)',
-      text: 'Is a wellness room with adequate amenities available?'
-    },
-    {
-      id: '45_1',
-      label: '44(b)',
-      text: 'Is an anonymous room maintained?'
-    },
-    {
-      id: '45_2',
-      label: '44(c)',
-      text: 'Are records properly maintained?'
-    },
-    {
-      id: '46',
-      label: '45',
-      text: 'Is a special diet provided for sick children?'
-    },
+//     { id: '50', label: '47(a)', text: 'No. of tables received', type: 'number' },
+//     { id: '50_1', label: '47(b)', text: 'No. of tables in good condition', type: 'number' },
+//     { id: '50_2', label: '47(c)', text: 'No. of tables in scrap', type: 'number' },
+
+//     { id: '51', label: '48(a)', text: 'No. of computers received for office', type: 'number' },
+//     { id: '51_1', label: '48(b)', text: 'No. of computers in good condition', type: 'number' },
+//     { id: '52_1', label: '48(c)', text: 'No. of computers in scrap', type: 'number' },
+
+//     { id: '53', label: '49(a)', text: 'No. of computers received for lab', type: 'number' },
+//     { id: '53_1', label: '49(b)', text: 'No. of computers in good condition', type: 'number' },
+//     { id: '53_2', label: '49(c)', text: 'No. of computers in scrap', type: 'number' },
+
+//     { id: '54', label: '50(a)', text: 'No. of laptops received for school', type: 'number' },
+//     { id: '54_1', label: '50(b)', text: 'No. of laptops in good condition', type: 'number' },
+//     { id: '54_2', label: '50(c)', text: 'No. of laptops in scrap', type: 'number' },
+
+//     { id: '55', label: '51(a)', text: 'No. of tablets received', type: 'number' },
+//     { id: '55_1', label: '51(b)', text: 'No. of tablets in good condition', type: 'number' },
+//     { id: '55_2', label: '51(c)', text: 'No. of tablets in scrap', type: 'number' }
+//   ]
+// },
+
+//     health: {
+//   title: 'Health',
+//   questions: [
+//     {
+//       id: '45',
+//       label: '52(a)',
+//       text: 'Is a wellness room with adequate amenities available?'
+//     },
+//     {
+//       id: '45_1',
+//       label: '52(b)',
+//       text: 'Is an anonymous room maintained?'
+//     },
+//     {
+//       id: '45_2',
+//       label: '52(c)',
+//       text: 'Are records properly maintained?'
+//     },
+//     {
+//       id: '46',
+//       label: '53',
+//       text: 'Is a special diet provided for sick children?'
+//     },
     
-  ]
-},
+//   ]
+// },
 
-remarks: {
-title: 'Final Remarks',
-questions: [
-   {
-      id: '41',
-      label: '46',
-      text: 'Any final general remarks and suggestions by the visiting officer?'
+// remarks: {
+// title: 'Final Remarks',
+// questions: [
+//    {
+//       id: '41',
+//       label: '54',
+//       text: 'Any final general remarks and suggestions by the visiting officer?'
+//     }
+// ]
+// },
+
+//     photos: {
+//     title: 'Photos',
+//     questions: [] 
+//   }
+//   };
+
+
+  const fetchInspectionQuestions = async () => {
+    try{
+
+      const res = await _fetch('inspectionquestions',null,false,token)
+
+      if(res.status === 'success'){
+        const frontendSections = {
+          academicReport: {
+            title: 'Academic Books Report',
+            questions: []
+          },
+          photos: {
+            title: 'Photos',
+            questions: []
+          }
+        };
+
+        setSections({
+          ...res.data,
+          ...frontendSections
+        });
+      } else {
+        toast.error(res.message);
+      }
+
+    } catch(error){
+      console.error('Error fetching Questions',error)
     }
-]
-},
-
-    photos: {
-    title: 'Photos',
-    questions: [] 
   }
-  };
+
+
+
 
   const handleResponseChange = (questionId,field,value) => {
     setFormData(prev => ({
@@ -500,14 +614,38 @@ const SubmitCaptureInfo =  async () => {
       const getMissingDetails = () => {
   const missing = [];
 
-  Object.entries(sections).forEach(([tabKey, section]) => {
+  // Object.entries(sections).forEach(([tabKey, section]) => {
+  //   section.questions.forEach(q => {
+  //     const r = formData.responses[q.id];
+  //     if (!r?.answer || !r?.remarks || r.remarks.trim() === '') {
+  //       missing.push({
+  //         tab: tabKey,
+  //         question: `${q.label}. ${q.text}`
+  //       });
+  //     }
+  //   });
+  // });
+
+  // return missing;
+
+   Object.entries(sections).forEach(([tabKey, section]) => {
     section.questions.forEach(q => {
       const r = formData.responses[q.id];
-      if (!r?.answer || !r?.remarks || r.remarks.trim() === '') {
-        missing.push({
-          tab: tabKey,
-          question: `${q.label}. ${q.text}`
-        });
+
+      if (q.type === 'number') {
+        if (r?.value === undefined || r?.value === '') {
+          missing.push({
+            tab: tabKey,
+            question: `${q.label}. ${q.text}`
+          });
+        }
+      } else {
+        if (!r?.answer || !r?.remarks || !r?.remarks?.trim() === '') {
+          missing.push({
+            tab: tabKey,
+            question: `${q.label}. ${q.text}`
+          });
+        }
       }
     });
   });
@@ -545,12 +683,16 @@ if (missing.length > 0) {
           alert('Departure time should be greater than arrival time')
         } else if(!arePhotosValid){
           alert('Please upload atleast 1 photo')
-        }
+        } else if (!isAcademicReportValid) {
+  alert('Please upload Academic Books Utilization Report');
+}
     
       return;
       }
 
       const uploadedPhotos = await uploadPhotos();
+
+      const uploadedReport = await uploadAcademicReport();
 
          const CapturedInfo = {
             generalInfo: {
@@ -574,6 +716,7 @@ if (missing.length > 0) {
               remoteReason: reason || null
             },
             photos: uploadedPhotos,
+            academicReport: uploadedReport,
             responses: formData.responses
         };
 
@@ -600,9 +743,26 @@ if (missing.length > 0) {
     }
 }
 
-const totalQuestions = Object.values(sections).reduce((sum,section) => sum + section.questions.length,0);
+const totalQuestions = Object.values(sections || {}).reduce((sum,section) => sum + section.questions.length,0);
 
-const answeredQuestions = Object.values(formData.responses).filter(r => r?.answer && r?.remarks && r.remarks.trim().length > 0).length;
+// const answeredQuestions = Object.values(formData.responses).filter(r => r?.answer && r?.remarks && r.remarks.trim().length > 0).length;
+
+const answeredQuestions = Object.entries(formData.responses).filter(
+  ([qid, r]) => {
+    const question = Object.values(sections)
+      .flatMap(s => s.questions)
+      .find(q => q.id === qid);
+
+    if (!question) return false;
+
+    if (question.type === 'number') {
+      return r?.value !== undefined && r?.value !== '';
+    }
+
+    return r?.answer && r?.remarks?.trim();
+  }
+).length;
+
 
 const isGeneralValid = designation?.trim() && DateOfVisit && institutionName?.trim();
 
@@ -614,9 +774,13 @@ const canProceed = distance !== null && accuracy !== null && distance <= (700 + 
 
 const arePhotosValid = photos.length > 0;
 
-const canSubmit = isGeneralValid && answeredQuestions === totalQuestions && canProceed && isTimeValid && isTimeOrderValid && arePhotosValid;
+const isAcademicReportValid = !!academicReportFile;
+
+
+const canSubmit = isGeneralValid && answeredQuestions === totalQuestions && canProceed && isTimeValid && isTimeOrderValid && arePhotosValid && isAcademicReportValid;
 
 useEffect(() => {
+fetchInspectionQuestions();
 fetchTourInfo();
 },[])
 
@@ -626,6 +790,7 @@ fetchTourInfo();
 const tabOrder = [
   'general',
   'academics',
+  'academicReport',
   'administration',
   'mess',
   'hygiene',
@@ -676,13 +841,24 @@ const getTabStatus = () => {
       return;
     }
 
+    if (tabKey === 'academicReport') {
+  status.academicReport = !!academicReportFile;
+  return;
+}
+
+
     // ✅ QUESTION-BASED TABS
     const section = sections[tabKey];
     if (!section) return;
 
     const allAnswered = section.questions.every(q => {
       const r = formData.responses[q.id];
-      return r?.answer && r?.remarks?.trim();
+      // return r?.answer && r?.remarks?.trim();
+      if (q.type === 'number') {
+  return r?.value !== undefined && r?.value !== '';
+}
+
+return r?.answer && r?.remarks?.trim();
     });
 
     status[tabKey] = allAnswered;
@@ -693,6 +869,14 @@ const getTabStatus = () => {
 
 
 const tabStatus = getTabStatus();
+
+
+useEffect(() => {
+  return () => {
+    photos.forEach(p => URL.revokeObjectURL(p.preview));
+  };
+}, [photos]);
+
 
 
 
@@ -715,7 +899,7 @@ const tabStatus = getTabStatus();
       </button>
     </li>
 
-    {Object.entries(sections).map(([key, section]) => (
+    {/* {Object.entries(sections).map(([key, section]) => (
        
       <li className="nav-item" key={key}>
         <button
@@ -730,7 +914,33 @@ const tabStatus = getTabStatus();
   )}
         </button>
       </li>
-    ))}
+    ))} */}
+
+    {tabOrder
+  .filter(key => sections[key])
+  .map(key => {
+    const section = sections[key];
+
+    return (
+      <li className="nav-item" key={key}>
+        <button
+          className={`nav-link ${
+            activeTab === key ? 'active fw-semibold text-primary' : ''
+          }`}
+          onClick={() => {
+            setActiveTab(key);
+            scrollToTop();
+          }}
+        >
+          {section.title}
+          {tabStatus[key] && (
+            <span className="ms-2 text-success">✔</span>
+          )}
+        </button>
+      </li>
+    );
+  })}
+
   </ul>
 </div>
 
@@ -819,6 +1029,46 @@ const tabStatus = getTabStatus();
   </div>
 )}
 
+{activeTab === 'academicReport' && (
+  <div className="card">
+    <div className="card-body">
+
+      <h4 className="fw-bold mb-3">
+        Academic Books Utilization Report
+      </h4>
+
+      <p className=" small">
+        Upload a class/ subject-wise pdf report signed by the Principal in the following format:
+      </p>
+
+      <ul className="small">
+        <li>S. No.</li>
+        <li>Class</li>
+        <li>Subject</li>
+        <li>No. of Books Received</li>
+        <li>No. of Books Used</li>
+        <li>No. of Books in Scrap</li>
+      </ul>
+
+      <p>S.No | Class | Subject | No. of Books Received | No. of Books Used | No. of Books in Scrap</p>
+
+      <input
+        type="file"
+        className="form-control"
+        accept=".pdf,image/*"
+        onChange={(e) => setAcademicReportFile(e.target.files[0])}
+      />
+
+      {academicReportFile && (
+        <div className="text-success mt-2">
+          Selected: {academicReportFile.name}
+        </div>
+      )}
+    </div>
+  </div>
+)}
+
+
 {Object.entries(sections).map(([key, section]) =>
   activeTab === key && (
     <div key={key}>
@@ -826,9 +1076,16 @@ const tabStatus = getTabStatus();
 
       {section.questions.map((question) => {
         
-        const isIncomplete =
-  !formData.responses[question.id]?.answer ||
-  !formData.responses[question.id]?.remarks?.trim();
+  //       const isIncomplete =
+  // !formData.responses[question.id]?.answer ||
+  // !formData.responses[question.id]?.remarks?.trim();
+
+  const response = formData.responses[question.id];
+
+const isIncomplete =
+  question.type === 'number'
+    ? response?.value === undefined || response?.value === ''
+    : !response?.answer || !response?.remarks?.trim();
 
       return (
 
@@ -839,7 +1096,7 @@ const tabStatus = getTabStatus();
               {question.label}. {question.text}
             </p>
 
-            <div className="d-flex gap-4 mb-2">
+            {/* <div className="d-flex gap-4 mb-2">
               <div className="form-check">
                 <input
                   className="form-check-input"
@@ -867,7 +1124,59 @@ const tabStatus = getTabStatus();
                 />
                 <label className="form-check-label">No</label>
               </div>
-            </div>
+            </div> */}
+
+
+            {question.type !== 'number' && (
+  <div className="d-flex gap-4 mb-2">
+    <div className="form-check">
+      <input
+        type="radio"
+        name={`q${question.id}`}
+        value="yes"
+        className='form-check-input'
+        checked={formData.responses[question.id]?.answer === 'yes'}
+        onChange={(e) =>
+          handleResponseChange(question.id, 'answer', e.target.value)
+        }
+      />
+      <label className="form-check-label">Yes</label>
+    </div>
+
+    <div className="form-check">
+      <input
+        type="radio"
+        name={`q${question.id}`}
+        value="no"
+        className='form-check-input'
+        checked={formData.responses[question.id]?.answer === 'no'}
+        onChange={(e) =>
+          handleResponseChange(question.id, 'answer', e.target.value)
+        }
+      />
+      <label  className="form-check-label" >No</label>
+    </div>
+  </div>
+)}
+
+
+
+{question.type === 'number' && (
+  <input
+    type="number"
+    className="form-control mb-2"
+    placeholder="Enter count"
+    value={formData.responses[question.id]?.value || ''}
+    onChange={(e) =>
+      handleResponseChange(
+        question.id,
+        'value',
+        e.target.value
+      )
+    }
+  />
+)}
+
 
             {errors[`q${question.id}`] && (
               <div className="text-danger small mb-2">
@@ -875,6 +1184,8 @@ const tabStatus = getTabStatus();
               </div>
             )}
 
+{question.type !== 'number' && (
+           <>
             <label className="form-label">Remarks</label>
             <textarea
               className="form-control"
@@ -885,6 +1196,10 @@ const tabStatus = getTabStatus();
               }
               placeholder="Enter remarks..."
             />
+           </>
+)}
+
+
           </div>
         </div>
 )})}
@@ -925,14 +1240,47 @@ const tabStatus = getTabStatus();
             e.target.value = '';
             return;
           }
-          setPhotos(selected);
+           const mapped = selected.map(file => ({
+      file,
+      preview: URL.createObjectURL(file)
+    }));
+          setPhotos(mapped);
         }}
       />
 
       {photos.length > 0 && (
-        <div className="text-success small mt-2">
-          Selected: {photos.length} photo(s)
-        </div>
+        // <div className="text-success small mt-2">
+        //   Selected: {photos.length} photo(s)
+        // </div>
+
+         <div className="row mt-3 g-2">
+    {photos.map((photo, index) => (
+      <div key={index} className="col-4 position-relative">
+        <img
+          src={photo.preview}
+          alt="preview"
+          className="img-fluid rounded border"
+          style={{
+            height: '200px',
+            objectFit: 'cover',
+            width: '100%'
+          }}
+        />
+
+        <button
+          type="button"
+          className="btn btn-sm btn-danger position-absolute top-0 end-0"
+          style={{ borderRadius: '50%' }}
+          onClick={() => {
+            URL.revokeObjectURL(photo.preview);
+            setPhotos(prev => prev.filter((_, i) => i !== index));
+          }}
+        >
+          ×
+        </button>
+      </div>
+    ))}
+  </div>
       )}
 
        <button

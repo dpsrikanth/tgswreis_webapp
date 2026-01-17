@@ -301,7 +301,7 @@ const openPhotoGallery = (tourDiaryId, photoList) => {
             ) : <span className="text-muted small">No Report</span>} */}
 
            <button className='btn btn-primary btn-sm' onClick={() => DownloadInspectionPdfReport(item.TourDiaryId)}>Download Inspection PDF</button>
-
+          
 
              {/* Photos */}
             {/* {item.PhotoAttachment && (
@@ -315,6 +315,22 @@ const openPhotoGallery = (tourDiaryId, photoList) => {
                 </small>
               </div>
             )} */}
+
+            {item.ReportPDF ? (
+    <button
+      className="btn btn-outline-primary btn-sm"
+      onClick={() => {
+        const fileUrl = `${apiUrl}/uploads/tourdiary/${item.TourDiaryId}/reports/${item.ReportPDF}`;
+        window.open(fileUrl, '_blank');
+      }}
+    >
+      📘 Academic Books Report
+    </button>
+  ) : (
+    <span className="badge text-bg-secondary">
+      Academic Report Not Uploaded
+    </span>
+  )}
            
   {item.PhotoAttachment ? (() => {
     const photosArray = JSON.parse(item.PhotoAttachment);
