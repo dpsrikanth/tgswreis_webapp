@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { _fetch } from '../libs/utils'
+import { exportToExcel } from '../libs/exportToExcel'
+
 
 const UtmostEmergencyList = () => {
   const token = useSelector((state) => state.userappdetails.TOKEN)
@@ -46,6 +48,51 @@ const UtmostEmergencyList = () => {
     fetchUtmostEmergency()
   }, [])
 
+
+  const excelColumns = [
+  { header: 'Student Name', key: 'StudentName', width: 25 },
+  { header: 'Gender', key: 'GenderName', width: 12 },
+  { header: 'School', key: 'SchoolName', width: 35 },
+  { header: 'School Code', key: 'SchoolCode', width: 15 },
+  { header: 'Zone', key: 'ZoneName', width: 18 },
+  { header: 'District', key: 'DistrictName', width: 18 },
+  { header: 'Health Date', key: 'HealthDate', width: 18 },
+  { header: 'Temperature', key: 'ClinicalTemperature', width: 15 },
+  { header: 'Clinical Details', key: 'ClinicalDetails', width: 35 },
+  { header: 'Action Taken', key: 'ClinicalActionTaken', width: 35 }
+]
+
+const excelData = students.map(item => ({
+  ...item,
+  StudentName: `${item.FName} ${item.LName || ''}`.trim(),
+  HealthDate: item.HealthIssueDate
+    ? new Date(item.HealthIssueDate).toLocaleDateString('en-IN')
+    : '-',
+  ClinicalTemperature: item.ClinicalTemperature ?? '-',
+  ClinicalDetails: item.ClinicalDetails ?? '-',
+  ClinicalActionTaken: item.ClinicalActionTaken ?? '-'
+}))
+
+const contextRows = []
+
+if (DistrictId && DistrictId !== 0 && students.length > 0) {
+  contextRows.push(`District : ${students[0].DistrictName}`)
+} else if (ZoneId && ZoneId !== 0 && students.length > 0) {
+  contextRows.push(`Zone : ${students[0].ZoneName}`)
+}
+
+const handleExport = () => {
+  exportToExcel({
+    data: excelData,
+    columns: excelColumns,
+    sheetName: 'Utmost Emergency',
+    fileName: 'Utmost_Emergency_Students',
+    title: 'Utmost Emergency Students',
+    context: contextRows
+  })
+}
+
+
   return (
     <>
       
@@ -58,6 +105,13 @@ const UtmostEmergencyList = () => {
           </h5>
         </div>
         <div className="col-sm-6 text-end">
+          <button
+    className="btn btn-success btn-sm me-2"
+    onClick={handleExport}
+    disabled={loading || students.length === 0}
+  >
+    Export Excel
+  </button>
           <button
             className="btn btn-secondary btn-sm"
             onClick={() => navigate(-1)}

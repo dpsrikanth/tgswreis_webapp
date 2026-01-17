@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { _fetch } from '../libs/utils'
 import { useNavigate } from 'react-router-dom'
+import { exportToExcel } from '../libs/exportToExcel'
 
 const StudentsReferredList = () => {
     const token = useSelector((state) => state.userappdetails.TOKEN)
@@ -49,6 +50,46 @@ const StudentsReferredList = () => {
            fetchStudents();
           },[])
 
+
+          const excelColumns = [
+  { header: 'Student Name', key: 'FName', width: 20 },
+  { header: 'School Code', key: 'SchoolCode', width: 15 },
+  { header: 'School Name', key: 'SchoolName', width: 30 },
+  { header: 'Zone', key: 'ZoneName', width: 20 },
+  { header: 'District', key: 'DistrictName', width: 20 },
+  { header: 'Referred Hospital Name', key: 'ReferredHospitalName', width: 30 },
+  { header: 'Referral Date', key: 'ReferralHospitalDate', width: 18 },
+  { header: 'Reason for Referral', key: 'RefrralHospitalReason', width: 30 },
+  { header: 'Follow Up Status', key: 'ReferredHospitalStatus', width: 18 },
+  { header: 'HS Name', key: 'HealthSupervisorName', width: 25 },
+  { header: 'HS Contact', key: 'HealthSupervisorMobile', width: 18 },
+  { header: 'Rejoined School Date', key: 'SchoolRejoinDate', width: 18 }
+]
+
+const contextRows = []
+
+// if (role === 'DCO' && districtName) {
+//   contextRows.push(`District : ${districtName}`)
+// }
+
+// if (role === 'ZCO' && zoneName) {
+//   contextRows.push(`Zone : ${zoneName}`)
+// }
+
+
+const handleExport = () => {
+  exportToExcel({
+  data: students,
+  columns: excelColumns,
+  sheetName: 'Referred Students',
+  fileName: 'Referred_Students',
+  title: 'Referred Students Report',
+  context: contextRows
+})
+
+}
+
+
   return (
     <>
      <div className='white-box shadow-sm'>
@@ -60,6 +101,14 @@ const StudentsReferredList = () => {
           </h5>
         </div>
         <div className="col-sm-6 text-end">
+          <button
+  className="btn btn-success btn-sm me-2"
+  onClick={handleExport}
+  disabled={loading || students.length === 0}
+>
+  Export Excel
+</button>
+
           <button className="btn btn-secondary btn-sm" onClick={() => navigate(-1)}>
             Back
           </button>

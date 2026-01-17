@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { _fetch } from '../libs/utils'
 import { useNavigate } from 'react-router-dom'
+import { exportToExcel } from '../libs/exportToExcel'
+
 
 const StudentsRecoveredList = ({defaultDate}) => {
     const token = useSelector((state) => state.userappdetails.TOKEN)
@@ -54,6 +56,41 @@ const StudentsRecoveredList = ({defaultDate}) => {
           fetchStudents()
         }
       }, [entryDate])
+
+
+      const excelColumns = [
+  { header: 'Student Name', key: 'FName', width: 22 },
+  { header: 'School Code', key: 'SchoolCode', width: 15 },
+  { header: 'School Name', key: 'SchoolName', width: 30 },
+  { header: 'Zone', key: 'ZoneName', width: 18 },
+  { header: 'District', key: 'DistrictName', width: 18 }
+]
+
+
+const contextRows = []
+
+if (DistrictId && DistrictId !== 0 && students.length > 0) {
+  contextRows.push(`District : ${students[0].DistrictName}`)
+} else if (ZoneId && ZoneId !== 0 && students.length > 0) {
+  contextRows.push(`Zone : ${students[0].ZoneName}`)
+}
+
+if (entryDate) {
+  contextRows.push(`Recovered Date : ${entryDate}`)
+}
+
+
+const handleExport = () => {
+  exportToExcel({
+    data: students,
+    columns: excelColumns,
+    sheetName: 'Recovered Students',
+    fileName: 'Recovered_Students',
+    title: 'Recovered Students Report',
+    context: contextRows
+  })
+}
+
     
   return (
     <>
@@ -66,6 +103,13 @@ const StudentsRecoveredList = ({defaultDate}) => {
           </h5>
         </div>
         <div className="col-sm-6 text-end">
+            <button
+    className="btn btn-success btn-sm me-2"
+    onClick={handleExport}
+    disabled={loading || students.length === 0}
+  >
+    Export Excel
+  </button>
           <button className="btn btn-secondary btn-sm" onClick={() => navigate(-1)}>
             Back
           </button>

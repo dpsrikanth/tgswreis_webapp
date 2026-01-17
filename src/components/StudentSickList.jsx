@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { _fetch } from '../libs/utils'
+import { exportToExcel } from '../libs/exportToExcel'
+
 
 const StudentSickList = ({
   SchoolId,
@@ -76,6 +78,53 @@ const StudentSickList = ({
   }
 }
 
+const excelColumns = [
+  { header: 'Student Name', key: 'StudentName', width: 25 },
+  { header: 'Gender', key: 'GenderName', width: 12 },
+  { header: 'Health Issue Date', key: 'HealthIssueDate', width: 18 },
+  { header: 'Sick From Date', key: 'SickFromDate', width: 18 },
+  { header: 'Health Issue Title', key: 'HealthIssueTitle', width: 25 },
+  { header: 'Health Issue Description', key: 'HealthIssueDescription', width: 40 },
+  { header: 'Action Taken', key: 'HealthActionTaken', width: 30 },
+  { header: 'Any Medical Emergency', key: 'IsMedicalEmergencies', width: 22 },
+  { header: 'Student in Wellness Center', key: 'StudentInWellnessCenter', width: 28 }
+]
+
+
+const excelData = students.map(item => ({
+  ...item,
+  StudentName: `${item.FName} ${item.LName || ''}`.trim(),
+
+  HealthIssueDate: item.HealthIssueDate
+    ? new Date(item.HealthIssueDate).toLocaleDateString('en-IN')
+    : '-',
+
+  SickFromDate: item.SickFromDate
+    ? new Date(item.SickFromDate).toLocaleDateString('en-IN')
+    : '-',
+
+  
+}))
+
+const categoryLabel = getCategoryLabel()
+const contextRows = []
+
+if (categoryLabel) {
+  contextRows.push(`Category : ${categoryLabel}`)
+}
+
+const handleExport = () => {
+  exportToExcel({
+    data: excelData,
+    columns: excelColumns,
+    sheetName: 'Student List',
+    fileName: 'Student_Sick_List',
+    title: `${categoryLabel} – Student List`,
+    context: contextRows
+  })
+}
+
+
 
   return (
     <>
@@ -87,10 +136,17 @@ const StudentSickList = ({
         </div>
         <div className="col-sm-6 text-end">
           <button
+      className="btn btn-success btn-sm me-2"
+      onClick={handleExport}
+      disabled={students.length === 0}
+    >
+      Export Excel
+    </button>
+          <button
             className="btn btn-secondary btn-sm"
             onClick={onBack}
           >
-            Back to Schools
+           ← Back to Schools
           </button>
         </div>
       </div>

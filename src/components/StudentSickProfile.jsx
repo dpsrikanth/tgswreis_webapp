@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { _fetch } from '../libs/utils'
+import { exportStudentProfileExcel } from '../libs/exportStudentProfileExcel'
+const apiUrl = window.gc.cdn;
+
 
 const StudentSickProfile = ({ UserId, onBack }) => {
   const token = useSelector((state) => state.userappdetails.TOKEN)
@@ -49,11 +52,46 @@ const StudentSickProfile = ({ UserId, onBack }) => {
     return <div className="text-center mt-3">No profile found</div>
   }
 
+
+  const DownloadStudentHealthCard = async (UserId) => {
+    try {
+      const response = await fetch(
+        `${apiUrl}/sick/student-health-pdf?userId=${UserId}`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `token=${token}`
+          }
+        }
+      );
+  
+      if (!response.ok) {
+        throw new Error('Failed to download PDF');
+      }
+  
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+  
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `StudentHealthCard_${UserId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+  
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+  
+    } catch (error) {
+      console.error('PDF download error:', error);
+      toast.error('Unable to download Student Health Card');
+    }
+  };
+
   return (
     <>
       {/* Header */}
       <div className="row align-items-center mb-3">
-        <div className="col-sm-8">
+        <div className="col-sm-7">
           <h5 className="fw-bold" style={{ color: '#cc1178' }}>
             Student Health Profile
           </h5>
@@ -64,12 +102,30 @@ const StudentSickProfile = ({ UserId, onBack }) => {
             {profile.SchoolName} | {profile.ZoneName}, {profile.DistrictName}
           </small>
         </div>
-        <div className="col-sm-4 text-end">
+        <div className="col-sm-5 text-end">
+          <button
+  className="btn btn-success btn-sm me-2"
+  onClick={() =>
+    exportStudentProfileExcel({
+      profile,
+      clinicalHistory,
+      chronicConditions
+    })
+  }
+>
+  Export Profile
+</button>
+<button
+  className="btn btn-danger btn-sm me-2"
+  onClick={() => DownloadStudentHealthCard(UserId)}
+>
+  Download Health Card (PDF)
+</button>
           <button
             className="btn btn-secondary btn-sm"
             onClick={onBack}
           >
-            Back to Student List
+           ← Back to Student List
           </button>
         </div>
       </div>

@@ -142,6 +142,7 @@ const _gc = {
         zonalwisetourreport: {url: 'http://localhost:9001/tour/zonalwisereport', method: 'GET'},
         nosickstudentstoday: {url: 'http://localhost:9001/sick/nosickstudentstoday', method: 'GET'},
         sickdailystatuscounts: {url: 'http://localhost:9001/sick/sickentrycounts', method: 'GET'},
+        studenthealthpdf: {url: 'http://localhost:9001/sick/student-health-pdf', method: 'GET'},
     },
 };
 window.gc = _gc;

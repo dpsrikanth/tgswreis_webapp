@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { _fetch } from '../libs/utils'
+import { exportToExcel } from '../libs/exportToExcel'
+
 
 const SchoolSickReport = ({
  
@@ -58,6 +60,55 @@ const SchoolSickReport = ({
     fetchSchoolData()
   }, [DistrictId])
 
+
+  const excelColumns = [
+  { header: 'School Name', key: 'SchoolName', width: 35 },
+  { header: 'School Code', key: 'SchoolCode', width: 15 },
+  { header: 'General Sick', key: 'GeneralSick', width: 15 },
+  { header: 'Sent Home', key: 'SentHome', width: 15 },
+  { header: 'Referred', key: 'ReferredToHospital', width: 15 },
+  { header: 'Admitted', key: 'AdmittedToHospital', width: 15 },
+  { header: 'Fever', key: 'FeverCases', width: 15 },
+  { header: 'Food Borne', key: 'FoodBorneCases', width: 18 },
+  { header: 'Emergency', key: 'EmergencyCases', width: 15 },
+  { header: 'Utmost Emergency', key: 'AtmostEmergencyCases', width: 20 },
+  { header: 'HS Name', key: 'HealthSupervisorName', width: 25 },
+  { header: 'HS Contact', key: 'HealthSupervisorMobile', width: 20 }
+]
+
+const excelData = schoolData.map(item => ({
+  SchoolName: item.SchoolName,
+  SchoolCode: item.SchoolCode,
+  GeneralSick: item.GeneralSick,
+  SentHome: item.SentHome,
+  ReferredToHospital: item.ReferredToHospital,
+  AdmittedToHospital: item.AdmittedToHospital,
+  FeverCases: item.FeverCases,
+  FoodBorneCases: item.FoodBorneCases,
+  EmergencyCases: item.EmergencyCases,
+  AtmostEmergencyCases: item.AtmostEmergencyCases,
+  HealthSupervisorName: item.HealthSupervisorName,
+  HealthSupervisorMobile: item.HealthSupervisorMobile
+}))
+
+
+const contextRows = [
+  'Report Type : School Wise Sick Report'
+]
+
+
+const handleExport = () => {
+  exportToExcel({
+    data: excelData,
+    columns: excelColumns,
+    sheetName: 'School Summary',
+    fileName: 'School_Wise_Sick_Report',
+    title: 'School Wise Sick Report',
+    context: contextRows
+  })
+}
+
+
   return (
     <>
       <div className="row align-items-center mb-2">
@@ -68,10 +119,17 @@ const SchoolSickReport = ({
         </div>
         <div className="col-sm-6 text-end">
           <button
+      className="btn btn-success btn-sm me-2"
+      onClick={handleExport}
+      disabled={schoolData.length === 0}
+    >
+      Export Excel
+    </button>
+          <button
             className="btn btn-secondary btn-sm"
             onClick={onBack}
           >
-            Back to Districts
+           ← Back to Districts
           </button>
         </div>
       </div>

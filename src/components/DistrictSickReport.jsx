@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { _fetch } from '../libs/utils'
+import { exportToExcel } from '../libs/exportToExcel'
+
 
 const DistrictSickReport = ({
   ZoneId,
@@ -41,6 +43,50 @@ const DistrictSickReport = ({
     fetchDistrictData()
   }, [ZoneId])
 
+  const excelColumns = [
+  { header: 'District Name', key: 'DistrictName', width: 25 },
+  { header: 'General Sick', key: 'GeneralSick', width: 15 },
+  { header: 'Sent Home', key: 'SentHome', width: 15 },
+  { header: 'Referred', key: 'ReferredToHospital', width: 15 },
+  { header: 'Admitted', key: 'AdmittedToHospital', width: 15 },
+  { header: 'Fever', key: 'FeverCases', width: 15 },
+  { header: 'Food Borne', key: 'FoodBorneCases', width: 18 },
+  { header: 'Emergency', key: 'EmergencyCases', width: 15 },
+  { header: 'Utmost Emergency', key: 'AtmostEmergencyCases', width: 20 }
+]
+
+const excelData = districtData.map(item => ({
+  DistrictName: item.DistrictName,
+  GeneralSick: item.GeneralSick,
+  SentHome: item.SentHome,
+  ReferredToHospital: item.ReferredToHospital,
+  AdmittedToHospital: item.AdmittedToHospital,
+  FeverCases: item.FeverCases,
+  FoodBorneCases: item.FoodBorneCases,
+  EmergencyCases: item.EmergencyCases,
+  AtmostEmergencyCases: item.AtmostEmergencyCases
+}))
+
+const contextRows = []
+
+if (ZoneName) {
+  contextRows.push(`Zone : ${ZoneName}`)
+}
+
+contextRows.push('Report Type : District Wise Sick Report')
+
+const handleExport = () => {
+  exportToExcel({
+    data: excelData,
+    columns: excelColumns,
+    sheetName: 'District Summary',
+    fileName: 'District_Wise_Sick_Report',
+    title: `District Wise Sick Report – ${ZoneName}`,
+    context: contextRows
+  })
+}
+
+
   return (
     <>
       <div className="row align-items-center mb-2">
@@ -50,8 +96,15 @@ const DistrictSickReport = ({
           </h5>
         </div>
         <div className="col-sm-6 text-end">
+          <button
+      className="btn btn-success btn-sm me-2"
+      onClick={handleExport}
+      disabled={districtData.length === 0}
+    >
+      Export Excel
+    </button>
           <button className="btn btn-secondary btn-sm" onClick={onBack}>
-            Back to Zones
+           ← Back to Zones
           </button>
         </div>
       </div>

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { _fetch } from '../libs/utils'
 import { useNavigate } from 'react-router-dom'
+import { exportToExcel } from '../libs/exportToExcel'
+
 
 const HealthSupervisorsList = ({ ZoneId, DistrictId }) => {
   const token = useSelector((state) => state.userappdetails.TOKEN)
@@ -41,6 +43,44 @@ const HealthSupervisorsList = ({ ZoneId, DistrictId }) => {
     fetchSupervisors()
   }, [ZoneId, DistrictId])
 
+  const excelColumns = [
+  { header: 'S.No', key: 'SNo', width: 8 },
+  { header: 'Zone', key: 'ZoneName', width: 18 },
+  { header: 'District', key: 'DistrictName', width: 18 },
+  { header: 'School Code', key: 'SchoolCode', width: 15 },
+  { header: 'School Name', key: 'SchoolName', width: 30 },
+  { header: 'Principal Contact', key: 'PrincipalContact', width: 22 },
+  { header: 'Supervisor Name', key: 'HealthSupervisorName', width: 25 },
+  { header: 'HS Mobile Number', key: 'HealthSupervisorMobile', width: 20 }
+]
+
+const excelData = supervisors.map((item, index) => ({
+  ...item,
+  SNo: index + 1
+}))
+
+
+const contextRows = []
+
+if (DistrictId && DistrictId !== 0 && supervisors.length > 0) {
+  contextRows.push(`District : ${supervisors[0].DistrictName}`)
+} else if (ZoneId && ZoneId !== 0 && supervisors.length > 0) {
+  contextRows.push(`Zone : ${supervisors[0].ZoneName}`)
+}
+
+
+const handleExport = () => {
+  exportToExcel({
+    data: excelData,
+    columns: excelColumns,
+    sheetName: 'Health Supervisors',
+    fileName: 'Health_Supervisors_List',
+    title: 'Health Supervisors List',
+    context: contextRows
+  })
+}
+
+
   return (
     <>
     <div className='white-box shadow-sm'>
@@ -51,6 +91,13 @@ const HealthSupervisorsList = ({ ZoneId, DistrictId }) => {
       </h5>
         </div>
         <div className="col-sm-6 text-end">
+           <button
+    className="btn btn-success btn-sm me-2"
+    onClick={handleExport}
+    disabled={loading || supervisors.length === 0}
+  >
+    Export Excel
+  </button>
           <button className="btn btn-secondary btn-sm" onClick={() => navigate('/sickdashboard')}>
             Back
           </button>

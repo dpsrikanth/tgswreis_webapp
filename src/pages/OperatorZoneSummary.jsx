@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { _fetch } from '../libs/utils'
+import { exportToExcel } from '../libs/exportToExcel'
+
 
 const OperatorZoneSummary = ({ onZoneSelect }) => {
   const token = useSelector((state) => state.userappdetails.TOKEN)
@@ -27,13 +29,55 @@ const OperatorZoneSummary = ({ onZoneSelect }) => {
   {label: 'Sent Home', key: 'SentHome', value: 'SENT_HOME'}
 ]
 
+const excelColumns = [
+  { header: 'Zone Name', key: 'ZoneName', width: 25 },
+  { header: 'General', key: 'GeneralSick', width: 15 },
+  { header: 'Fever', key: 'Fever', width: 15 },
+  { header: 'Admitted', key: 'Admitted', width: 15 },
+  { header: 'Referred', key: 'Referred', width: 15 },
+  { header: 'Sent Home', key: 'SentHome', width: 15 }
+]
+
+
+const excelData = zones.map(zone => ({
+  ZoneName: zone.ZoneName,
+  GeneralSick: zone.GeneralSick,
+  Fever: zone.Fever,
+  Admitted: zone.Admitted,
+  Referred: zone.Referred,
+  SentHome: zone.SentHome
+}))
+
+const contextRows = [
+  'Report Type : Zone Wise Summary'
+]
+
+const handleExport = () => {
+  exportToExcel({
+    data: excelData,
+    columns: excelColumns,
+    sheetName: 'Zone Wise Summary',
+    fileName: 'Zone_Wise_Summary',
+    title: 'Zone Wise Summary',
+    context: contextRows
+  })
+}
+
+
 
   return (
     <div className="row g-3 pt-3">
-      <div className="col-sm-12">
+      <div className="col-sm-12 d-flex justify-content-between align-items-center">
           <h5 className="fw-bold" style={{ color: '#cc1178' }}>
             Zone Wise Summary
           </h5>
+           <button
+    className="btn btn-success btn-sm"
+    onClick={handleExport}
+    disabled={zones.length === 0}
+  >
+    Export Excel
+  </button>
         </div>
       {zones.map((zone, idx) => (
         <div key={idx} className="col-md-4">

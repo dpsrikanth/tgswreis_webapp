@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { _fetch } from '../libs/utils'
+import { exportToExcel } from '../libs/exportToExcel'
+
 
 const CATEGORY_BUTTONS = [
   { label: 'All', value: null },
@@ -53,16 +55,77 @@ const OperatorStudentList = ({
     `${s.FName} ${s.LName}`.toLowerCase().includes(search.toLowerCase())
   )
 
+  const excelColumns = [
+  { header: 'Student Name', key: 'StudentName', width: 25 },
+  { header: 'Gender', key: 'GenderName', width: 12 },
+  { header: 'School', key: 'SchoolName', width: 30 },
+  { header: 'Health Issue Title', key: 'HealthIssueTitle', width: 25 },
+  { header: 'Health Issue Date', key: 'HealthIssueDate', width: 18 },
+  { header: 'Sick From Date', key: 'SickFromDate', width: 18 },
+  { header: 'Health Issue Description', key: 'HealthIssueDescription', width: 40 },
+  { header: 'Health Action Taken', key: 'HealthActionTaken', width: 30 },
+  { header: 'Any Medical Emergencies', key: 'IsMedicalEmergencies', width: 22 },
+  { header: 'Student in Wellness Center', key: 'StudentInWellnessCenter', width: 25 }
+]
+
+
+const excelData = filteredStudents.map(s => ({
+  ...s,
+  StudentName: `${s.FName} ${s.LName || ''}`.trim(),
+  HealthIssueDate: s.HealthIssueDate
+    ? new Date(s.HealthIssueDate).toLocaleDateString('en-IN')
+    : '-',
+  SickFromDate: s.SickFromDate
+    ? new Date(s.SickFromDate).toLocaleDateString('en-IN')
+    : '-',
+ 
+}))
+
+const contextRows = []
+
+if (ZoneName) {
+  contextRows.push(`Zone : ${ZoneName}`)
+}
+
+const categoryLabel =
+  CATEGORY_BUTTONS.find(b => b.value === selectedCategory)?.label || 'All'
+
+contextRows.push(`Category : ${categoryLabel}`)
+
+
+const handleExport = () => {
+  exportToExcel({
+    data: excelData,
+    columns: excelColumns,
+    sheetName: 'Students',
+    fileName: 'Sick_Students_List',
+    title: 'Sick – Student List',
+    context: contextRows
+  })
+}
+
+
+
   return (
     <div className="white-box shadow-sm">
 
-      <div className="d-flex justify-content-between mb-2">
+      <div className="d-flex justify-content-between mb-2 align-items-center">
         <h6 className="fw-bold">
           Zone: {ZoneName}
         </h6>
+        <div>
+          <button
+      className="btn btn-success btn-sm me-2"
+      onClick={handleExport}
+      disabled={filteredStudents.length === 0}
+    >
+      Export Excel
+    </button>
         <button className="btn btn-link" onClick={onBack}>
           ← Back
         </button>
+        </div>
+        
       </div>
 
       {/* Category filters */}

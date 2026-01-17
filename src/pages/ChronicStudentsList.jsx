@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { _fetch } from '../libs/utils'
 import { useNavigate } from 'react-router-dom'
+import { exportToExcel } from '../libs/exportToExcel'
+
 
 const ChronicStudentsList = ({ ZoneId, DistrictId }) => {
   const token = useSelector((state) => state.userappdetails.TOKEN)
@@ -41,6 +43,48 @@ const ChronicStudentsList = ({ ZoneId, DistrictId }) => {
     fetchChronicStudents()
   }, [ZoneId, DistrictId])
 
+  const excelColumns = [
+  { header: 'Student Name', key: 'StudentName', width: 25 },
+  { header: 'Gender', key: 'GenderName', width: 12 },
+  { header: 'School', key: 'SchoolName', width: 30 },
+  { header: 'District', key: 'DistrictName', width: 20 },
+  { header: 'Zone', key: 'ZoneName', width: 20 },
+  { header: 'Chronic Condition', key: 'ChronicDisease', width: 30 },
+  { header: 'Treatment Given', key: 'ChronicTreatment', width: 30 },
+  { header: 'HS Name', key: 'HealthSupervisorName', width: 22 },
+  { header: 'HS Contact', key: 'HealthSupervisorMobile', width: 20 },
+  { header: 'Last Updated', key: 'LastUpdated', width: 18 }
+]
+
+const excelData = students.map(item => ({
+  ...item,
+  StudentName: `${item.FName} ${item.LName || ''}`.trim(),
+  ChronicTreatment: item.ChronicTreatment || '-',
+  LastUpdated: item.LastSyncedAt
+    ? new Date(item.LastSyncedAt).toLocaleDateString('en-IN')
+    : '-'
+}))
+
+const contextRows = []
+
+if (DistrictId && DistrictId !== 0 && students.length > 0) {
+  contextRows.push(`District : ${students[0].DistrictName}`)
+} else if (ZoneId && ZoneId !== 0 && students.length > 0) {
+  contextRows.push(`Zone : ${students[0].ZoneName}`)
+}
+
+const handleExport = () => {
+  exportToExcel({
+    data: excelData,
+    columns: excelColumns,
+    sheetName: 'Chronic Students',
+    fileName: 'Chronic_Students_List',
+    title: 'Students with Chronic Conditions',
+    context: contextRows
+  })
+}
+
+
   return (
     <>
     <div className='white-box shadow-sm'>
@@ -51,6 +95,13 @@ const ChronicStudentsList = ({ ZoneId, DistrictId }) => {
       </h5>
         </div>
         <div className='col-sm-6 text-end'>
+            <button
+    className="btn btn-success btn-sm me-2"
+    onClick={handleExport}
+    disabled={loading || students.length === 0}
+  >
+    Export Excel
+  </button>
            <button className="btn btn-secondary btn-sm" onClick={() => navigate('/sickdashboard')}>
             Back
           </button>

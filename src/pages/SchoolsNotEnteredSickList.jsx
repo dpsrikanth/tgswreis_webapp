@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { _fetch } from '../libs/utils'
 import { useNavigate } from 'react-router-dom'
+import { exportToExcel } from '../libs/exportToExcel'
+
 
 const SchoolsNotEnteredSickList = ({ defaultDate}) => {
   const token = useSelector((state) => state.userappdetails.TOKEN)
@@ -55,6 +57,42 @@ const SchoolsNotEnteredSickList = ({ defaultDate}) => {
     }
   }, [entryDate])
 
+  const excelColumns = [
+  { header: 'Zone', key: 'ZoneName', width: 20 },
+  { header: 'District', key: 'DistrictName', width: 20 },
+  { header: 'School Code', key: 'SchoolCode', width: 18 },
+  { header: 'School Name', key: 'SchoolName', width: 35 },
+  { header: 'Principal Contact', key: 'ContactMobile', width: 20 },
+  { header: 'HS Name', key: 'HealthSupervisorName', width: 20 },
+  { header: 'HS Contact', key: 'HealthSupervisorMobile', width: 20 },
+]
+
+
+const contextRows = []
+
+if (DistrictId && DistrictId !== 0 && schools.length > 0) {
+  contextRows.push(`District : ${schools[0].DistrictName}`)
+} else if (ZoneId && ZoneId !== 0 && schools.length > 0) {
+  contextRows.push(`Zone : ${schools[0].ZoneName}`)
+}
+
+if (entryDate) {
+  contextRows.push(`Date : ${entryDate}`)
+}
+
+
+const handleExport = () => {
+  exportToExcel({
+    data: schools,
+    columns: excelColumns,
+    sheetName: 'Not Entered Sick',
+    fileName: 'Schools_Not_Entered_Sick',
+    title: 'Schools Not Entered Sick Data',
+    context: contextRows
+  })
+}
+
+
   return (
     <>
 
@@ -67,6 +105,13 @@ const SchoolsNotEnteredSickList = ({ defaultDate}) => {
           </h5>
         </div>
         <div className="col-sm-6 text-end">
+          <button
+    className="btn btn-success btn-sm me-2"
+    onClick={handleExport}
+    disabled={loading || schools.length === 0}
+  >
+    Export Excel
+  </button>
           <button className="btn btn-secondary btn-sm" onClick={() => navigate(-1)}>
             Back
           </button>
@@ -96,32 +141,41 @@ const SchoolsNotEnteredSickList = ({ defaultDate}) => {
         <table className="table table-bordered">
           <thead className="table-light">
             <tr>
-              <th>School Code</th>
-              <th>School Name</th>
+              <th>S.No</th>
               <th>Zone</th>
               <th>District</th>
+              <th>School Code</th>
+              <th>School Name</th>
+              <th>Principal Contact</th>
+              <th>HS Name</th>
+              <th>HS Contact</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan="4" className="text-center">
+                <td colSpan="8" className="text-center">
                   Loading...
                 </td>
               </tr>
             ) : schools.length === 0 ? (
               <tr>
-                <td colSpan="4" className="text-center">
+                <td colSpan="8" className="text-center">
                   No schools found
                 </td>
               </tr>
             ) : (
-              schools.map((s) => (
+              schools.map((s,index) => (
                 <tr key={s.SchoolID}>
+                  <td>{index+1}</td>
+                    <td>{s.ZoneName}</td>
+                  <td>{s.DistrictName}</td>
                   <td>{s.SchoolCode}</td>
                   <td>{s.SchoolName}</td>
-                  <td>{s.ZoneName}</td>
-                  <td>{s.DistrictName}</td>
+                  <td>{s.ContactMobile}</td>
+                  <td>{s.HealthSupervisorName}</td>
+                  <td>{s.HealthSupervisorMobile}</td>
+                
                 </tr>
               ))
             )}

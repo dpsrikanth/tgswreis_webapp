@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { _fetch } from '../libs/utils'
+import { exportToExcel } from '../libs/exportToExcel'
+
 
 const ZoneSickReport = ({ onZoneClick }) => {
   const token = useSelector((state) => state.userappdetails.TOKEN)
@@ -32,6 +34,46 @@ const ZoneSickReport = ({ onZoneClick }) => {
     fetchZoneWiseData()
   }, [])
 
+  const excelColumns = [
+  { header: 'Zone Name', key: 'ZoneName', width: 25 },
+  { header: 'General Sick', key: 'GeneralSick', width: 15 },
+  { header: 'Sent Home', key: 'SentHome', width: 15 },
+  { header: 'Referred', key: 'ReferredToHospital', width: 15 },
+  { header: 'Admitted', key: 'AdmittedToHospital', width: 15 },
+  { header: 'Fever', key: 'FeverCases', width: 15 },
+  { header: 'Food Borne', key: 'FoodBorneCases', width: 18 },
+  { header: 'Emergency', key: 'EmergencyCases', width: 15 },
+  { header: 'Utmost Emergency', key: 'AtmostEmergencyCases', width: 20 }
+]
+
+const excelData = zonewiseData.map(item => ({
+  ZoneName: item.ZoneName,
+  GeneralSick: item.GeneralSick,
+  SentHome: item.SentHome,
+  ReferredToHospital: item.ReferredToHospital,
+  AdmittedToHospital: item.AdmittedToHospital,
+  FeverCases: item.FeverCases,
+  FoodBorneCases: item.FoodBorneCases,
+  EmergencyCases: item.EmergencyCases,
+  AtmostEmergencyCases: item.AtmostEmergencyCases
+}))
+
+const contextRows = [
+  'Report Type : Zonal Wise Sick Report'
+]
+
+const handleExport = () => {
+  exportToExcel({
+    data: excelData,
+    columns: excelColumns,
+    sheetName: 'Zonal Summary',
+    fileName: 'Zonal_Wise_Sick_Report',
+    title: 'Zonal Wise Sick Report',
+    context: contextRows
+  })
+}
+
+
   return (
     <>
       <div className="row align-items-center mb-2">
@@ -40,6 +82,15 @@ const ZoneSickReport = ({ onZoneClick }) => {
             Zonal Wise Sick Report
           </h5>
         </div>
+        <div className="col-sm-6 text-end">
+    <button
+      className="btn btn-success btn-sm"
+      onClick={handleExport}
+      disabled={zonewiseData.length === 0}
+    >
+      Export Excel
+    </button>
+  </div>
       </div>
 
       <div className="table-responsive">
