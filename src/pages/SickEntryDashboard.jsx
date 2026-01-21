@@ -25,6 +25,7 @@ const chartRef = useRef(null);
 const chartInstanceRef = useRef(null);
 
 
+
 const navigate = useNavigate();
 
 
@@ -362,6 +363,7 @@ const getRecoveredStudentsCount = async ({queryKey})  => {
 
 const {
   data: sickStats,
+  dataUpdatedAt,
   isLoading: sickStatsLoading,
   isFetching: sickStatsFetching
 } = useQuery({
@@ -471,6 +473,15 @@ const {
   enabled: !!token
 });
 
+const lastUpdated = dataUpdatedAt
+  ? dayjs(dataUpdatedAt).format('hh:mm A')
+  : '-';
+
+const nextUpdate = dataUpdatedAt
+  ? dayjs(dataUpdatedAt).add(15, 'minute').format('hh:mm A')
+  : '-';
+
+
 
 useEffect(() => {
   if (trendsLoading) return;
@@ -549,6 +560,18 @@ useEffect(() => {
       <div className="row g-3 mb-3">
 
         <div className="row g-3">
+          <div className='col-sm-12'>
+            <div className="dashboard-sync-info">
+  <span>🕒 Last updated: {lastUpdated}</span>
+  <span className="mx-2">|</span>
+  <span>🔄 Updates every 15 mins</span>
+  <span className="mx-2">|</span>
+  <span>⏭ Next update: {nextUpdate}</span>
+
+  {sickStatsFetching && <span className="ms-2">🔄 Syncing...</span>}
+</div>
+
+          </div>
          
 
   {/* 🔴 Utmost Emergency */}
