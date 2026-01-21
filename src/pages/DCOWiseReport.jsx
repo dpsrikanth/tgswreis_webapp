@@ -475,7 +475,23 @@ useEffect(
                                         <td><span className={getStatus(item.StatusText).badge}>{item.StatusText}</span></td>
                                         <td>
                                              <div className='d-flex gap-2 justify-content-end'>
-                                         {item.ReportSubmitted === 'Yes' && ( <button className='btn btn-primary btn-sm' onClick={() => DownloadInspectionPdfReport(item.TourDiaryId)}>Download Inspection PDF</button>)}     
+                                         {item.ReportSubmitted === 'Yes' && ( <button className='btn btn-primary btn-sm' onClick={() => DownloadInspectionPdfReport(item.TourDiaryId)}>Download Inspection PDF</button>)}   
+
+                                         {item.ReportPDF ? (
+    <button
+      className="btn btn-outline-primary btn-sm"
+      onClick={() => {
+        const fileUrl = `${apiUrl}/uploads/tourdiary/${item.TourDiaryId}/reports/${item.ReportPDF}`;
+        window.open(fileUrl, '_blank');
+      }}
+    >
+      📘 Academic Books Report
+    </button>
+  ) : (
+    <span className="badge text-bg-secondary">
+      Academic Report Not Uploaded
+    </span>
+  )}   
               
            
   {item.PhotoAttachment ? (() => {

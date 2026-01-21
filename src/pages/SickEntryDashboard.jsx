@@ -640,6 +640,21 @@ useEffect(() => {
       <small>Today</small>
     </div>
   </div>
+
+   <div className="col-md-3">
+    <div
+      className="white-box shadow-sm text-center bg-warning"
+      style={{ cursor: 'pointer' }}
+      onClick={() => {
+        navigate('/sickentered') // optional list page
+      }}
+    >
+      <h3 className="fw-bold">{statusLoading ? '-' : dailyStatusCounts?.hasSickEntries ?? 0}</h3>
+      <h6 className="fw-bold">Schools Entered</h6>
+      <small>Today</small>
+    </div>
+  </div>
+
    <div className="col-md-3">
     <div
       className="white-box shadow-sm text-center bg-success text-white"
