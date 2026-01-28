@@ -63,6 +63,7 @@ import MyTourReport from './pages/MyTourReport';
 import ZonalWiseTourReport from './pages/ZonalWiseTourReport';
 import SchoolsNoSickStudents from './pages/SchoolsNoSickStudents';
 import SchoolsSickEntered from './pages/SchoolsSickEntered';
+import InspectionCoverageReport from './pages/InspectionCoverageReport';
 const AppRoutes = () => {
   return (
     <Router>
@@ -427,6 +428,12 @@ const AppRoutes = () => {
             <SchoolsSickEntered defaultDate={new Date().toISOString().split('T')[0]} />
           </ProtectedRoute>
         }/>
+
+        <Route path='/inspectioncoveragereport' element={
+          <ProtectedRoute>
+          <InspectionCoverageReport />
+          </ProtectedRoute>
+        } />
 
         </Route>
       </Routes>

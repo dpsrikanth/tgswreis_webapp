@@ -324,7 +324,8 @@ const getDailySickStatusCounts = async ({queryKey}) => {
 
    return {
     notEntered: res.data.notEntered || 0,
-    noSickConfirmed: res.data.noSickConfirmed || 0
+    noSickConfirmed: res.data.noSickConfirmed || 0,
+    hasSickEntries: res.data.hasSickEntries || 0
   };
 }
 
@@ -650,7 +651,7 @@ useEffect(() => {
       }}
     >
       <h3 className="fw-bold">{statusLoading ? '-' : dailyStatusCounts?.hasSickEntries ?? 0}</h3>
-      <h6 className="fw-bold">Schools Entered</h6>
+      <h6 className="fw-bold">Schools with Sick Entries</h6>
       <small>Today</small>
     </div>
   </div>

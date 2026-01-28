@@ -556,9 +556,7 @@ const ExcelReportOfficerWise = async (summary = [], visits = [], meta = {}) => {
        Academic Books Report
     </button>
   ) : (
-    <span className="badge text-bg-secondary">
-      Academic Report Not Uploaded
-    </span>
+    null
   )} 
               
            

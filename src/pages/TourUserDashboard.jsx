@@ -165,7 +165,8 @@ fetchUpcomingWeek();
        <div className='col-sm-6'>
         <div className='white-box shadow-sm'>
           <h5 className=''>Upcoming Visits for the next 7 days</h5>
-          <table className='table table-bordered'>
+          <div className='table-responsive'>
+            <table className='table table-bordered'>
             <thead>
               <tr>
                 <th>S.No</th>
@@ -193,6 +194,8 @@ fetchUpcomingWeek();
             
             </tbody>
           </table>
+          </div>
+        
         </div>
        </div>
 

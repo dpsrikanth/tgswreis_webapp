@@ -147,6 +147,7 @@ const _gc = {
         healthsupervisorscount: {url: 'http://localhost:9001/healthsupervisorscount', method: 'GET'},
         chronicstudentscount: {url: 'http://localhost:9001/chronicstudentscount', method: 'GET'},
         sickentered: {url: 'http://localhost:9001/sick/hassickentriestoday', method: 'GET'},
+        inspectioncoveragereport: {url: 'http://localhost:9001/tour/inspectioncoveragereport', method: 'GET'},
     },
 };
 window.gc = _gc;

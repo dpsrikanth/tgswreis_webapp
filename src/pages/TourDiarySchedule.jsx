@@ -6,7 +6,7 @@ import { _fetch } from "../libs/utils";
 import { useSelector } from 'react-redux';
 import { toast, ToastContainer } from "react-toastify";
 import Select from 'react-select';
-import {format,startOfMonth,endOfMonth} from 'date-fns'
+import {format,startOfMonth,endOfMonth,addMonths,addDays,subDays,isWithinInterval,isSameMonth,differenceInDays,formatDistanceToNow,startOfDay,differenceInCalendarDays} from 'date-fns'
 
 
 const TourDiarySchedule = () => {
@@ -27,6 +27,7 @@ const [purpose,setPurpose] = useState('');
 const [schoolList,setSchoolList] = useState([]);
 const [tourSchedule,setTourSchedule] = useState([]);
 const [tourRows,setTourRows] = useState([]);
+const [selectedMonth,setSelectedMonth] = useState(new Date());
 
 useEffect(() => {
 
@@ -53,6 +54,16 @@ const schoolOptions = schoolList.map((school) => ({
     label: school.PartnerName.replace('TGSWREIS',''),
     schoolcode: school.SchoolCode
 }))
+
+const nextMonth = addMonths(new Date(), 1);
+
+const isNextMonthSelected = isSameMonth(
+  selectedMonth,
+  nextMonth
+);
+
+
+
 
 
 const getStatus = (status) => {
@@ -169,7 +180,7 @@ const removeRow = (index) => {
 const fetchTourScheduleNew = async () => {
     if(!UserId) return;
   try{
-     const payload = {UserId}
+     const payload = {UserId,Month: format(selectedMonth, "yyyy-MM")}
     _fetch("gettourschedulenew",payload,false,token).then(res => {
       if(res.status === 'success'){
         const savedRows = res.data || [];
@@ -179,7 +190,8 @@ const fetchTourScheduleNew = async () => {
           VisitDate: r.DateOfVisit.split('T')[0],
           SchoolId: r.SchoolId,
           Purpose: r.Purpose || '',
-          Status: r.Status
+          Status: r.Status,
+          IsAdditionalVisit: r.IsAdditionalVisit ?? 0
         }));
 
         const emptyRow = {
@@ -187,7 +199,8 @@ const fetchTourScheduleNew = async () => {
           VisitDate: '',
           SchoolId: '',
           Purpose: '',
-          Status: 1
+          Status: 1,
+          IsAdditionalVisit: 0
         };
 
         while(filledRows.length < requiredVisits){
@@ -205,7 +218,10 @@ const fetchTourScheduleNew = async () => {
 const saveTourScheduleNew = async () => {
     if(!UserId) return;
     try{
-    const payload = {UserId,Visits: tourRows}
+    const payload = {UserId,Visits: tourRows.map((row, index) => ({
+    ...row,
+    IsAdditionalVisit: index >= requiredVisits ? 1 : 0
+  }))}
 
     _fetch('monthlytourschedulenew',payload,false,token).then(res => {
         if(res.status === 'success'){
@@ -226,21 +242,96 @@ const saveTourScheduleNew = async () => {
   useEffect(() => {
     if (UserId) {
       fetchOfficersList();
-      fetchTourScheduleNew();
     }
   }, [UserId]);
 
-const today = new Date();
-const year = today.getFullYear();
-const month = today.getMonth();
 
-const minDate = format(today,'yyyy-MM-dd');
-const maxDate = format(endOfMonth(today),'yyyy-MM-dd');
+  useEffect(() => {
+  if (UserId) {
+    fetchTourScheduleNew();
+  }
+}, [selectedMonth,UserId]);
 
-const isRowLocked = (row) => {
-  return row.Status === 3 || row.Status === 4
+
+const todayDate = new Date();
+const year = todayDate.getFullYear();
+const month = todayDate.getMonth();
+
+const monthStart = startOfMonth(selectedMonth);
+const monthEnd = endOfMonth(selectedMonth);
+
+const minDate = format(monthStart, "yyyy-MM-dd");
+const maxDate = format(monthEnd, "yyyy-MM-dd");
+
+
+const editStart = subDays(monthStart,5);
+const editEnd = monthStart;
+
+let isWithinWindow = false;
+
+try {
+  isWithinWindow = isWithinInterval(todayDate, {
+    start: editStart,
+    end: editEnd
+  });
+} catch {
+  isWithinWindow = false;
 }
 
+
+const isScheduleEditable =
+  isNextMonthSelected && isWithinWindow;
+
+  const hasAdditionalVisits =
+  // tourRows.length > requiredVisits;
+   tourRows.some(row => row.IsAdditionalVisit === 1);
+
+
+// const minDate = format(today,'yyyy-MM-dd');
+// const maxDate = format(endOfMonth(today),'yyyy-MM-dd');
+
+const isRowLocked = (row,index) => {
+
+
+    if(row.Status === 3 || row.Status === 4 || row.Status === 5){
+      return true;
+    }
+
+    if(index < requiredVisits && !isScheduleEditable){
+      return true;
+    }
+
+    return false;
+}
+
+const canSave =
+  isScheduleEditable || hasAdditionalVisits;
+
+
+  let scheduleMessage = "";
+let scheduleColor = "text-muted";
+
+if (todayDate < editStart) {
+ const daysLeft = differenceInCalendarDays(
+    startOfDay(editStart),
+    startOfDay(todayDate)
+  );
+
+  scheduleMessage = `Note: Schedule opens in ${daysLeft} day(s) — ${format(editStart, "dd MMM yyyy")}`;
+  scheduleColor = "text-primary";
+}
+
+else if (todayDate >= editStart && todayDate < editEnd) {
+
+
+  scheduleMessage = `Note: Schedule open till ${format(editEnd, "dd MMM yyyy")} (12:00 AM)`;
+  scheduleColor = "text-success";
+}
+
+else {
+  scheduleMessage = `Note: Schedule is locked. Only additional visits can be added.`;
+  scheduleColor = "text-danger";
+}
 
 
   return (
@@ -255,6 +346,13 @@ const isRowLocked = (row) => {
             <div className="white-box shadow-sm">
                 <h5>Add New Inspection Schedule</h5>
                 <div className="row gy-3">
+                  
+                  <div className="col-sm-12 mt-3">
+  <small className={`fw-semibold ${scheduleColor}`}>
+    {scheduleMessage}
+  </small>
+</div>
+
                     <div className="col-sm-4">
                         <label className="form-label">Officer Name</label>
                         {/* <select className="form-select" value={selectedOfficer} disabled onChange={(e) => setSelectedOfficer(e.target.value)}>
@@ -285,9 +383,24 @@ const isRowLocked = (row) => {
                       </>)
                     }
                    
-                    <div className='col-sm-2'>
+                    {/* <div className='col-sm-2'>
                       <label className='form-label'>Current Month</label>
                       <input type='text' className='form-control' disabled value={new Date().toLocaleString('en-US',{month:'long',year:'numeric'})}></input>
+                    </div> */}
+                    <div className='col-sm-2'>
+                      <label className='form-label'>Select Month</label>
+                      <select className='form-select' value={format(selectedMonth, "yyyy-MM")}
+                      onChange={(e) =>
+      setSelectedMonth(new Date(e.target.value + "-01"))}
+                      >
+                        <option value={format(new Date(), "yyyy-MM")}>
+      {format(new Date(), "MMMM yyyy")}
+    </option>
+
+    <option value={format(addMonths(new Date(), 1), "yyyy-MM")}>
+      {format(addMonths(new Date(), 1), "MMMM yyyy")}
+    </option>
+                      </select>
                     </div>
                     {/* <div className="col-sm-4">
                         <label className="form-label">Visit Date</label>
@@ -323,13 +436,15 @@ const isRowLocked = (row) => {
     setTourRows([...tourRows, {
       VisitDate: "",
       SchoolId: "",
-      Purpose: ""
+      Purpose: "",
+      IsAdditionalVisit: 1,
     }])
   }
 >
   + Add Additional Visit
 </button>
-                <table className='table table-bordered'>
+<div className='table-responsive'>
+ <table className='table table-bordered'>
                     <thead>
                         <tr>
                             <th>S.No</th>
@@ -342,7 +457,19 @@ const isRowLocked = (row) => {
                     <tbody>
                         {tourRows.map((row,index) => (
                             <tr key={index}>
-                             <td>{index + 1}</td>
+                             <td><div className="d-flex flex-column align-items-center gap-1">
+    <span>{index + 1}</span>
+
+    {row.IsAdditionalVisit === 1 || index >= requiredVisits ? (
+      <span className="badge bg-warning text-dark">
+        Additional
+      </span>
+    ) : (
+      <span className="badge bg-primary">
+        Required
+      </span>
+    )}
+  </div></td>
                              <td>
                                 <input 
                                 type='date' 
@@ -350,7 +477,7 @@ const isRowLocked = (row) => {
                                 value={row.VisitDate}
                                 min={minDate}
                                 max={maxDate}
-                                disabled = {isRowLocked(row)}
+                                disabled = {isRowLocked(row,index)}
                                 onChange = {(e) => updateRow(index,'VisitDate',e.target.value)}
                                  />
                              </td>
@@ -359,7 +486,7 @@ const isRowLocked = (row) => {
         isClearable
         isSearchable
         options={schoolOptions}
-        isDisabled = {isRowLocked(row)}
+        isDisabled = {isRowLocked(row,index)}
         value={schoolOptions.find(s => s.value === row.SchoolId) || null}
         onChange={(opt) => updateRow(index, "SchoolId", opt ? opt.value : "")}
       />
@@ -369,7 +496,7 @@ const isRowLocked = (row) => {
         rows={2}
         className="form-control"
         value={row.Purpose}
-        disabled = {isRowLocked(row)}
+        disabled = {isRowLocked(row,index)}
         onChange={(e) => updateRow(index, "Purpose", e.target.value)}
       />
                              </td>
@@ -389,8 +516,10 @@ const isRowLocked = (row) => {
                         
                     </tbody>
                 </table>
+</div>
+               
                 <div className='text-center'>
-                 <button className='btn btn-primary' onClick={() => saveTourScheduleNew()}>Save</button>
+                 <button className='btn btn-primary' disabled={!canSave} onClick={() => saveTourScheduleNew()}>Save</button>
                 </div>
                 
                 </div>

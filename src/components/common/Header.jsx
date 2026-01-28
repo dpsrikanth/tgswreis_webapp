@@ -76,10 +76,39 @@ const Header = () => {
             <div className='col-sm-1'>
                  <img src='img/main_logo.png' />
             </div>
-            <div className='col-sm-3'>
-                <img src='img/ministerlogonew1.png' style={{width:'104px',height:'104px'}} alt='' />
-                <img src='img/CM.png' className='ms-2' alt=''/>
-            </div>
+             <div className="col-sm-3 d-flex justify-content-evenly align-items-center">
+
+    {/* Minister */}
+    <div className="d-flex flex-column align-items-center text-center">
+      <img
+        src="img/ministerlogonew1.png"
+        style={{ width: "104px", height: "104px" }}
+        alt=""
+      />
+      <div style={{ fontSize: "11px", fontWeight: 700, lineHeight: "1.3" }}>
+        SRI ADLURI LAXMAN<br />KUMAR
+      </div>
+      <div style={{ fontSize: "10px" }} className='fw-bold'>
+        Hon’ble Minister
+      </div>
+    </div>
+
+    {/* CM */}
+    <div className="d-flex flex-column align-items-center text-center">
+      <img
+        src="img/CM.png"
+        style={{ width: "104px", height: "104px" }}
+        alt=""
+      />
+      <div style={{ fontSize: "11px", fontWeight: 700, lineHeight: "1.3" }}>
+        SRI ANUMULA<br />REVANTH REDDY
+      </div>
+      <div style={{ fontSize: "10px" }} className='fw-bold'>
+        Hon’ble Chief Minister
+      </div>
+    </div>
+
+  </div>
             <div className='col-sm-1 d-none d-md-block'>
                 <div className="timedatebg"><span id="time">{time}</span> | <span id="date">{date}</span></div>
             </div>

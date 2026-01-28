@@ -108,7 +108,7 @@ const SchoolsSickEntered = ({defaultDate}) => {
       <div className="row align-items-center mb-3">
         <div className="col-sm-6">
           <h5 className="fw-bold" style={{ color: '#cc1178' }}>
-            Schools Entered Sick Data
+            Schools Entered Sick Entries Data
           </h5>
         </div>
         <div className="col-sm-6 text-end">
