@@ -152,16 +152,16 @@ const fetchOfficersList = async () => {
 
 
 
-useEffect(() => {
-    const initialRows = Array.from({length: requiredVisits}, () => ({
-      TourDiaryId: null,
-      VisitDate: '',
-      SchoolId: '',
-      Purpose: ''
-    })) ;
+// useEffect(() => {
+//     const initialRows = Array.from({length: requiredVisits}, () => ({
+//       TourDiaryId: null,
+//       VisitDate: '',
+//       SchoolId: '',
+//       Purpose: ''
+//     })) ;
 
-    setTourRows(initialRows);
-},[requiredVisits]);
+//     setTourRows(initialRows);
+// },[requiredVisits]);
 
 const updateRow = (index, field, value) => {
     const updated = [...tourRows];
@@ -183,30 +183,67 @@ const fetchTourScheduleNew = async () => {
      const payload = {UserId,Month: format(selectedMonth, "yyyy-MM")}
     _fetch("gettourschedulenew",payload,false,token).then(res => {
       if(res.status === 'success'){
-        const savedRows = res.data || [];
+        // const savedRows = res.data || [];
 
-        const filledRows = savedRows.map(r => ({
-          TourDiaryId: r.TourDiaryId,
-          VisitDate: r.DateOfVisit.split('T')[0],
-          SchoolId: r.SchoolId,
-          Purpose: r.Purpose || '',
-          Status: r.Status,
-          IsAdditionalVisit: r.IsAdditionalVisit ?? 0
-        }));
+        // const filledRows = savedRows.map(r => ({
+        //   TourDiaryId: r.TourDiaryId,
+        //   VisitDate: r.DateOfVisit.split('T')[0],
+        //   SchoolId: r.SchoolId,
+        //   Purpose: r.Purpose || '',
+        //   Status: r.Status,
+        //   IsAdditionalVisit: r.IsAdditionalVisit ?? 0
+        // }));
 
-        const emptyRow = {
-          TourDiaryId: null,
-          VisitDate: '',
-          SchoolId: '',
-          Purpose: '',
-          Status: 1,
-          IsAdditionalVisit: 0
-        };
+        // const emptyRow = {
+        //   TourDiaryId: null,
+        //   VisitDate: '',
+        //   SchoolId: '',
+        //   Purpose: '',
+        //   Status: 1,
+        //   IsAdditionalVisit: 0
+        // };
 
-        while(filledRows.length < requiredVisits){
-            filledRows.push({...emptyRow});
-        }
-        setTourRows(filledRows);
+        // while(filledRows.length < requiredVisits){
+        //     filledRows.push({...emptyRow});
+        // }
+        // setTourRows(filledRows);
+       const rows = Array.isArray(res.data) ? res.data : [];
+
+    const normalized = rows.map(r => ({
+      TourDiaryId: r.TourDiaryId,
+      VisitDate: r.DateOfVisit?.split("T")[0] || "",
+      SchoolId: r.SchoolId,
+      Purpose: r.Purpose || "",
+      Status: r.Status,
+      IsAdditionalVisit: r.IsAdditionalVisit === true ? 1 : 0
+    }));
+
+    const requiredRows = normalized.filter(
+      r => r.IsAdditionalVisit === 0
+    );
+
+    const additionalRows = normalized.filter(
+      r => r.IsAdditionalVisit === 1
+    );
+
+    const emptyRequiredRow = {
+      TourDiaryId: null,
+      VisitDate: "",
+      SchoolId: "",
+      Purpose: "",
+      Status: 1,
+      IsAdditionalVisit: 0
+    };
+
+    while (requiredRows.length < requiredVisits) {
+      requiredRows.push({ ...emptyRequiredRow });
+    }
+
+    setTourRows([
+      ...requiredRows,
+      ...additionalRows
+    ]);
+        
       }
     })
 
@@ -220,7 +257,9 @@ const saveTourScheduleNew = async () => {
     try{
     const payload = {UserId,Visits: tourRows.map((row, index) => ({
     ...row,
-    IsAdditionalVisit: index >= requiredVisits ? 1 : 0
+    IsAdditionalVisit: row.IsAdditionalVisit ?? (
+  index >= requiredVisits ? 1 : 0
+)
   }))}
 
     _fetch('monthlytourschedulenew',payload,false,token).then(res => {
@@ -264,7 +303,7 @@ const minDate = format(monthStart, "yyyy-MM-dd");
 const maxDate = format(monthEnd, "yyyy-MM-dd");
 
 
-const editStart = subDays(monthStart,5);
+const editStart = subDays(monthStart,3);
 const editEnd = monthStart;
 
 let isWithinWindow = false;
