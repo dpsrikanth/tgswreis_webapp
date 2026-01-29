@@ -148,6 +148,13 @@ const _gc = {
         chronicstudentscount: {url: 'http://localhost:9001/chronicstudentscount', method: 'GET'},
         sickentered: {url: 'http://localhost:9001/sick/hassickentriestoday', method: 'GET'},
         inspectioncoveragereport: {url: 'http://localhost:9001/tour/inspectioncoveragereport', method: 'GET'},
+        schoolwisetourreport: {url: 'http://localhost:9001/tour/schoolwisereport', method: 'GET'},
+        datewisetourreport: {url: 'http://localhost:9001/tour/datewisereport', method: 'GET'},
+        yesnotvisitedinspections: {url: 'http://localhost:9001/tour/notvisitedinspections', method: 'GET'},
+        todayadditionalinspections: {url: 'http://localhost:9001/tour/additionalinspections', method: 'GET'},
+        todaycannotvisitinspections: {url: 'http://localhost:9001/tour/cannotvisitinspections', method: 'GET'},
+        schoolvisitabstract: {url: 'http://localhost:9001/tour/school-visit-abstract', method: 'GET'},
+        notvisitedremarks: {url: 'http://localhost:9001/tour/notvisited-remarks', method: 'PATCH'},
     },
 };
 window.gc = _gc;

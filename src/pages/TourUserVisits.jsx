@@ -31,6 +31,11 @@ const [showReportModal,setShowReportModal] = useState(false);
 const [showImagesModal,setShowImagesModal] = useState(false);
 const [selectedFileUrl,setSelectedFileUrl] = useState('');
 const apiUrl = window.gc.cdn;
+const [showNotVisitedModal, setShowNotVisitedModal] = useState(false);
+const [remarksTourId, setRemarksTourId] = useState(null);
+const [notVisitedRemarks, setNotVisitedRemarks] = useState('');
+
+
 
 
 const fetchTourScheduleInd = async () => {
@@ -163,6 +168,57 @@ const openPhotoGallery = (tourDiaryId, photoList) => {
   });
 };
 
+
+
+const canAddRemarks = (dateStr) => {
+  const visitDate = new Date(dateStr);
+  const today = new Date();
+
+  const diffDays =
+    (today.setHours(0,0,0,0) - visitDate.setHours(0,0,0,0)) /
+    (1000 * 60 * 60 * 24);
+
+  return diffDays <= 2;
+};
+
+
+const submitNotVisitedRemarks = async () => {
+  try {
+
+    if (!notVisitedRemarks.trim()) {
+      toast.warning("Please enter remarks");
+      return;
+    }
+
+    const payload = {
+      tourDiaryId: remarksTourId,
+      remarks: notVisitedRemarks,
+      UserId : UserId
+    };
+
+    const res = await _fetch(
+      "notvisitedremarks",
+      payload,
+      false,
+      token,
+    );
+
+    if (res.status === "success") {
+      toast.success(res.message);
+      setShowNotVisitedModal(false);
+      setRemarksTourId(null);
+      setNotVisitedRemarks('');
+      fetchTourScheduleInd();
+    } else {
+      toast.error(res.message);
+    }
+
+  } catch (error) {
+    toast.error("Failed to update remarks");
+  }
+};
+
+
   return (
     <>
     <ToastContainer />
@@ -233,36 +289,69 @@ const openPhotoGallery = (tourDiaryId, photoList) => {
 
      {/*NOT VISITED */}
     <div className="tab-pane fade" id="notvisited">
-      <div className="white-box shadow-sm">
+     <div className="white-box shadow-sm">
     <h5>Not Visited Inspections</h5>
 
-    {notvisited.length ? notvisited.map(item => (
-      <div key={item.TourDiaryId} className="card mb-3 shadow-sm border-sm">
-        <div className="card-body d-flex justify-content-between align-items-start">
+    {notvisited.length ? notvisited.map(item => {
 
-          <div>
-            <span className="badge bg-secondary">
-              {new Date(item.DateOfVisit).toLocaleDateString('en-IN')}
-            </span>
-            <h6 className="mt-2 mb-1 fw-bold">
-              {item.PartnerName.replace("TGSWREIS", "")}
-            </h6>
-            <p className="text-muted small mb-0">{item.Purpose}</p>
+      const allowRemarks = canAddRemarks(item.DateOfVisit);
+
+      return (
+        <div key={item.TourDiaryId} className="card mb-3 shadow-sm border-sm">
+          <div className="card-body d-flex justify-content-between align-items-start">
+
+            <div>
+              <span className="badge bg-secondary">
+                {new Date(item.DateOfVisit).toLocaleDateString('en-IN')}
+              </span>
+
+              <h6 className="mt-2 mb-1 fw-bold">
+                {item.PartnerName.replace("TGSWREIS", "")}
+              </h6>
+
+              <p className="text-muted small mb-1">
+                {item.Purpose}
+              </p>
+
+              {item.NotVisitedRemarks && (
+                <div className="alert alert-info py-1 px-2 small mt-2">
+                  <strong>Remarks:</strong> {item.NotVisitedRemarks}
+                </div>
+              )}
+            </div>
+
+            <div className="text-end">
+              <span className="badge bg-danger mb-2">
+                NOT VISITED
+              </span>
+
+              <div>
+                <button
+                  className="btn btn-outline-primary btn-sm mt-2"
+                  disabled={!allowRemarks}
+                  onClick={() => {
+                    setRemarksTourId(item.TourDiaryId);
+                    setNotVisitedRemarks(item.NotVisitedRemarks || '');
+                    setShowNotVisitedModal(true);
+                  }}
+                >
+                  {allowRemarks ? "Add / Edit Remarks" : "Remarks Closed"}
+                </button>
+
+                {!allowRemarks && (
+                  <div className="text-muted small mt-1">
+                    Allowed only within 2 days
+                  </div>
+                )}
+              </div>
+            </div>
+
           </div>
-
-          <div className="text-end">
-            <span className="badge bg-danger mb-2">NOT VISITED</span>
-            {/* <div> 
-                <button className="btn btn-primary btn-sm"
-              onClick={() => navigate(`/uploadtourreports/${item.TourDiaryId}`)}>
-              Upload Proof
-            </button>
-            </div> */}
-          </div>
-
         </div>
-      </div>
-    )) : <div className="text-muted">No Not visited records</div>}
+      );
+    }) : (
+      <div className="text-muted">No Not Visited records</div>
+    )}
   </div>
     </div>
 
@@ -589,6 +678,61 @@ const openPhotoGallery = (tourDiaryId, photoList) => {
     </div>
   );
 })()}
+
+
+{showNotVisitedModal && remarksTourId && (
+  <div
+    className="modal show fade"
+    style={{ display: "block", backgroundColor: "rgba(0,0,0,0.5)" }}
+  >
+    <div className="modal-dialog modal-md">
+      <div className="modal-content">
+
+        <div className="modal-header">
+          <h5 className="modal-title">
+            Not Visited Remarks
+          </h5>
+          <button
+            className="btn-close"
+            onClick={() => setShowNotVisitedModal(false)}
+          />
+        </div>
+
+        <div className="modal-body">
+          <label className="form-label">
+            Reason / Explanation
+          </label>
+
+          <textarea
+            className="form-control"
+            rows={4}
+            value={notVisitedRemarks}
+            onChange={(e) => setNotVisitedRemarks(e.target.value)}
+            placeholder="Enter reason for not visiting..."
+          />
+        </div>
+
+        <div className="modal-footer">
+          <button
+            className="btn btn-secondary"
+            onClick={() => setShowNotVisitedModal(false)}
+          >
+            Cancel
+          </button>
+
+          <button
+            className="btn btn-primary"
+            onClick={submitNotVisitedRemarks}
+          >
+            Save Remarks
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+)}
+
 
 
       

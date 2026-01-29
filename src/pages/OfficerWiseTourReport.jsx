@@ -33,7 +33,8 @@ const OfficerWiseTourReport = () => {
   const [selectedTourDiaryId,setSelectedTourDiaryId] = useState(null);
   const [fromDate,setFromDate] = useState('');
   const [toDate,setToDate] = useState('');
-  const [selectedOfficers, setSelectedOfficers] = useState([]);  
+  const [selectedOfficers, setSelectedOfficers] = useState([]);
+  const navigate = useNavigate();  
   const apiUrl = window.gc.cdn;
 
   const officerOptions = officersList.map(o => ({
@@ -380,6 +381,9 @@ const ExcelReportOfficerWise = async (summary = [], visits = [], meta = {}) => {
   fromDate,
   toDate
 })}>Excel Report</button>
+<button className="btn btn-secondary btn-sm ms-2" onClick={() => navigate('/tourdiarydashboard')}>
+            Back
+          </button>
                  </div>
                 </div>
                 <div className='row align-items-center'>

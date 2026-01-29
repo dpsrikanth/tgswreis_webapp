@@ -74,14 +74,17 @@ const updateSchoolContact = async (schoolCode, contactNumber,ContacteMailAddress
   return (
    <>
    <ToastContainer/>
-    <h6 className="fw-bold mb-3"><a onClick={() => navigate('/samsdashboard')} style={{cursor:'pointer'}}><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>Edit School Details</h6>
+    <h6 className="fw-bold mb-3"><a onClick={() => navigate('/tourdiarydashboard')} style={{cursor:'pointer'}}><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>Edit School Details</h6>
     <div className='row'>
         <div className='col-sm-12'>
              <div className="white-box shadow-sm">
                 <div className="table-header">
                     <h5><span className="pink fw-bold">School Details</span></h5>
+                    <button className="btn btn-secondary btn-sm" onClick={() => navigate('/tourdiarydashboard')}>
+            Back
+          </button>
                 </div>
-                <div className='text-end'>
+                <div className='text-end mt-2'>
                     <button className='btn btn-success' onClick={() => navigate('/zonescontact')}>Update Zone Contacts</button>
                 </div>
                 <table className='table table-bordered'>

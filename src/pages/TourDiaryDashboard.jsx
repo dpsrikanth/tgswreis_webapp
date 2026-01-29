@@ -26,6 +26,7 @@ const TourDiaryDashboard = () => {
   const [yesNotVisited,setYesNotVisited] = useState([]);
   const [todayCannotVisit,setTodayCannotVisit] = useState(null);
   const [todayPending,setTodayPending] = useState(null);
+  const [todayUnplanned,setTodayUnplanned] = useState(null);
   const navigate = useNavigate();
   
 
@@ -118,6 +119,7 @@ const fetchLowCompliance = async () => {
                 setTodayCompleted(res.data[0].TotalCompletedToday);
                 setTodayCannotVisit(res.data[0].TotalCannotVisitToday)
                 setTodayPending(res.data[0].PendingToday);
+                setTodayUnplanned(res.data[0].TotalAdditionalVisitsToday);
                 toast.success(res.message);
             }else {
                 toast.error(res.message);
@@ -139,6 +141,7 @@ const fetchLowCompliance = async () => {
                 setTotalNotVisited(res.data[0].TotalNotVisited);
                 setTotalCompleted(res.data[0].TotalCompleted);
                 setTotalCannotVisit(res.data[0].TotalCannotVisit);
+                setYesNotVisited(res.data[0].YesterdayNotVisited);
                 toast.success(res.message);
             }else {
                 toast.error(res.message);
@@ -179,7 +182,7 @@ useEffect(() => {
 
   return (
     <>
-    <h6 className="fw-bold mb-2"><a href="tsmess.html"><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>TGSWREIS Inspection Module Dashboard</h6>
+    <h6 className="fw-bold mb-2"><a onClick={() => navigate('/samsdashboard')} style={{cursor:'pointer'}}><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>TGSWREIS Inspection Module Dashboard</h6>
       
 
       <div className="row g-3 mb-3 pt-2">
@@ -187,7 +190,7 @@ useEffect(() => {
         <div className="col-sm-12">
             <div className="row g-3 mb-3">
         <div className="col-md-4">
-          <a href="">
+          
           <div className="white-box d-flex justify-content-between shadow-sm">
             <div>
               <h3 className="fw-bold text-primary">{todayPlanned}</h3>
@@ -197,7 +200,7 @@ useEffect(() => {
               <div class="traffic-light primary"></div>
             </div>
           </div>
-          </a>
+          
         </div>
         
         <div className="col-md-4">
@@ -215,20 +218,20 @@ useEffect(() => {
             </div>
           </div>
         </div>
-        <div className="col-md-4">
+        <div className="col-md-4" style={{cursor:'pointer'}} onClick={() => navigate('/yesnotvisitedinspections')}>
           <div
             className="white-box d-flex justify-content-between shadow-sm">
             <div>
-              <h3 className="fw-bold text-danger">{todayNotVisited}</h3>
-              <h6 className="fw-bold">Today Not Visited Inspections</h6>
+              <h3 className="fw-bold text-danger">{yesNotVisited}</h3>
+              <h6 className="fw-bold">Yesterday Not Visited Inspections</h6>
             </div>
             <div className="text-end">
               <div class="traffic-light red"></div>
             </div>
           </div>
         </div>
-         <div className="col-md-4">
-          <a href="">
+         <div className="col-md-4" style={{cursor:'pointer'}} onClick={() => navigate('/cannotvisitinspections')}>
+         
           <div
             className="white-box d-flex justify-content-between shadow-sm"
           >
@@ -242,10 +245,10 @@ useEffect(() => {
              
             </div>
           </div>
-          </a>
+          
         </div> 
         <div className="col-md-4">
-          <a href="">
+         
           <div
             className="white-box d-flex justify-content-between shadow-sm"
           >
@@ -259,7 +262,24 @@ useEffect(() => {
              
             </div>
           </div>
-          </a>
+        
+        </div> 
+        <div className="col-md-4" style={{cursor:'pointer'}} onClick={() => navigate('/additionalinspections')}>
+        
+          <div
+            className="white-box d-flex justify-content-between shadow-sm"
+          >
+            <div>
+             
+              <h3 className="fw-bold text-info">{todayUnplanned}</h3>
+               <h6 className="fw-bold">Today Unplanned/Additional Inspections</h6>
+            </div>
+            <div className="text-end">
+              <div class="traffic-light info"></div>
+             
+            </div>
+          </div>
+      
         </div> 
       </div>
         </div>
@@ -322,8 +342,8 @@ useEffect(() => {
         </div> */}
 
         <div className='row'>
-          <div className='col-sm-8'>
-            <div className='row'>
+          <div className='col-sm-12'>
+            <div className='row gy-3'>
                <div className='col-sm-12'>
              <div className="white-box shadow-sm">
                 <h5 className="chart-title">Today's Scheduled Inspections</h5>
@@ -366,9 +386,7 @@ useEffect(() => {
                     </div>
                     </div>
                    </div>
-            </div>
-          </div>
-          <div className='col-sm-4'>
+               <div className='col-sm-12'>
             <div className='row gy-3'>
              {/* <div className = "col-sm-12">
             <div className="white-box shadow-sm">
@@ -405,33 +423,57 @@ useEffect(() => {
                        <button className = 'btn btn-primary mt-2' >Designation Wise Report</button>
                        <button className = 'btn btn-primary mt-2' >Officer Wise Report</button>
                     </div> */}
-                    <div className='col-sm-12 shadow-sm border rounded-3 p-3 d-flex gap-3 align-items-center' onClick={() => navigate('/dailytourreport')} style={{cursor:'pointer'}}>
+                    <div className='col-sm-4 shadow-sm border rounded-3 p-3 d-flex gap-3 align-items-center' onClick={() => navigate('/dailytourreport')} style={{cursor:'pointer'}}>
                       <div className="report-icon"><i class="bi bi-suitcase-lg-fill"></i></div>
                      <p className='mb-0'>Daily Inspection Compliance Report</p>
                     </div>
-                    <div className='col-sm-12 shadow-sm border rounded-3 p-3 d-flex gap-3 align-items-center' onClick={() => navigate('/consolidatedtourreport')} style={{cursor:'pointer'}}>
+                    <div className='col-sm-4 shadow-sm border rounded-3 p-3 d-flex gap-3 align-items-center' onClick={() => navigate('/consolidatedtourreport')} style={{cursor:'pointer'}}>
                       <div className="report-icon"><i class="bi bi-suitcase2-fill"></i></div>
                      <p className='mb-0'>Consolidated Inspection Compliance Report</p>
                     </div>
                     {/* <div className='col-sm-12 shadow-sm border rounded-3 p-3'  style={{cursor:'pointer'}}>
                      <p className='mb-0'>Designation Wise Report</p>
                     </div> */}
-                     <div className='col-sm-12 shadow-sm border rounded-3 p-3 d-flex gap-3 align-items-center' onClick={() => navigate('/officerwisetourreport')}  style={{cursor:'pointer'}}>
+                     <div className='col-sm-4 shadow-sm border rounded-3 p-3 d-flex gap-3 align-items-center' onClick={() => navigate('/officerwisetourreport')}  style={{cursor:'pointer'}}>
                         <div className="report-icon"><i class="bi bi-file-earmark-person-fill"></i></div>
                      <p className='mb-0'>Officer Wise Report</p>
                     </div>
 
                     {UserType === 'SuperAdmin' && (
-                      <div className='col-sm-12 shadow-sm border rounded-3 p-3 d-flex gap-3 align-items-center' onClick={() => navigate('/schoolscontact')}  style={{cursor:'pointer'}}>
+                      <>
+
+                    <div className='col-sm-4 shadow-sm border rounded-3 p-3 d-flex gap-3 align-items-center' onClick={() => navigate('/schoolwisetourreport')}  style={{cursor:'pointer'}}>
+                        <div className="report-icon"><i class="bi bi-building-fill"></i></div>
+                     <p className='mb-0'>School Wise Inspection Report</p>
+                    </div>
+
+
+                    <div className='col-sm-4 shadow-sm border rounded-3 p-3 d-flex gap-3 align-items-center' onClick={() => navigate('/datewiseinspectionreport')}  style={{cursor:'pointer'}}>
+                        <div className="report-icon"><i class="bi bi-calendar-date-fill"></i></div>
+                     <p className='mb-0'>Date Wise Inspection Report</p>
+                    </div>
+
+
+                    <div className='col-sm-4 shadow-sm border rounded-3 p-3 d-flex gap-3 align-items-center' onClick={() => navigate('/schoolwisevisitabstract')}  style={{cursor:'pointer'}}>
+                        <div className="report-icon"><i class="bi bi-123"></i></div>
+                     <p className='mb-0'>School Wise Abstract Report</p>
+                    </div>
+
+                    <div className='col-sm-4 shadow-sm border rounded-3 p-3 d-flex gap-3 align-items-center' onClick={() => navigate('/schoolscontact')}  style={{cursor:'pointer'}}>
                         <div className="report-icon"><i class="bi bi-geo-fill"></i></div>
                      <p className='mb-0'>Update Latitude and Longitude of School</p>
                     </div>
+                      </>
+                     
                     )}
                 </div>
             </div>
         </div> 
             </div>
+          </div>     
+            </div>
           </div>
+         
         </div>
 
         

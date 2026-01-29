@@ -17,6 +17,7 @@ const UserId = useSelector((state) => state.userappdetails.profileData.Id);
 const [tourReport,setTourReport] = useState([]);
 const [fromDate,setFromDate] = useState('');
 const [toDate,setToDate] = useState('');
+const navigate = useNavigate();
 
 
 const fetchConsolidatedTourReport = async () => {
@@ -156,6 +157,9 @@ saveAs(blob,`ConsolidatedTourReport_${new Date().toISOString().split('T')[0]}.xl
                     <div>
                        <button className='btn btn-success' onClick={() => ExcelReportTourConsolidated(tourReport)}>Excel Report</button>
                     </div>
+                    <button className="btn btn-secondary btn-sm" onClick={() => navigate('/tourdiarydashboard')}>
+            Back
+          </button>
                 </div>
                 <div className='row align-items-center'>
                     <div className='col-sm-2 text-end'>

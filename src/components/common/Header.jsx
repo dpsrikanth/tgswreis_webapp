@@ -10,6 +10,9 @@ const Header = () => {
     const { toggleSidebar } = useSidebar();
     const [time, setTime] = React.useState('');
     const [date, setDate] = React.useState('');
+    const profileRef = React.useRef(null);
+const profileBtnRef = React.useRef(null);
+
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const token = useSelector((state) => state.userappdetails.TOKEN);
@@ -32,6 +35,30 @@ const Header = () => {
         const interval = setInterval(updateDateTime, 1000);
         return () => clearInterval(interval); // Cleanup on unmount
     }, []);
+
+    React.useEffect(() => {
+  const handleClickOutside = (event) => {
+    const menu = profileRef.current;
+    const button = profileBtnRef.current;
+
+    if (
+      menu &&
+      !menu.contains(event.target) &&
+      button &&
+      !button.contains(event.target)
+    ) {
+      menu.style.display = "none";
+    }
+  };
+
+  document.addEventListener("mousedown", handleClickOutside);
+
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, []);
+
+
     const toggleMessagesPopup = () => {
         const messagesPopup = document.getElementById("messagesPopup");
         messagesPopup.classList.toggle("d-none");
@@ -113,8 +140,8 @@ const Header = () => {
                 <div className="timedatebg"><span id="time">{time}</span> | <span id="date">{date}</span></div>
             </div>
             <div className='col-sm-2'>
-                <img src="img/profile_icon.png" style={{cursor:'pointer'}} onClick={toggleProfileMenu} />
-                <div className="profile-menu" id="profileMenu" style={{ display: "none", position: "absolute", right: "10px", top: "60px", background: "white", boxShadow: "0 0 10px rgba(0,0,0,0.1)", borderRadius: "10px", padding: "10px", width: "200px", zIndex: 9 }}>
+                <img src="img/profile_icon.png" style={{cursor:'pointer'}} ref={profileBtnRef} onClick={toggleProfileMenu} />
+                <div className="profile-menu" id="profileMenu" ref={profileRef} style={{ display: "none", position: "absolute", right: "10px", top: "60px", background: "white", boxShadow: "0 0 10px rgba(0,0,0,0.1)", borderRadius: "10px", padding: "10px", width: "200px", zIndex: 9 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "10px 0" }}>
                     <img src="img/profile_icon.png" style={{ width: "40px", height: "40px" }} />
                     <span>{DisplayName}-{RoleDisplayName}</span>

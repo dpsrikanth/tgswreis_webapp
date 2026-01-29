@@ -14,6 +14,7 @@ const token = useSelector((state) => state.userappdetails.TOKEN);
 const UserType = useSelector((state) => state.userappdetails.profileData.UserType);
 const UserId = useSelector((state) => state.userappdetails.profileData.Id);
 const [tourReport,setTourReport] = useState([])
+const navigate = useNavigate();
 
 
 const fetchDailyTourReport = async () => {
@@ -153,6 +154,9 @@ fetchDailyTourReport();
                     <div>
                        <button className='btn btn-success' onClick={() => ExcelReportTourDaily(tourReport)}>Excel Report</button>
                     </div>
+                    <button className="btn btn-secondary btn-sm" onClick={() => navigate('/tourdiarydashboard')}>
+            Back
+          </button>
                 </div>
                 <div className='table-responsive pt-2'>
                   <table className='table table-bordered'>

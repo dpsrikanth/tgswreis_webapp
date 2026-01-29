@@ -64,6 +64,12 @@ import ZonalWiseTourReport from './pages/ZonalWiseTourReport';
 import SchoolsNoSickStudents from './pages/SchoolsNoSickStudents';
 import SchoolsSickEntered from './pages/SchoolsSickEntered';
 import InspectionCoverageReport from './pages/InspectionCoverageReport';
+import SchoolWiseTourReport from './pages/SchoolWiseTourReport';
+import DateWiseInspectionReport from './pages/DateWiseInspectionReport';
+import SchoolWiseVisitAbstract from './pages/SchoolWiseVisitAbstract';
+import NotVisitedInspections from './pages/NotVisitedInspections';
+import AdditionalInspections from './pages/AdditionalInspections';
+import CannotVisitInspections from './pages/CannotVisitInspections';
 const AppRoutes = () => {
   return (
     <Router>
@@ -432,6 +438,43 @@ const AppRoutes = () => {
         <Route path='/inspectioncoveragereport' element={
           <ProtectedRoute>
           <InspectionCoverageReport />
+          </ProtectedRoute>
+        } />
+
+        <Route path='/schoolwisetourreport' element={
+         <ProtectedRoute>
+          <SchoolWiseTourReport />
+         </ProtectedRoute>
+        } />
+
+        <Route path='/datewiseinspectionreport' element={
+          <ProtectedRoute>
+            <DateWiseInspectionReport />
+          </ProtectedRoute>
+        } />
+
+
+        <Route path='/schoolwisevisitabstract' element={
+          <ProtectedRoute>
+            <SchoolWiseVisitAbstract />
+          </ProtectedRoute>
+        } />
+
+        <Route path='/yesnotvisitedinspections' element={
+          <ProtectedRoute>
+            <NotVisitedInspections />
+          </ProtectedRoute>
+        } />
+
+        <Route path='/additionalinspections' element={
+          <ProtectedRoute>
+            <AdditionalInspections />
+          </ProtectedRoute>
+        } />
+
+        <Route path='/cannotvisitinspections' element={
+          <ProtectedRoute>
+            <CannotVisitInspections />
           </ProtectedRoute>
         } />
 
