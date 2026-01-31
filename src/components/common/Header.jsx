@@ -11,7 +11,7 @@ const Header = () => {
     const [time, setTime] = React.useState('');
     const [date, setDate] = React.useState('');
     const profileRef = React.useRef(null);
-const profileBtnRef = React.useRef(null);
+    const profileBtnRef = React.useRef(null);
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -141,16 +141,16 @@ const profileBtnRef = React.useRef(null);
             </div>
             <div className='col-sm-2'>
                 <img src="img/profile_icon.png" style={{cursor:'pointer'}} ref={profileBtnRef} onClick={toggleProfileMenu} />
-                <div className="profile-menu" id="profileMenu" ref={profileRef} style={{ display: "none", position: "absolute", right: "10px", top: "60px", background: "white", boxShadow: "0 0 10px rgba(0,0,0,0.1)", borderRadius: "10px", padding: "10px", width: "200px", zIndex: 9 }}>
+                <div className="profile-menu" id="profileMenu" ref={profileRef} style={{ display: "none", position: "absolute", right: "10px", top: "120px", background: "white", boxShadow: "0 0 10px rgba(0,0,0,0.1)", borderRadius: "10px", padding: "10px", width: "200px", zIndex: 9 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "10px 0" }}>
                     <img src="img/profile_icon.png" style={{ width: "40px", height: "40px" }} />
                     <span>{DisplayName}-{RoleDisplayName}</span>
                 </div>
                 <hr style={{ margin: "0px" }} />
                 <div style={{ padding: "10px" }}>
-                    <a href="#" style={{ display: "block", padding: "8px 5px" }}>Profile</a>
-                    <a onClick={() => navigate("/change-password")} style={{ display: "block", padding: "8px 5px" }}>Change Password</a>
-                    <a onClick={handleLogout} style={{ display: "block", padding: "8px 5px" }}>Logout</a>
+                    <a href="#" style={{ display: "block", padding: "8px 5px",cursor:'pointer' }} onClick={() => navigate('/userprofile')}>Profile</a>
+                    <a onClick={() => navigate("/change-password")} style={{ display: "block", padding: "8px 5px",cursor:'pointer' }}>Change Password</a>
+                    <a onClick={handleLogout} style={{ display: "block", padding: "8px 5px",cursor:'pointer' }}>Logout</a>
                 </div>
 
             </div>

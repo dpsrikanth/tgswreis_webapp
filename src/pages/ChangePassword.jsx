@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
 import { _fetch } from "../libs/utils";
 import { useSelector } from 'react-redux';
+import { notify } from "../services/notify";
+
 const ChangePassword = () => {
     const token = useSelector((state) => state.userappdetails.TOKEN);
     const [form, setForm] = useState({
@@ -35,17 +36,16 @@ const ChangePassword = () => {
         const payload = { currentPassword: form.oldPassword, newPassword: form.newPassword };
         _fetch("changepassword", payload, false, token).then(res => {
             if (res.status === "success") {
-                toast.success("Password changed successfully!");
+                notify.success("Password changed successfully!");
                 setForm({ oldPassword: "", newPassword: "", confirmPassword: "" });
             }
         }).catch(error => {
-            toast.error("Login failed: " + error.message);
+            notify.error("Login failed: " + error.message);
         });
     };
 
     return (
         <div className="container mt-5">
-            <ToastContainer />
             <h3>Change Password</h3>
             <form onSubmit={handleSubmit} autoComplete="off" style={{ maxWidth: 400 }}>
                 <div className="mb-3">

@@ -5,12 +5,23 @@ import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { _fetch } from "../libs/utils";
 import { format } from "date-fns";
+import { useNavigate } from "react-router-dom";
 
 const AdditionalInspections = () => {
 
   const token = useSelector(state => state.userappdetails.TOKEN);
 
   const [rows, setRows] = useState([]);
+  const navigate = useNavigate();
+
+  const today = new Date();
+
+const formattedToday = today.toLocaleDateString("en-GB", {
+  day: "2-digit",
+  month: "short",
+  year: "numeric"
+});
+
 
   const fetchData = async () => {
     try {
@@ -44,7 +55,7 @@ const AdditionalInspections = () => {
     const ws = wb.addWorksheet("Additional Visits");
 
     ws.mergeCells("A1:I1");
-    ws.getCell("A1").value = "Today – Additional Inspections";
+    ws.getCell("A1").value = `Today (${formattedToday}) – Additional Inspections`;
     ws.getCell("A1").font = { bold: true, size: 14 };
     ws.getCell("A1").alignment = { horizontal: "center" };
 
@@ -57,8 +68,6 @@ const AdditionalInspections = () => {
       "Region",
       "School",
       "School Code",
-      "Visit Date",
-      "Visit Type"
     ];
 
     ws.addRow(headers).eachCell(c => {
@@ -73,9 +82,7 @@ const AdditionalInspections = () => {
         r.RoleDisplayName,
         r.Region,
         r.PartnerName?.replace("TGSWREIS", ""),
-        r.SchoolCode,
-        format(new Date(r.DateOfVisit), "dd-MMM-yyyy"),
-        "ADDITIONAL VISIT"
+        r.SchoolCode
       ]);
     });
 
@@ -94,7 +101,7 @@ const AdditionalInspections = () => {
 
       <div className="table-header">
         <h5 className="chart-title">
-          Today – Additional Inspections
+          Today ({formattedToday}) – Additional Inspections
         </h5>
 
         <button
@@ -103,6 +110,9 @@ const AdditionalInspections = () => {
         >
           Export Excel
         </button>
+          <button className="btn btn-secondary btn-sm" onClick={() => navigate('/tourdiarydashboard')}>
+            Back
+          </button>
       </div>
 
       <table className="table table-bordered mt-3">
@@ -114,8 +124,6 @@ const AdditionalInspections = () => {
             <th>Region</th>
             <th>School</th>
             <th>School Code</th>
-            <th>Date</th>
-            <th>Visit Type</th>
           </tr>
         </thead>
 
@@ -128,12 +136,6 @@ const AdditionalInspections = () => {
               <td>{r.Region}</td>
               <td>{r.PartnerName?.replace("TGSWREIS", "")}</td>
               <td>{r.SchoolCode}</td>
-              <td>{format(new Date(r.DateOfVisit), "dd-MMM-yyyy")}</td>
-              <td>
-                <span className="badge bg-info">
-                  Additional
-                </span>
-              </td>
             </tr>
           )) : (
             <tr>

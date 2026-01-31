@@ -148,7 +148,7 @@ saveAs(blob,`ConsolidatedTourReport_${new Date().toISOString().split('T')[0]}.xl
 
   return (
     <>
-    <h6 className="fw-bold mb-3"><a onClick={() => {navigate('/tourdiarydashboard')}}><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>Consolidated Inspection Report</h6>
+    <h6 className="fw-bold mb-3"><a onClick={() => {navigate('/tourdiarydashboard')}}><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>Consolidated Inspection Compliance Report</h6>
    <div className='row'>
     <div className='col-sm-12'>
             <div className="white-box shadow-sm">
@@ -161,7 +161,7 @@ saveAs(blob,`ConsolidatedTourReport_${new Date().toISOString().split('T')[0]}.xl
             Back
           </button>
                 </div>
-                <div className='row align-items-center'>
+                <div className='row align-items-center pt-4'>
                     <div className='col-sm-2 text-end'>
                         <label className='form-label'>From Date:</label>
                     </div>
@@ -174,6 +174,7 @@ saveAs(blob,`ConsolidatedTourReport_${new Date().toISOString().split('T')[0]}.xl
                     <div className='col-sm-2'>
                         <input type='date' className='form-control' value={toDate} onChange={(e) => setToDate(e.target.value)} />
                     </div>
+                    <div className='col-sm-1'></div>
                     <div className='col-sm-2'>
                         <button className='btn btn-primary' onClick={() => fetchConsolidatedTourReport()}>Fetch</button>
                     </div>

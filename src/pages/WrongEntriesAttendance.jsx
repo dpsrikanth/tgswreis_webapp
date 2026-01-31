@@ -4,8 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef, use } from 'react';
 import { _fetch } from "../libs/utils";
 import { useSelector } from 'react-redux';
-import { toast, ToastContainer } from "react-toastify";
 import Select from 'react-select';
+import { notify } from '../services/notify';
 
 const WrongEntriesAttendance = () => {
   const token = useSelector((state) => state.userappdetails.TOKEN);
@@ -51,9 +51,9 @@ const fetchAttendanceEntries = async () => {
     _fetch('wrongattendanceentries',payload,false,token).then(res => {
       if(res.status === 'success'){
         setAttendanceEntries(res.data);
-        toast.success(res.message)
+        notify.success(res.message)
       } else {
-        toast.error('Attendance Entries not fetched successfully')
+        notify.error('Attendance Entries not fetched successfully')
       }
     })
 
@@ -72,7 +72,7 @@ const UpdateAttendanceEntries = async () => {
        
         if(res.status === 'success'){
         setShowModal(false);
-        toast.success(res.message);
+        notify.success(res.message);
         fetchAttendanceEntries();
         setCat1Present('');
         setCat2Present('');
@@ -84,7 +84,7 @@ const UpdateAttendanceEntries = async () => {
         setCat4Guest('');
         setSelectedRow('');
       } else {
-        toast.error('Error updating Attendance')
+        notify.error('Error updating Attendance')
       }
    
   })} catch (error){
@@ -111,7 +111,6 @@ if(selectedRow){
 
   return (
      <>
-         <ToastContainer />
           <h6 className="fw-bold mb-3"><a onClick={() => {navigate('/samsdashboard')}}><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle',cursor:'pointer'}}></i></a>Wrong Entries Attendance</h6>
      
       <div className="row gy-3">

@@ -1,4 +1,4 @@
-import { toast, ToastContainer } from "react-toastify";
+
 import { _fetch } from "../libs/utils";
 import { useSelector } from 'react-redux';
 import React, { useEffect,useState } from "react";
@@ -27,13 +27,11 @@ const TSMESS = () => {
                 //console.log("TS Mess Defaults Data", res.data);
                 setTodayDefaults(res.data.today);
                 setMonthDefaults(res.data.month);
-                toast.success(res.message || "TS Mess defaults data fetched successfully.");
             } else {
-                toast.info(res.message || "Failed to fetch TS Mess defaults data.");
+                console.error(res.message || "Failed to fetch TS Mess defaults data.");
             }
         }).catch(err => {
             console.error("Error fetching TS Mess defaults data:", err);
-            toast.error("An error occurred while fetching TS Mess defaults data.");
         });
     }
     const monthlyConsumedAmount = () => {
@@ -166,13 +164,13 @@ const TSMESS = () => {
                     notFollowing: res.data.NotFollowingSchools
                 });
                 displayChart(res.data.FollowingSchools, res.data.NotFollowingSchools);
-                //toast.success("Menu compliance data fetched successfully.");
+                
             } else {
-                //toast.error("Failed to fetch menu compliance data.");
+                console.error('Error fetching menu compliance data:',res.message)
             }
         }).catch(err => {
             console.error("Error fetching menu compliance data:", err);
-            //toast.error("An error occurred while fetching menu compliance data.");
+           
         });
     }
     useEffect(() => {
@@ -186,7 +184,6 @@ const TSMESS = () => {
     }, []);
     return (
         <>
-            <ToastContainer />
             <h5 className="fw-bold mb-3 maroon">TS Mess</h5>
             <div className="row">
                 <div className="col-sm-9">

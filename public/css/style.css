@@ -871,6 +871,29 @@ tfoot td {
 }
 
 
+.traffic-light.secondary {
+    background: #6c757d;
+    box-shadow: 
+        0 0 20px rgba(108, 117, 125, 0.6),
+        0 0 0 4px rgba(108, 117, 125, 0.2);
+    animation: glow-secondary 2s ease-in-out infinite;
+}
+
+@keyframes glow-secondary {
+    0%, 100% {
+        box-shadow: 
+            0 0 20px rgba(108, 117, 125, 0.6),
+            0 0 0 4px rgba(108, 117, 125, 0.2);
+    }
+    50% {
+        box-shadow: 
+            0 0 30px rgba(108, 117, 125, 0.8),
+            0 0 0 4px rgba(108, 117, 125, 0.3);
+    }
+}
+
+
+
 .report-icon {
     width: 38px;
     height: 38px;

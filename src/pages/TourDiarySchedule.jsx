@@ -4,9 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef, use } from 'react';
 import { _fetch } from "../libs/utils";
 import { useSelector } from 'react-redux';
-import { toast, ToastContainer } from "react-toastify";
 import Select from 'react-select';
 import {format,startOfMonth,endOfMonth,addMonths,addDays,subDays,isWithinInterval,isSameMonth,differenceInDays,formatDistanceToNow,startOfDay,differenceInCalendarDays} from 'date-fns'
+import { notify } from '../services/notify';
 
 
 const TourDiarySchedule = () => {
@@ -97,7 +97,7 @@ const fetchOfficersList = async () => {
           if(res.status === 'success'){
             setOfficersList(res.data[0]);
           } else {
-            toast.error('Error fetching Officers List')
+            notify.error('Error fetching Officers List')
           }
         })
 
@@ -264,17 +264,17 @@ const saveTourScheduleNew = async () => {
 
     _fetch('monthlytourschedulenew',payload,false,token).then(res => {
         if(res.status === 'success'){
-            toast.success(res.message);
+            notify.success(res.message);
             fetchTourScheduleNew();
         }else {
-            toast.error(res.message);
+            notify.error(res.message);
         }
     })
 
 
     }catch(error){
      onsole.error("Error saving tour schedule", error);
-      toast.error("Error saving schedule");
+      notify.error("Error saving schedule");
     }
 }
 
@@ -376,8 +376,7 @@ else {
   return (
     <>
     
-    <ToastContainer/>
-     <h6 className="fw-bold mb-3"><a href="tsmess.html"><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>Inspection Schedule Management</h6>
+     <h6 className="fw-bold mb-3"><a style={{cursor:'pointer'}} onClick={() => navigate('/touruserdashboard')}><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>Inspection Schedule Management</h6>
      
       <div className="row gy-3">
 

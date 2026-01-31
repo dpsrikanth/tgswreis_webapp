@@ -2,7 +2,6 @@ import React from 'react'
 import dayjs from 'dayjs';
 import * as XLSX from 'xlsx';
 import { _fetch } from '../libs/utils';
-import { toast, ToastContainer } from "react-toastify";
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { useEffect,useState } from 'react';
@@ -12,6 +11,7 @@ import { Fancybox } from "@fancyapps/ui";
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
 import { format } from "date-fns";
 import Select from 'react-select';
+import { notify } from '../services/notify';
 
 
 
@@ -85,7 +85,7 @@ const ZonalWiseTourReport = () => {
                           
                             } catch (error) {
                               console.error('PDF download error:', error);
-                              toast.error('Unable to download inspection report');
+                              notify.error('Unable to download inspection report');
                             }
                           };
                  
@@ -98,7 +98,7 @@ const ZonalWiseTourReport = () => {
                                     if(res.status === 'success'){
                                         setOfficersList(res.data);
                                     }else {
-                                        toast.error('Error fetching Officers list')
+                                        notify.error('Error fetching Officers list')
                                     }
                                 
                         
@@ -133,7 +133,7 @@ const ZonalWiseTourReport = () => {
                  
                 const fetchZonalWiseReport = async () => {
   if (!fromDate || !toDate) {
-    toast.warning('Please select From and To dates');
+    notify.warning('Please select From and To dates');
     return;
   }
 
@@ -160,7 +160,7 @@ const ZonalWiseTourReport = () => {
     setSummary(res.summary);
     setVisits(res.visits);
   } else {
-    toast.error('Failed to fetch report');
+    notify.error('Failed to fetch report');
   }
 };
 
@@ -355,7 +355,6 @@ const ExcelReportZonalWise = async (
 
   return (
    <>
-    <ToastContainer/>
      <div className='row'>
         <div className='col-sm-12'>
             <div className='white-box shadow-sm'>

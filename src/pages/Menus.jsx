@@ -1,9 +1,10 @@
-import { toast, ToastContainer } from "react-toastify";
+
 import { _fetch } from "../libs/utils";
 import { useSelector } from 'react-redux';
 import { useEffect, useState, useRef, use } from 'react';
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { notify } from "../services/notify";
 const Menus = () => {
     const token = useSelector((state) => state.userappdetails.TOKEN);
     const UserType = useSelector((state) => state.userappdetails.profileData.UserType);
@@ -23,19 +24,18 @@ const Menus = () => {
         _fetch("menu", null, false, token).then(res => {
             if (res.status === "success") {
                 setMenuList(res.data);
-                //toast.success("Menu list fetched successfully.");
             } else {
-                toast.info("Failed to fetch menu list.");
+                console.error("Failed to fetch menu list.");
             }
         }).catch(err => {
             //console.error("Error fetching menu list:", err);
-            toast.error("An error occurred while fetching menu list.");
+            console.error("An error occurred while fetching menu list.");
         });
     }
     const getmenuitemsbydayoftheweek = async (mealtypeid) => {
         console.log("Fetching menu items for Meal Type ID:", mealtypeid);
         if (!mealtypeid) {
-            toast.error("Meal Type ID is required to fetch menu items.");
+            console.error("Meal Type ID is required to fetch menu items.");
             return [];
         }
         try {
@@ -43,12 +43,11 @@ const Menus = () => {
             if (res.status === "success") {
                 return res.data;
             } else {
-                toast.error("Failed to fetch menu items for the selected day.");
+                console.error("Failed to fetch menu items for the selected day.");
                 return [];
             }
         } catch (err) {
             console.error("Error fetching menu items:", err);
-            toast.error("An error occurred while fetching menu items.");
             return [];
         }
     }
@@ -76,7 +75,7 @@ const Menus = () => {
      const handleSubmit = () => {
         const updatedItems = selectedMealItems.filter(item => item.Checked);
         if (updatedItems.length === 0) {
-            toast.error("Please select at least one item to update.");
+            notify.error("Please select at least one item to update.");
             return;
         }
         // Only show as removed those that were originally checked but are now unchecked
@@ -88,10 +87,10 @@ const Menus = () => {
             item.Checked && !originalCheckedIdsRef.current.includes(item.FoodItemId)
         );
         if (removedItems.length > 0) {
-            toast.info("Some items were removed from the selection.");
+            notify.info("Some items were removed from the selection.");
         }
         if (newlyAddedItems.length === 0) {
-            toast.info("No new items were added.");
+            notify.info("No new items were added.");
         }
         // Here you can handle the submission of only newlyAddedItems
         // console.log("Newly added items:", newlyAddedItems);
@@ -110,7 +109,6 @@ const Menus = () => {
     };
     return (
         <>
-            <ToastContainer />
             <h6 className="fw-bold mb-3"><a onClick={() => { navigate("/tsmess") }}><i className="bi bi-arrow-left pe-2" style={{ fontSize: "24px", verticalAlign: "middle" }}></i></a> Daily Menu</h6>
             <div className="row">
                 <div className="col-sm-12 text-end">

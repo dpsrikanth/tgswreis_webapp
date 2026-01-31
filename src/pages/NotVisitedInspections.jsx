@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import { useSelector } from "react-redux";
-import { toast } from "react-toastify";
 import { _fetch } from "../libs/utils";
 import { format } from "date-fns";
+import { notify } from "../services/notify";
+import { useNavigate } from "react-router-dom";
 
 const NotVisitedInspections = () => {
 
@@ -12,6 +13,17 @@ const NotVisitedInspections = () => {
 
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+
+  const yesterday = new Date();
+yesterday.setDate(yesterday.getDate() - 1);
+
+const formattedDate = yesterday.toLocaleDateString("en-GB", {
+  day: "2-digit",
+  month: "short",
+  year: "numeric"
+});
 
   /* ===========================
       FETCH DATA
@@ -35,7 +47,7 @@ const NotVisitedInspections = () => {
       }
 
     } catch (err) {
-      toast.error("Failed to load data");
+      console.error("Failed to load data");
     }
 
     setLoading(false);
@@ -52,7 +64,7 @@ const NotVisitedInspections = () => {
   const exportExcel = async () => {
 
     if (!rows.length) {
-      toast.warning("No data available");
+      notify.warning("No data available");
       return;
     }
 
@@ -68,7 +80,7 @@ const NotVisitedInspections = () => {
 
     sheet.mergeCells("A1:J1");
     sheet.getCell("A1").value =
-      "Yesterday – Not Visited Inspections";
+      `Yesterday (${formattedDate})  – Not Visited Inspections`;
     sheet.getCell("A1").font = { bold: true, size: 14 };
     sheet.getCell("A1").alignment = { horizontal: "center" };
 
@@ -81,8 +93,6 @@ const NotVisitedInspections = () => {
       "Region",
       "School Name",
       "School Code",
-      "Visit Date",
-      "Status",
       "Remarks"
     ];
 
@@ -103,8 +113,6 @@ const NotVisitedInspections = () => {
         row.Region,
         row.PartnerName?.replace("TGSWREIS", ""),
         row.SchoolCode,
-        format(new Date(row.DateOfVisit), "dd-MMM-yyyy"),
-        "NOT VISITED",
         row.NotVisitedRemarks || ""
       ]);
 
@@ -132,12 +140,16 @@ const NotVisitedInspections = () => {
       UI
   =========================== */
 
+
+
+
+
   return (
     <div className="white-box shadow-sm">
 
       <div className="table-header">
         <h5 className="chart-title">
-          Yesterday – Not Visited Inspections
+          Yesterday ({formattedDate}) – Not Visited Inspections
         </h5>
 
         <button
@@ -146,6 +158,9 @@ const NotVisitedInspections = () => {
         >
           Export Excel
         </button>
+         <button className="btn btn-secondary btn-sm" onClick={() => navigate('/tourdiarydashboard')}>
+            Back
+          </button>
       </div>
 
       <div className="table-responsive mt-3">
@@ -159,8 +174,6 @@ const NotVisitedInspections = () => {
               <th>Region</th>
               <th>School</th>
               <th>School Code</th>
-              <th>Visit Date</th>
-              <th>Status</th>
               <th>Remarks</th>
             </tr>
           </thead>
@@ -175,15 +188,7 @@ const NotVisitedInspections = () => {
                   <td>{r.Region}</td>
                   <td>{r.PartnerName?.replace("TGSWREIS", "")}</td>
                   <td>{r.SchoolCode}</td>
-                  <td>
-                    {format(new Date(r.DateOfVisit), "dd-MMM-yyyy")}
-                  </td>
-                  <td>
-                    <span className="badge bg-danger">
-                      Not Visited
-                    </span>
-                  </td>
-                  <td>{r.NotVisitedRemarks || "-"}</td>
+                  <td>{r.NotVisitedRemarks || "Awaiting Remarks"}</td>
                 </tr>
               ))
             ) : (

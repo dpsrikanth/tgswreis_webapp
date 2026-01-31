@@ -1,12 +1,12 @@
 import React,{ useEffect,useRef,useState }  from 'react'
 import { useSelector } from 'react-redux'
 import { _fetch } from '../libs/utils';
-import { toast, ToastContainer } from "react-toastify";
 import {data, useNavigate} from 'react-router-dom'
 import io from 'socket.io-client'
 import ExcelJS from 'exceljs';
 import {saveAs} from 'file-saver';
 import DataTable from 'react-data-table-component';
+import { notify } from '../services/notify';
 
 
 const ComplaintDashboard = () => {
@@ -70,9 +70,8 @@ const fetchComplaintLogs = async () => {
         _fetch('getcomplaintlogs',null,false,token).then(res => {
             if(res.status === 'success'){
                 setComplaintLogs(res.data);
-                toast.success(res.message)
             } else {
-                toast.error(res.message)
+                console.error(res.message)
             }
         })
 
@@ -127,7 +126,7 @@ const fetchComplaintTypes = async () => {
                           })
         }
       } else {
-        toast.error(res.message);
+        console.error(res.message);
       }
     }) 
 
@@ -354,7 +353,7 @@ if(Array.isArray(data) && data.length > 0){
   const headers = Object.keys(data[0]);
   createSheet("Daily Logs",customHeaders,data);
 } else {
-  toast.error(`No Logs for today's date`);
+  notify.error(`No Logs for today's date`);
 }
 
 const buffer = await workbook.xlsx.writeBuffer();
@@ -451,7 +450,7 @@ if(Array.isArray(data) && data.length > 0){
   const headers = Object.keys(data[0]);
   createSheet("Daily Logs",customHeaders,data);
 } else {
-  toast.error(`No Logs for today's date`);
+  notify.error(`No Logs for today's date`);
 }
 
 const buffer = await workbook.xlsx.writeBuffer();
@@ -468,13 +467,12 @@ const fetchDailyLogsReport = async () => {
     if(res.status === 'success'){
        DailyLogsReport(res.data);
     } else {
-      toast.error(res.message);
+      notify.error(res.message);
     }
   })
   }
   catch(error){
     console.log('Error fetching Daily Logs report:',error)
-    toast.error(res.message);
   }
 }
 
@@ -489,7 +487,7 @@ const fetchBetweenLogsReport = async () => {
     if(res.status === 'success'){
       BetweenExcelReport(res.data);
     } else {
-      toast.error(res.message);
+      notify.error(res.message);
     }
   })
 }
@@ -588,7 +586,7 @@ const columns = [
 
   return (
     <>
-      <ToastContainer/>
+
           <h6 className="fw-bold mb-3"><a onClick={() => navigate('/samsdashboard')} style={{cursor:'pointer'}}><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>TGSWREIS Complaint Dashboard</h6>
         
       <div>

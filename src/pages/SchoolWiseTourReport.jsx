@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { _fetch } from "../libs/utils";
-import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import { format } from "date-fns";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import { useNavigate } from "react-router-dom";
+import { notify } from "../services/notify";
 
 
 const SchoolWiseTourReport = () => {
@@ -20,7 +20,7 @@ const SchoolWiseTourReport = () => {
 
   const fetchSchoolWiseReport = async () => {
     if (!fromDate || !toDate) {
-      toast.warning("Please select From & To dates");
+      notify.warning("Please select From & To dates");
       return;
     }
 
@@ -34,7 +34,7 @@ const SchoolWiseTourReport = () => {
         if (res.status === "success") {
           setSchools(res.data);
         } else {
-          toast.error("No data found");
+          notify.error("No data found");
         }
       });
   };
@@ -64,7 +64,7 @@ const exportInstitutionWiseExcel = async (
 ) => {
 
   if (!schools || schools.length === 0) {
-    toast.warning("No data available");
+    notify.warning("No data available");
     return;
   }
 
@@ -260,7 +260,7 @@ const exportInstitutionWiseExcel = async (
           {/* ================= HEADER ================= */}
           <div className="table-header">
             <h5 className="chart-title">
-              School Wise Tour Diary Report
+              School Wise Inspection Report
             </h5>
             <button
   className="btn btn-success"

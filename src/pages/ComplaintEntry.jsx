@@ -1,11 +1,11 @@
 import React,{ useEffect,useRef,useState }  from 'react'
 import { useSelector } from 'react-redux'
 import { _fetch } from '../libs/utils';
-import { toast, ToastContainer } from "react-toastify";
 import {data, useNavigate} from 'react-router-dom'
 import ExcelJS from 'exceljs';
 import {saveAs} from 'file-saver';
 import DataTable from 'react-data-table-component';
+import { notify } from '../services/notify';
 
 const ComplaintEntry = () => {
 
@@ -51,9 +51,8 @@ const fetchComplaintLogs = async () => {
         _fetch('getcomplaintlogs',null,false,token).then(res => {
             if(res.status === 'success'){
                 setComplaintLogs(res.data);
-                toast.success(res.message)
             } else {
-                toast.error(res.message)
+                console.error(res.message)
             }
         })
 
@@ -114,17 +113,16 @@ const updateComplaintLog = async () => {
     try {
         _fetch('updatecomplaintlog',payload,false,token).then(res => {
             if(res.status === 'success'){
-                toast.success(res.message);
+                notify.success(res.message);
                 setShowEditModal(false);
                 fetchComplaintLogs();
             } else {
-                toast.error(res.message);
+                notify.error(res.message);
             }
         })
 
     } catch (error){
         console.error('Error updating complaint:',error)
-        toast.error(res.message)
     }
 }
 
@@ -151,7 +149,7 @@ const fetchCardDetails = async () => {
 
    } catch(error){
     console.log('Error fetching details related to card number:',error)
-    toast.error(res.message)
+    notify.error(res.message)
    }
 }
 
@@ -170,13 +168,12 @@ const fetchGSMDetails = async () => {
                setInstName(res.data[0].PartnerName)
                setSchoolCode(res.data[0].SchoolCode)
             } else {
-                toast.error(res.message)
+                notify.error(res.message)
             }
         })
 
     } catch (error){
         console.error('Error fetching Details for this GSM Number:',error)
-        toast.error(res.message)
     }
 }
 
@@ -200,7 +197,7 @@ const CreateNewComplaint = async () => {
 
         _fetch('createnewcomplaint',payload,false,token).then (res => {
             if(res.status === 'success'){
-                toast.success(res.message);
+                notify.success(res.message);
                 setShowAddModal(false);
                 fetchComplaintLogs();
                 setGSMNumber('');
@@ -217,7 +214,7 @@ const CreateNewComplaint = async () => {
                 setHouseMasterPhoneNum('');
                 setReportedDate('');
             } else {
-                toast.error(res.message)
+                notify.error(res.message)
             }
         })
 
@@ -308,7 +305,7 @@ if(Array.isArray(data) && data.length > 0){
   const headers = Object.keys(data[0]);
   createSheet("Daily Logs",customHeaders,data);
 } else {
-  toast.error(`No Logs for today's date`);
+  notify.error(`No Logs for today's date`);
 }
 
 const buffer = await workbook.xlsx.writeBuffer();
@@ -406,7 +403,7 @@ if(Array.isArray(data) && data.length > 0){
   const headers = Object.keys(data[0]);
   createSheet("Daily Logs",customHeaders,data);
 } else {
-  toast.error(`No Logs for today's date`);
+  notify.error(`No Logs for today's date`);
 }
 
 const buffer = await workbook.xlsx.writeBuffer();
@@ -422,13 +419,12 @@ const fetchDailyLogsReport = async () => {
     if(res.status === 'success'){
        DailyLogsReport(res.data);
     } else {
-      toast.error(res.message);
+      notify.error(res.message);
     }
   })
   }
   catch(error){
     console.log('Error fetching Daily Logs report:',error)
-    toast.error(res.message);
   }
 }
 
@@ -441,7 +437,7 @@ const fetchBetweenLogsReport = async () => {
     if(res.status === 'success'){
       BetweenExcelReport(res.data);
     } else {
-      toast.error(res.message);
+      notify.error(res.message);
     }
   })
 }
@@ -585,7 +581,6 @@ const columns = [
 
   return (
    <>
-      <ToastContainer />
        <div className="bg-white mt-2 py-2">
       <h4 className="text-center">TGSWREIS CALL CENTRE LOG BOOK</h4>
       </div>

@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import { _fetch } from "../libs/utils";
-import { toast } from "react-toastify";
 import { format } from "date-fns";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { notify } from "../services/notify";
 
 const SchoolWiseVisitAbstract = () => {
 
@@ -24,7 +24,7 @@ const SchoolWiseVisitAbstract = () => {
 
   const fetchReport = async () => {
     if (!fromDate || !toDate) {
-      toast.warning("Select From & To date");
+      notify.warning("Select From & To date");
       return;
     }
 
@@ -39,7 +39,7 @@ const SchoolWiseVisitAbstract = () => {
       setAbstract(res.abstract);
       setSchools(res.schools);
     } else {
-      toast.error("No data found");
+      notify.error("No data found");
     }
   };
 
@@ -50,7 +50,7 @@ const SchoolWiseVisitAbstract = () => {
   const exportExcel = async () => {
 
     if (!schools.length) {
-      toast.warning("No data available");
+      notify.warning("No data available");
       return;
     }
 

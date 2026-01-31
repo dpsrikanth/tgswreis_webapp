@@ -2,7 +2,6 @@ import React, { useEffect,useRef,useState } from 'react'
 import { useSelector } from 'react-redux'
 import { data, Form, useNavigate } from 'react-router-dom';
 import { _fetch } from '../libs/utils';
-import { toast, ToastContainer } from "react-toastify";
 
 const Items = () => {
 const token = useSelector((state) => state.userappdetails.TOKEN);
@@ -22,13 +21,13 @@ const fetchItems = async () => {
     _fetch('fetchitems',null,false,token).then(res => {
         if(res.status === 'success') {
             setItems(res.data);
-            toast.success(res.message);
+            
         } else {
-            toast.error(res.message);
+            console.error(res.message);
         }
     }).catch(err => {
         console.error('Error fetching Items List',err);
-        toast.error('Failed to fetch Items List');
+        
     })
 };
 
@@ -49,15 +48,14 @@ const addItem = async () => {
    
     _fetch("additems",payload,false,token).then(res => {
         if(res.status === 'success') {
-            toast.success(res.message);
+            notify.success(res.message);
             fetchItems();
             setShowModal(false);
         } else {
-            toast.error(res.message);
+            notify.error(res.message);
         }
     }).catch(err => {
         console.error('Failed to Add a New Item',err);
-        toast.error('Failed to add a new item');
     })
 }
 
@@ -66,7 +64,7 @@ const addItem = async () => {
 
   return (
     <>
-     <ToastContainer />
+
      <h6 className="fw-bold mb-3">
                 <a onClick={() => { navigate("/tsmess") }} style={{ cursor: "pointer" }}>
                     <i className="bi bi-arrow-left pe-2" style={{ fontSize: "24px", verticalAlign: "middle" }}></i>

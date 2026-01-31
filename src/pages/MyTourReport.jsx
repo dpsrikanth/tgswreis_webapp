@@ -12,6 +12,7 @@ import { Fancybox } from "@fancyapps/ui";
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
 import { format } from "date-fns";
 import Select from 'react-select';
+import { notify } from '../services/notify';
 
 
 const MyTourReport = () => {
@@ -31,6 +32,7 @@ const MyTourReport = () => {
                const [selectedTourDiaryId,setSelectedTourDiaryId] = useState(null);
                const [fromDate,setFromDate] = useState('');
                const [toDate,setToDate] = useState('');
+               const navigate = useNavigate();
                const apiUrl = window.gc.cdn;
 
                 const openPhotoGallery = (tourDiaryId, photoList) => {
@@ -103,14 +105,14 @@ const MyTourReport = () => {
   
     } catch (error) {
       console.error('PDF download error:', error);
-      toast.error('Unable to download inspection report');
+      notify.error('Unable to download inspection report');
     }
   };
 
 
 const fetchMyTourReport = async () => {
   if (!fromDate || !toDate) {
-    toast.warning('Please select From and To dates');
+    notify.warning('Please select From and To dates');
     return;
   }
 
@@ -131,11 +133,10 @@ const fetchMyTourReport = async () => {
       setSummary(res.summary);
       setVisits(res.visits);
     } else {
-      toast.error('Failed to fetch report');
+      notify.error('Failed to fetch report');
     }
   } catch (err) {
     console.error(err);
-    toast.error('Error fetching My Inspection Report');
   }
 };
 
@@ -144,7 +145,7 @@ const ExcelReportMyTour = async (summary, visits, meta) => {
   const { fromDate, toDate } = meta;
 
   if (!summary.length && !visits.length) {
-      toast.warning('No data available to export');
+      notify.warning('No data available to export');
       return;
     }
 
@@ -284,7 +285,6 @@ const ExcelReportMyTour = async (summary, visits, meta) => {
   
   return (
     <>
-    <ToastContainer />
       <div className='row'>
         <div className='col-sm-12'>
             <div className='white-box shadow-sm'>
@@ -298,6 +298,9 @@ const ExcelReportMyTour = async (summary, visits, meta) => {
     })
   }>Excel Report</button>
                  </div>
+                 <button className="btn btn-secondary btn-sm ms-2" onClick={() => navigate('/touruserdashboard')}>
+            Back
+          </button>
                 </div>
                 <div className='row align-items-center'>
 

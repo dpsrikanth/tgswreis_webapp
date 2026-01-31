@@ -70,6 +70,12 @@ import SchoolWiseVisitAbstract from './pages/SchoolWiseVisitAbstract';
 import NotVisitedInspections from './pages/NotVisitedInspections';
 import AdditionalInspections from './pages/AdditionalInspections';
 import CannotVisitInspections from './pages/CannotVisitInspections';
+import TodayTotalInspections from './pages/TodayTotalInspections';
+import CompletedInspections from './pages/CompletedInspections';
+import PendingInspections from './pages/PendingInspections';
+import ProfilePage from './components/common/ProfilePage';
+import TourVisitDetails from './pages/TourVisitDetails';
+import ComparativeInspection from './pages/ComparativeInspection';
 const AppRoutes = () => {
   return (
     <Router>
@@ -477,6 +483,48 @@ const AppRoutes = () => {
             <CannotVisitInspections />
           </ProtectedRoute>
         } />
+
+        <Route path='/todaytotalinspections' element={
+         <ProtectedRoute>
+          <TodayTotalInspections />
+         </ProtectedRoute>
+        } />
+
+        <Route path='/todaycompletedinspections' element={
+         <ProtectedRoute>
+          <CompletedInspections />
+         </ProtectedRoute>
+        } />
+
+        <Route path='/todaypendinginspections' element={
+         <ProtectedRoute>
+          <PendingInspections />
+         </ProtectedRoute>
+        } />
+
+
+        <Route path='/userprofile' element={
+         <ProtectedRoute>
+          <ProfilePage />
+         </ProtectedRoute>
+        } />
+
+
+        <Route path="/tour/visit-details/:status"
+  element={
+    <ProtectedRoute>
+      <TourVisitDetails />
+    </ProtectedRoute>
+  }
+/>
+
+
+<Route path='/comparativeinspection' element={
+<ProtectedRoute>
+  <ComparativeInspection />
+</ProtectedRoute>
+} />
+
 
         </Route>
       </Routes>

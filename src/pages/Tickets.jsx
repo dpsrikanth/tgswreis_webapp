@@ -2,8 +2,8 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { data, useNavigate } from 'react-router-dom';
 import { _fetch } from '../libs/utils';
-import { toast, ToastContainer } from "react-toastify";
 import DataTable from 'react-data-table-component';
+import { notify } from '../services/notify';
 
 const Tickets = () => {
   const token = useSelector((state) => state.userappdetails.TOKEN);
@@ -26,13 +26,11 @@ const Tickets = () => {
     _fetch('fetchtickets', queryData, false, token).then(res => {
       if (res.status === 'success') {
         setTickets(res.data);
-        toast.success(res.message);
       } else {
-        toast.error(res.message);
+        console.error(res.message);
       }
     }).catch(err => {
       console.error("Error fetching tickets list:", err);
-      toast.error("Failed to fetch tickets list.");
     })
   };
 
@@ -61,16 +59,16 @@ const Tickets = () => {
 
     _fetch('processTicket', { TicketId: ticketid, ApprovedStatus, ApprovedFromDate, ApprovedToDate, ApprovedReason, ApprovedBy: userid, ApprovedOn: new Date().toISOString() }, false, token).then(res => {
       if (res.status === 'success') {
-        toast.success(res.message);
+        notify.success(res.message);
         setShowModal(false);
         fetchTickets();
       }
       else {
-        toast.error(res.message);
+        notify.error(res.message);
       }
     }).catch(err => {
       console.error('Error Updating Ticket Status:', err);
-      toast.error("Failed to update ticket status.");
+      notify.error("Failed to update ticket status.");
     })
   }
 
@@ -191,7 +189,7 @@ const Tickets = () => {
 
   return (
     <>
-      <ToastContainer />
+
       <div className="row g-3 mb-3">
         <div className="col-sm-12">
           <div className="white-box shadow-sm">

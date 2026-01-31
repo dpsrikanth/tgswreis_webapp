@@ -2,7 +2,6 @@ import React from 'react'
 import dayjs from 'dayjs';
 import * as XLSX from 'xlsx';
 import { _fetch } from '../libs/utils';
-import { toast, ToastContainer } from "react-toastify";
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { useEffect,useState } from 'react';
@@ -12,6 +11,7 @@ import { Fancybox } from "@fancyapps/ui";
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
 import { format } from "date-fns";
 import Select from 'react-select';
+import { notify } from '../services/notify';
 
 
 const DCOWiseReport = () => {
@@ -20,6 +20,7 @@ const DCOWiseReport = () => {
       const UserId = useSelector((state) => state.userappdetails.profileData.Id);
       const ZoneId = useSelector((state) => state.userappdetails.profileData.ZoneId);
       const DistrictId = useSelector((state) => state.userappdetails.profileData.DistrictId);
+      const navigate = useNavigate();
 
        const [officersList,setOfficersList] = useState([]);
        const [selectedOfficerId,setSelectedOfficerId] = useState(null);
@@ -86,7 +87,7 @@ const DCOWiseReport = () => {
          
            } catch (error) {
              console.error('PDF download error:', error);
-             toast.error('Unable to download inspection report');
+             notify.error('Unable to download inspection report');
            }
          };
 
@@ -99,7 +100,7 @@ const DCOWiseReport = () => {
                    if(res.status === 'success'){
                        setOfficersList(res.data);
                    }else {
-                       toast.error('Error fetching Officers list')
+                       notify.error('Error fetching Officers list')
                    }
                })
        
@@ -134,7 +135,7 @@ const DCOWiseReport = () => {
 
 const fetchDCOWiseReport = async () => {
   if (!fromDate || !toDate) {
-    toast.warning('Please select From and To dates');
+    notify.warning('Please select From and To dates');
     return;
   }
 
@@ -163,11 +164,10 @@ const fetchDCOWiseReport = async () => {
       setSummary(res.summary);
       setVisits(res.visits);
     } else {
-      toast.error('Failed to fetch report');
+      notify.error('Failed to fetch report');
     }
   } catch (err) {
     console.error(err);
-    toast.error('Error fetching DCO Wise Report');
   }
 };
 
@@ -183,7 +183,7 @@ const ExcelReportDCOWise = async (
   } = meta;
 
   if (!summary.length && !visits.length) {
-    toast.warning('No data available to export');
+    notify.warning('No data available to export');
     return;
   }
 
@@ -345,7 +345,6 @@ useEffect(
 
   return (
     <>
-    <ToastContainer/>
      <div className='row'>
         <div className='col-sm-12'>
             <div className='white-box shadow-sm'>
@@ -359,6 +358,9 @@ useEffect(
       toDate
     })
   }>Excel Report</button>
+   <button className="btn btn-secondary btn-sm ms-2" onClick={() => navigate('/touruserdashboard')}>
+            Back
+          </button>
                  </div>
                 </div>
                 <div className='row align-items-center'>

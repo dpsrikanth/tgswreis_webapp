@@ -1,4 +1,4 @@
-import { toast, ToastContainer } from "react-toastify";
+
 import { _fetch } from "../libs/utils";
 import { useSelector } from 'react-redux';
 import React from "react";
@@ -15,13 +15,13 @@ const MenuOTFollowing = () => {
                 if (res.status === "success") {               
                     //console.log("Compliance Not Following List fetched successfully:", res.data);
                     setComplianceNotFollowing(res.data);
-                    toast.success("Compliance Not Following list fetched successfully.");
+                   
                 } else {
-                    toast.error("Failed to fetch compliance not following list.");
+                    console.error("Failed to fetch compliance not following list.");
                 }
             }).catch(err => {
                 console.error("Error fetching compliance not following list:", err);
-                toast.error("Failed to fetch compliance not following list.");
+                
             });
         };
         useEffect(() => {

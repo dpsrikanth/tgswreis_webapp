@@ -2,11 +2,11 @@ import React,{useState} from 'react';
 import dayjs from 'dayjs';
 import * as XLSX from 'xlsx';
 import { _fetch } from '../libs/utils';
-import { toast, ToastContainer } from "react-toastify";
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react';
 import Select from 'react-select';
+import { notify } from '../services/notify';
 
 
 const CsrDashboard = () => {
@@ -40,15 +40,14 @@ const fetchCSRActivities = async () => {
         _fetch('getcsractivities',null,false,token).then(res => {
             if(res.status === 'success'){
                 setCsrActivitiesList(res.data);
-                toast.success(res.message)
             } else {
-                toast.error(res.message);
+                console.error(res.message);
             }
         })
 
     } catch (error){
         console.error('Error fetching CSR Activities',error)
-        toast.error(res.message)
+        
     }
 }
 
@@ -65,7 +64,7 @@ const fetchCSRStats = async () => {
 
   } catch (error){
     console.error('Error fetching CSRStats',error)
-    toast.error(res.message);
+    
   }
 }
 
@@ -99,7 +98,7 @@ const createCsrActivity = async () => {
 
         _fetch('createcsractivity',formData,true,token).then(res => {
             if(res.status === 'success'){
-                toast.success(res.message)
+                notify.success(res.message)
                 setShowModal(false)
                 fetchCSRActivities();
                 fetchCSRStats();
@@ -110,13 +109,12 @@ const createCsrActivity = async () => {
                 setAssignedTo([])
                 setAttachment(null)
             }else{
-                toast.error(res.message);
+                notify.error(res.message);
             }
         })
 
     } catch (error){
         console.error('error creating csr activity',error)
-        toast.error(res.message);
     }
 }
 
@@ -143,17 +141,16 @@ const updateCsrActivity = async () => {
 
       if(res.status === 'success'){
         setShowModalTwo(false);
-        toast.success(res.message);
+        notify.success(res.message);
         fetchCSRActivities();
       }else {
-        toast.error(res.message);
+        notify.error(res.message);
       }
 
     })
 
   } catch (error) {
     console.error('Error updating csr activity',error);
-    toast.error('Error updating csr activity');
   }
 }
 

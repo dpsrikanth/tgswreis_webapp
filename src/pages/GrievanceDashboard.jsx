@@ -2,12 +2,12 @@ import React,{useState} from 'react';
 import dayjs from 'dayjs';
 import * as XLSX from 'xlsx';
 import { _fetch } from '../libs/utils';
-import { toast, ToastContainer } from "react-toastify";
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react';
 import ExcelJS from 'exceljs';
 import {saveAs} from 'file-saver';
+import { notify } from '../services/notify';
 
 
 
@@ -45,16 +45,16 @@ const fetchGrievances = async () => {
         _fetch('getgrievances',null,false,token).then(res => {
             if(res.status === 'success'){
                 setGrievancesList(res.data);
-                toast.success(res.message)
+               
             }else {
-                toast.error(res.message)
+                console.error(res.message)
             }
         })
 
 
     } catch (error){
         console.error('Error fetching Grievances List')
-        toast.error('Error fetching Grievances')
+       
     }
 }
 
@@ -69,13 +69,12 @@ const fetchGrievancesStats = async () => {
         setResolvedCount(res.data[1].CountByStatus);
         setNotResolvedCount(res.data[2].CountByStatus);
       }else{
-        toast.error(res.message)
+        console.error(res.message)
       }
     })
 
   } catch (error) {
     console.error('Error fetching Grievance Stats',error)
-    toast.error('Error fetching Grievance Stats')
   }
 }
 
@@ -88,7 +87,7 @@ const updateGrievanceStatus = async () => {
     _fetch('updategrievancestatus',payload,false,token).then(res => {
       if(res.status === 'success'){
         setShowModal(false);
-        toast.success(res.message);
+        notify.success(res.message);
         setSelectedGrievanceId(null);
         setGrievanceStatus('');
         setResolutionReason('');
@@ -97,12 +96,12 @@ const updateGrievanceStatus = async () => {
         fetchGrievancesStats();
 
       } else {
-        toast.error(res.message)
+        notify.error(res.message)
       }
     })
   } catch (error){
     console.error('Error Updating Grievance',error)
-    toast.error('Error updating Grievance')
+   
   }
 } 
 
@@ -179,7 +178,7 @@ useEffect(() => {
 
   return (
     <>
-    <ToastContainer />
+
    <div className="row g-3 mb-3">
 
     <div className='col-sm-12'>

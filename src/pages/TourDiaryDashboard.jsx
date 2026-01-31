@@ -4,8 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef, use } from 'react';
 import { _fetch } from "../libs/utils";
 import { useSelector } from 'react-redux';
-import { toast, ToastContainer } from "react-toastify";
-import Select from 'react-select';
 
 const TourDiaryDashboard = () => {
   const token = useSelector((state) => state.userappdetails.TOKEN);
@@ -36,9 +34,8 @@ const TourDiaryDashboard = () => {
         _fetch('todaytourschedule',null,false,token).then(res => {
             if(res.status === 'success'){
                 setTodaySchedule(res.data);
-                toast.success(res.message);
             }else {
-                toast.error(res.message);
+                console.error(res.message);
             }
         })
 
@@ -77,9 +74,9 @@ const fetchTopCompliance = async () => {
         _fetch('topcompliant',null,false,token).then(res => {
             if(res.status === 'success'){
                 setTopCompliance(res.data);
-                toast.success(res.message);
+                
             }else {
-                toast.error(res.message);
+                console.error(res.message);
             }
         })
 
@@ -96,9 +93,9 @@ const fetchLowCompliance = async () => {
         _fetch('topnoncompliant',null,false,token).then(res => {
             if(res.status === 'success'){
                 setLowCompliance(res.data);
-                toast.success(res.message);
+               
             }else {
-                toast.error(res.message);
+                console.error(res.message);
             }
         })
 
@@ -120,9 +117,8 @@ const fetchLowCompliance = async () => {
                 setTodayCannotVisit(res.data[0].TotalCannotVisitToday)
                 setTodayPending(res.data[0].PendingToday);
                 setTodayUnplanned(res.data[0].TotalAdditionalVisitsToday);
-                toast.success(res.message);
             }else {
-                toast.error(res.message);
+                console.error(res.message);
             }
         })
 
@@ -142,9 +138,8 @@ const fetchLowCompliance = async () => {
                 setTotalCompleted(res.data[0].TotalCompleted);
                 setTotalCannotVisit(res.data[0].TotalCannotVisit);
                 setYesNotVisited(res.data[0].YesterdayNotVisited);
-                toast.success(res.message);
             }else {
-                toast.error(res.message);
+                console.error(res.message);
             }
         })
 
@@ -189,12 +184,12 @@ useEffect(() => {
 
         <div className="col-sm-12">
             <div className="row g-3 mb-3">
-        <div className="col-md-4">
+        <div className="col-md-4" style={{cursor:'pointer'}} onClick={() => navigate('/todaytotalinspections')}>
           
           <div className="white-box d-flex justify-content-between shadow-sm">
             <div>
               <h3 className="fw-bold text-primary">{todayPlanned}</h3>
-              <h6 className="fw-bold">Today Planned Inspections</h6>
+              <h6 className="fw-bold">Today Scheduled Inspections</h6>
             </div>
             <div className="text-end">
               <div class="traffic-light primary"></div>
@@ -202,68 +197,7 @@ useEffect(() => {
           </div>
           
         </div>
-        
-        <div className="col-md-4">
-          <div
-            className="white-box d-flex justify-content-between shadow-sm"
-          >
-            <div>
-            
-              <h3 className="fw-bold text-success">{todayCompleted}</h3>
-                <h6 className="fw-bold">Today Completed Inspections</h6>
-            </div>
-            <div className="text-end">
-               <div class="traffic-light green"></div>
-      
-            </div>
-          </div>
-        </div>
-        <div className="col-md-4" style={{cursor:'pointer'}} onClick={() => navigate('/yesnotvisitedinspections')}>
-          <div
-            className="white-box d-flex justify-content-between shadow-sm">
-            <div>
-              <h3 className="fw-bold text-danger">{yesNotVisited}</h3>
-              <h6 className="fw-bold">Yesterday Not Visited Inspections</h6>
-            </div>
-            <div className="text-end">
-              <div class="traffic-light red"></div>
-            </div>
-          </div>
-        </div>
-         <div className="col-md-4" style={{cursor:'pointer'}} onClick={() => navigate('/cannotvisitinspections')}>
-         
-          <div
-            className="white-box d-flex justify-content-between shadow-sm"
-          >
-            <div>
-             
-              <h3 className="fw-bold maroon">{todayCannotVisit}</h3>
-               <h6 className="fw-bold">Today Cannot Visit Inspections</h6>
-            </div>
-            <div className="text-end">
-             <div class="traffic-light maroon"></div>
-             
-            </div>
-          </div>
-          
-        </div> 
-        <div className="col-md-4">
-         
-          <div
-            className="white-box d-flex justify-content-between shadow-sm"
-          >
-            <div>
-             
-              <h3 className="fw-bold text-warning">{todayPending}</h3>
-               <h6 className="fw-bold">Today Pending Inspections</h6>
-            </div>
-            <div className="text-end">
-              <div class="traffic-light yellow"></div>
-             
-            </div>
-          </div>
-        
-        </div> 
+
         <div className="col-md-4" style={{cursor:'pointer'}} onClick={() => navigate('/additionalinspections')}>
         
           <div
@@ -281,6 +215,73 @@ useEffect(() => {
           </div>
       
         </div> 
+
+        <div className="col-md-4" style={{cursor:'pointer'}} onClick={() => navigate('/todaypendinginspections')}>
+         
+          <div
+            className="white-box d-flex justify-content-between shadow-sm"
+          >
+            <div>
+             
+              <h3 className="fw-bold text-warning">{todayPending}</h3>
+               <h6 className="fw-bold">Today Pending Inspections</h6>
+            </div>
+            <div className="text-end">
+              <div class="traffic-light yellow"></div>
+             
+            </div>
+          </div>
+        
+        </div> 
+        
+        <div className="col-md-4" style={{cursor:'pointer'}} onClick={() => navigate('/todaycompletedinspections')}>
+          <div
+            className="white-box d-flex justify-content-between shadow-sm"
+          >
+            <div>
+            
+              <h3 className="fw-bold text-success">{todayCompleted}</h3>
+                <h6 className="fw-bold">Today Completed Inspections</h6>
+            </div>
+            <div className="text-end">
+               <div class="traffic-light green"></div>
+            </div>
+          </div>
+        </div>
+
+          <div className="col-md-4" style={{cursor:'pointer'}} onClick={() => navigate('/cannotvisitinspections')}>
+         
+          <div
+            className="white-box d-flex justify-content-between shadow-sm"
+          >
+            <div>
+             
+              <h3 className="fw-bold text-secondary">{todayCannotVisit}</h3>
+               <h6 className="fw-bold">Today Cannot Visit Inspections</h6>
+            </div>
+            <div className="text-end">
+             <div class="traffic-light secondary"></div>
+             
+            </div>
+          </div>
+          
+        </div> 
+
+        <div className="col-md-4" style={{cursor:'pointer'}} onClick={() => navigate('/yesnotvisitedinspections')}>
+          <div
+            className="white-box d-flex justify-content-between shadow-sm">
+            <div>
+              <h3 className="fw-bold text-danger">{yesNotVisited}</h3>
+              <h6 className="fw-bold">Yesterday Not Visited Inspections</h6>
+            </div>
+            <div className="text-end">
+              <div class="traffic-light red"></div>
+            </div>
+          </div>
+        </div>
+       
+        
+        
       </div>
         </div>
 
@@ -344,48 +345,7 @@ useEffect(() => {
         <div className='row'>
           <div className='col-sm-12'>
             <div className='row gy-3'>
-               <div className='col-sm-12'>
-             <div className="white-box shadow-sm">
-                <h5 className="chart-title">Today's Scheduled Inspections</h5>
-                <div className="row">
-                    <div className="col-sm-12">
-                      <div className='table-responsive'>
-                      <table className="table table-responsive">
-                            <thead>
-                                <tr>
-                                    <th>S.No</th>
-                                    <th>Visit Date</th>
-                                    <th>Officer Name</th>
-                                    <th>Designation</th>
-                                    <th>School Name</th>
-                                    <th>School Code</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                              {Array.isArray(todaySchedule) && todaySchedule.length > 0 ? (
-                                todaySchedule.map((item,index) => (
-                                    <tr key={index}>
-                                        <td>{index + 1}</td>
-                                        <td>{new Date(item.DateOfVisit).toLocaleDateString('en-IN')}</td>
-                                        <td>{item.OfficerName}</td>
-                                        <td>{item.RoleDisplayName} - {item.Region}</td>
-                                        <td>{item.PartnerName.replace('TGSWREIS','')}</td>
-                                        <td>{item.SchoolCode}</td>
-                                        <td><span className={getStatus(item.Status).badge}>{getStatus(item.Status).label}</span></td>
-                                    </tr>
-                                ))
-                              ) : (
-                                <div>No Visits Scheduled Today</div>
-                              )}
-                            </tbody>
-                        </table>
-                      </div>
-                        
-                    </div>
-                    </div>
-                    </div>
-                   </div>
+              
                <div className='col-sm-12'>
             <div className='row gy-3'>
              {/* <div className = "col-sm-12">
@@ -429,14 +389,14 @@ useEffect(() => {
                     </div>
                     <div className='col-sm-4 shadow-sm border rounded-3 p-3 d-flex gap-3 align-items-center' onClick={() => navigate('/consolidatedtourreport')} style={{cursor:'pointer'}}>
                       <div className="report-icon"><i class="bi bi-suitcase2-fill"></i></div>
-                     <p className='mb-0'>Consolidated Inspection Compliance Report</p>
+                     <p className='mb-0'>Officer Wise Report</p>
                     </div>
                     {/* <div className='col-sm-12 shadow-sm border rounded-3 p-3'  style={{cursor:'pointer'}}>
                      <p className='mb-0'>Designation Wise Report</p>
                     </div> */}
                      <div className='col-sm-4 shadow-sm border rounded-3 p-3 d-flex gap-3 align-items-center' onClick={() => navigate('/officerwisetourreport')}  style={{cursor:'pointer'}}>
                         <div className="report-icon"><i class="bi bi-file-earmark-person-fill"></i></div>
-                     <p className='mb-0'>Officer Wise Report</p>
+                     <p className='mb-0'>Officer Wise Compliance Report</p>
                     </div>
 
                     {UserType === 'SuperAdmin' && (
@@ -457,6 +417,12 @@ useEffect(() => {
                     <div className='col-sm-4 shadow-sm border rounded-3 p-3 d-flex gap-3 align-items-center' onClick={() => navigate('/schoolwisevisitabstract')}  style={{cursor:'pointer'}}>
                         <div className="report-icon"><i class="bi bi-123"></i></div>
                      <p className='mb-0'>School Wise Abstract Report</p>
+                    </div>
+
+
+                     <div className='col-sm-4 shadow-sm border rounded-3 p-3 d-flex gap-3 align-items-center' onClick={() => navigate('/comparativeinspection')}  style={{cursor:'pointer'}}>
+                        <div className="report-icon"><i class="bi bi-clipboard-data-fill"></i></div>
+                     <p className='mb-0'>Comparative Inspection Analysis</p>
                     </div>
 
                     <div className='col-sm-4 shadow-sm border rounded-3 p-3 d-flex gap-3 align-items-center' onClick={() => navigate('/schoolscontact')}  style={{cursor:'pointer'}}>

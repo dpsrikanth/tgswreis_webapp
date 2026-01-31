@@ -4,9 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef, use } from 'react';
 import { _fetch } from "../libs/utils";
 import { useSelector } from 'react-redux';
-import { toast, ToastContainer } from "react-toastify";
 import { Fancybox } from "@fancyapps/ui";
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
+import { notify } from '../services/notify';
 
 
 const TourUserVisits = () => {
@@ -50,7 +50,7 @@ const fetchTourScheduleInd = async () => {
               setNotVisited(res.data.filter(d => d.Status === 4));
               setCannotVisit(res.data.filter(d => d.Status === 5));
             }else{
-                toast.error(res.message)
+                console.error(res.message)
             }
         })
 
@@ -69,7 +69,7 @@ const MarkCannotVisit = async () => {
             if(res.status === 'success'){
                  setCannotVisitModal(false);
                 fetchTourScheduleInd();
-                toast.success(res.message);
+                notify.success(res.message);
             }
         })
 
@@ -89,10 +89,10 @@ const MarkVisited = async () => {
                 setShowMarkVisitModal(false);
                 fetchTourScheduleInd();
                 setVisitedId(null);
-               toast.success(res.message);
+               notify.success(res.message);
                navigate(`/inspectionreportssubmission/${visitedId}`)
             } else {
-                toast.error(res.message);
+                notify.error(res.message);
             }
         })
 
@@ -137,7 +137,7 @@ const DownloadInspectionPdfReport = async (TourDiaryId) => {
 
   } catch (error) {
     console.error('PDF download error:', error);
-    toast.error('Unable to download inspection report');
+    notify.error('Unable to download inspection report');
   }
 };
 
@@ -186,7 +186,7 @@ const submitNotVisitedRemarks = async () => {
   try {
 
     if (!notVisitedRemarks.trim()) {
-      toast.warning("Please enter remarks");
+      notify.warning("Please enter remarks");
       return;
     }
 
@@ -204,25 +204,24 @@ const submitNotVisitedRemarks = async () => {
     );
 
     if (res.status === "success") {
-      toast.success(res.message);
+      notify.success(res.message);
       setShowNotVisitedModal(false);
       setRemarksTourId(null);
       setNotVisitedRemarks('');
       fetchTourScheduleInd();
     } else {
-      toast.error(res.message);
+      notify.error(res.message);
     }
 
   } catch (error) {
-    toast.error("Failed to update remarks");
+    notify.error("Failed to update remarks");
   }
 };
 
 
   return (
     <>
-    <ToastContainer />
-      <h6 className="fw-bold mb-3"><a href="#"><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>My Scheduled Inspections</h6>
+      <h6 className="fw-bold mb-3"><a style={{cursor:'pointer'}} onClick={() => navigate('/touruserdashboard')}><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>My Scheduled Inspections</h6>
 
       <ul className="nav nav-tabs" id="tourTabs">
   <li className="nav-item">

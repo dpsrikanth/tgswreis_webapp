@@ -1,11 +1,11 @@
 import React,{ useEffect,useRef,useState } from 'react'
 import { useSelector } from 'react-redux'
 import { _fetch } from '../libs/utils';
-import { toast, ToastContainer } from "react-toastify";
 import {data, useNavigate} from 'react-router-dom'
 import DataTable from 'react-data-table-component';
 import ExcelJS from 'exceljs';
 import {saveAs} from 'file-saver';
+import { notify } from '../services/notify';
 
 const SchoolsDailyTracker = () => {
 
@@ -26,16 +26,14 @@ const fetchSchoolsNoConsumption = async () => {
         _fetch('noconsumptionentered',null,false,token).then(res => {
             if(res.status === 'success'){
                 setSchoolsNoConsumption(res.data);
-                toast.success(res.message);
             } else {
-                toast.error(res.message);
+                console.error(res.message);
             }
         })
 
     } catch (error){
 
         console.error('Error fetching data',error)
-        toast.error(res.message);
     }
 }
 
@@ -45,16 +43,14 @@ const fetchSchoolsNoPurchase = async () => {
         _fetch('nopurchaseentries',null,false,token).then(res => {
             if(res.status === 'success'){
                 setSchoolsNoPurchase(res.data)
-                toast.success(res.message);
             } else {
-                toast.error(res.message);
+                console.error(res.message);
             }
         })
 
     } catch (error){
 
         console.error('Error fetching data',error)
-        toast.error(res.message);
     }
 }
 
@@ -131,7 +127,7 @@ if(Array.isArray(data) && data.length > 0){
   const headers = Object.keys(data[0]);
   createSheet("Schools List",customHeaders,data);
 } else {
-  toast.error(`Schools List with no consumption entries today not found`);
+  notify.error(`Schools List with no consumption entries today not found`);
 }
 
 const buffer = await workbook.xlsx.writeBuffer();
@@ -211,7 +207,7 @@ if(Array.isArray(data) && data.length > 0){
   const headers = Object.keys(data[0]);
   createSheet("Schools List",customHeaders,data);
 } else {
-  toast.error(`Schools List who have not entered any purchase entries till now`);
+  notify.error(`Schools List who have not entered any purchase entries till now`);
 }
 
 const buffer = await workbook.xlsx.writeBuffer();
@@ -282,7 +278,7 @@ if(!dataFetched.current){
   return (
     <>
 
-     <ToastContainer/>
+
      <h6 className="fw-bold mb-3"><a onClick={() => navigate('/samsdashboard')} style={{cursor:'pointer'}}><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>Schools Daily Tracker</h6>
      <div className='row'>
         <div className='col-sm-12'>

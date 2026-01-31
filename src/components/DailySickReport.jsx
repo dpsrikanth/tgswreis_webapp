@@ -4,6 +4,7 @@ import { useEffect,useRef,useState } from 'react';
 import { useSelector } from 'react-redux';
 import ExcelJS from 'exceljs';
 import {saveAs} from 'file-saver';
+import { notify } from '../services/notify';
 
 const DailySickReport = ({SchoolId,PartnerName,SchoolCode,onBack}) => {
 const token = useSelector((state) => state.userappdetails.TOKEN);
@@ -129,7 +130,7 @@ const [toDate,setToDate] = useState('');
    const headers = Object.keys(data[0]);
    createSheet("Sick Entries",customHeaders,data);
  } else {
-   toast.error(`No Entries for these dates`);
+   notify.error(`No Entries for these dates`);
  }
  
  const buffer = await workbook.xlsx.writeBuffer();

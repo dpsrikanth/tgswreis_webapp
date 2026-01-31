@@ -1,9 +1,9 @@
 import React from "react";
-import { ToastContainer, toast } from 'react-toastify';
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { _fetch } from '../libs/utils';
 import { useSelector } from "react-redux";
+import { notify } from "../services/notify";
 
 const Login = () => {
     const token = useSelector((state) => state.userappdetails.TOKEN);
@@ -29,11 +29,10 @@ const Login = () => {
                 dispatch({ type: "CLASSES_LIST", payload: res.data });
             } else {
                 console.error("Failed to fetch classes list:", res.message);
-                toast.error("Failed to fetch classes list: " + res.message);
+               
             }
         }).catch(error => {
             console.error("Error fetching classes list:", error);
-            toast.error("Error fetching classes list: " + error.message);
         });
     }
     const fetchSchoolList = async (tokenToUse,data) => {
@@ -124,14 +123,14 @@ const Login = () => {
             })
                 .then(response => {
                     if (!response.ok) {
-                        toast.error("Login failed: " + response.statusText);
+                        notify.error("Login failed: " + response.statusText);
                         throw new Error("Login failed");
                     }
                     return response.json();
                 })
                 .then(async data => {
                     if (data.status !== "success") {
-                        toast.error("Login failed: " + data.message);
+                        notify.error("Login failed: " + data.message);
                         return false;
                     }
                     await storeResponse(data); // Only after this, lists are fetched
@@ -168,7 +167,7 @@ const Login = () => {
                     
                 })
                 .catch(error => {
-                    toast.error("Login failed: " + error.message);
+                    notify.error("Login failed: " + error.message);
                 });
         }
         //console.log(user);
@@ -177,7 +176,6 @@ const Login = () => {
 
     return (
         <div className="login_bg">
-            <ToastContainer />
             <div className="row m-0">
                 <div className="offset-md-9 col-md-3">
                     <div className="login_form d-flex align-items-center">

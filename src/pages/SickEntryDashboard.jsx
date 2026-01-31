@@ -2,7 +2,6 @@ import React,{useState} from 'react';
 import dayjs from 'dayjs';
 import * as XLSX from 'xlsx';
 import { _fetch } from '../libs/utils';
-import { toast, ToastContainer } from "react-toastify";
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { useEffect,useRef } from 'react';
@@ -185,7 +184,7 @@ const getTopFoodBorneSchools = async ({ queryKey }) => {
 
 //   } catch(error){
 //     console.error('Error fetching daily trends');
-//     toast.error('Error fetching Daily Trends')
+//    
 //   }
 // }
 

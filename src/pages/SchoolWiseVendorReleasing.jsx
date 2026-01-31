@@ -2,9 +2,9 @@ import React,{useState} from 'react';
 import dayjs from 'dayjs';
 import * as XLSX from 'xlsx';
 import { _fetch } from '../libs/utils';
-import { toast, ToastContainer } from "react-toastify";
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import { notify } from '../services/notify';
 
 
 const SchoolWiseVendorReleasing = () => {
@@ -31,13 +31,12 @@ const handleSchoolVendorData = async () => {
     _fetch('schoolvendorpayments',payload,false,token).then(res => {
         if(res.status === 'success') {
             setPaymentData(res.data);
-            toast.success(res.message);
+            notify.success(res.message);
         } else {
-            toast.error(res.message);
+            notify.error(res.message);
         }
     }).catch(err => {
         console.error("Failed to Generate Report:",err);
-        toast.error("Failed to Generate Report");
     })
 }
 
@@ -59,7 +58,6 @@ const exportToExcel = () => {
 
   return (
    <>
-     <ToastContainer />
     <h6 className="fw-bold mb-3"><a onClick={() => {navigate('/reportsdashboard')}}><i className="bi bi-arrow-left pe-2" style={{fontSize:'24px',verticalAlign:'middle'}}></i></a>School Wise Vendor Releasing</h6>
       
       <div className="row">

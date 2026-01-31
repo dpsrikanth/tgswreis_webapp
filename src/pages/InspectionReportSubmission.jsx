@@ -4,7 +4,7 @@ import { useNavigate,useParams } from "react-router-dom";
 import { useEffect, useState, useRef,} from 'react';
 import { _fetch } from "../libs/utils";
 import { useSelector } from 'react-redux';
-import { toast, ToastContainer } from "react-toastify";
+import { notify } from '../services/notify';
 
 const InspectionReportSubmission = () => {
     const token = useSelector((state) => state.userappdetails.TOKEN);
@@ -43,13 +43,13 @@ const InspectionReportSubmission = () => {
 
     const validateFiles = () => {
         // if(report && report.size > 3 * 1024 * 1024){
-        //     toast.error('PDF Size must be less than 3MB');
+        //     notify.error('PDF Size must be less than 3MB');
         //     return false;
         // }
     
         for(let file of photos){
             if(file.size > 1 * 1024 * 1024){
-                toast.error('Each Photo must be less than 1MB');
+                notify.error('Each Photo must be less than 1MB');
                 return false;
             }
         }
@@ -60,7 +60,7 @@ const InspectionReportSubmission = () => {
 
     const uploadPhotos = async () => {
         if(!photos.length){
-            toast.error('Please select atleast one photo');
+            notify.error('Please select atleast one photo');
             return;
         }
 
@@ -127,7 +127,7 @@ const InspectionReportSubmission = () => {
                     setOfficerName(res.data[0].OfficerName);
                     setDistrict(res.data[0].DistrictName)
                 }else{
-                    toast.error(res.message);
+                    notify.error(res.message);
                 }
             })
     
@@ -445,7 +445,7 @@ const InspectionReportSubmission = () => {
           ...frontendSections
         });
       } else {
-        toast.error(res.message);
+        notify.error(res.message);
       }
 
     } catch(error){
@@ -661,7 +661,7 @@ if (missing.length > 0) {
   setActiveTab(firstMissingTab);
   scrollToTop();
 
-  toast.error(
+  notify.error(
     `Please complete pending questions in "${sections[firstMissingTab].title}" tab`
   );
 
@@ -729,17 +729,17 @@ if (missing.length > 0) {
 
         _fetch('inspectionreportsubmit',payload,false,token).then(res => {
             if(res.status === 'success'){
-                toast.success(res.message);
+                notify.success(res.message);
                 localStorage.removeItem(`inspection_draft_${TourDiaryId}`);
                 navigate('/touruservisits')
             } else{
-              toast.error(res.message);
+              notify.error(res.message);
             }
         })
 
     }catch(error){
         console.error('Error Submitting Inspection Report',error);
-        toast.error('Error submitting Inspection Report')
+        notify.error('Error submitting Inspection Report')
     }
 }
 
@@ -882,7 +882,6 @@ useEffect(() => {
 
   return (
     <>
-      <ToastContainer />
      <div className={showGeoModal ? 'pointer-events-none' : ''}>
      <>
       <div className="border-bottom bg-white overflow-auto">
@@ -1236,7 +1235,7 @@ const isIncomplete =
         onChange={(e) => {
           const selected = Array.from(e.target.files);
           if (selected.length > 3) {
-            toast.error('Only 3 photos allowed');
+            notify.error('Only 3 photos allowed');
             e.target.value = '';
             return;
           }

@@ -2,30 +2,29 @@ import React, { useEffect, useState } from "react";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 import { _fetch } from "../libs/utils";
 import { format } from "date-fns";
-import { notify } from "../services/notify";
 import { useNavigate } from "react-router-dom";
 
-const CannotVisitInspections = () => {
+const CompletedInspections = () => {
 
   const token = useSelector(state => state.userappdetails.TOKEN);
-
   const [rows, setRows] = useState([]);
-   const navigate = useNavigate();
+  const navigate = useNavigate();
 
-   const today = new Date();
+  const today = new Date();
 
-const formattedToday = today.toLocaleDateString("en-GB", {
-  day: "2-digit",
-  month: "short",
-  year: "numeric"
-});
+  const formattedToday = today.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric"
+  });
 
   const fetchData = async () => {
     try {
       const res = await _fetch(
-        "todaycannotvisitinspections",
+        "todaycompletedinspections",
         {},
         false,
         token
@@ -33,12 +32,9 @@ const formattedToday = today.toLocaleDateString("en-GB", {
 
       if (res.status === "success") {
         setRows(res.data);
-      } else {
-        setRows([]);
       }
-
     } catch {
-      console.error("Failed to fetch data");
+      toast.error("Failed to fetch completed inspections");
     }
   };
 
@@ -46,29 +42,20 @@ const formattedToday = today.toLocaleDateString("en-GB", {
     fetchData();
   }, []);
 
-  /* ===========================
-      EXCEL EXPORT
-  =========================== */
-
   const exportExcel = async () => {
 
     if (!rows.length) {
-      notify.warning("No data available");
+      toast.warning("No data available");
       return;
     }
 
     const wb = new ExcelJS.Workbook();
-    const ws = wb.addWorksheet("Cannot Visit");
+    const ws = wb.addWorksheet("Completed Inspections");
 
-    const border = {
-      top: { style: "thin" },
-      left: { style: "thin" },
-      right: { style: "thin" },
-      bottom: { style: "thin" }
-    };
+    ws.mergeCells("A1:I1");
+    ws.getCell("A1").value =
+      `Today (${formattedToday}) – Completed Inspections`;
 
-    ws.mergeCells("A1:J1");
-    ws.getCell("A1").value = `Today (${formattedToday}) – Cannot Visit Inspections`;
     ws.getCell("A1").font = { bold: true, size: 14 };
     ws.getCell("A1").alignment = { horizontal: "center" };
 
@@ -76,49 +63,36 @@ const formattedToday = today.toLocaleDateString("en-GB", {
 
     const headers = [
       "S.No",
-      "Officer Name",
+      "Officer",
       "Designation",
       "Region",
       "School",
-      "School Code",
-      "Reason",
-      "Remarks"
+      "School Code"
     ];
 
-    const headerRow = ws.addRow(headers);
-
-    headerRow.eachCell(c => {
+    ws.addRow(headers).eachCell(c => {
       c.font = { bold: true };
-      c.border = border;
       c.alignment = { horizontal: "center" };
     });
 
     rows.forEach((r, i) => {
-
-      const row = ws.addRow([
+      ws.addRow([
         i + 1,
         r.OfficerName,
         r.RoleDisplayName,
         r.Region,
         r.PartnerName?.replace("TGSWREIS", ""),
-        r.SchoolCode,
-        r.RejectedReason || "-",
-        r.RejectedRemarks || "-"
+        r.SchoolCode
       ]);
-
-      row.eachCell(cell => {
-        cell.border = border;
-        cell.font = { color: { argb: "FF6B6B" } };
-      });
     });
 
-    ws.columns.forEach(c => c.width = 25);
+    ws.columns.forEach(c => (c.width = 25));
 
     const buffer = await wb.xlsx.writeBuffer();
 
     saveAs(
       new Blob([buffer]),
-      `CannotVisitInspections_${format(new Date(), "dd-MM-yyyy")}.xlsx`
+      `CompletedInspections_${format(new Date(), "dd-MM-yyyy")}.xlsx`
     );
   };
 
@@ -127,16 +101,13 @@ const formattedToday = today.toLocaleDateString("en-GB", {
 
       <div className="table-header">
         <h5 className="chart-title">
-          Today ({formattedToday}) – Cannot Visit Inspections
+          Today ({formattedToday}) – Completed Inspections
         </h5>
 
-        <button
-          className="btn btn-success"
-          onClick={exportExcel}
-        >
+        <button className="btn btn-success" onClick={exportExcel}>
           Export Excel
         </button>
-         <button className="btn btn-secondary btn-sm" onClick={() => navigate('/tourdiarydashboard')}>
+          <button className="btn btn-secondary btn-sm" onClick={() => navigate('/tourdiarydashboard')}>
             Back
           </button>
       </div>
@@ -150,8 +121,6 @@ const formattedToday = today.toLocaleDateString("en-GB", {
             <th>Region</th>
             <th>School</th>
             <th>School Code</th>
-            <th>Reason</th>
-            <th>Remarks</th>
           </tr>
         </thead>
 
@@ -164,13 +133,11 @@ const formattedToday = today.toLocaleDateString("en-GB", {
               <td>{r.Region}</td>
               <td>{r.PartnerName?.replace("TGSWREIS", "")}</td>
               <td>{r.SchoolCode}</td>
-              <td>{r.RejectedReason || "-"}</td>
-              <td>{r.RejectedRemarks || "-"}</td>
             </tr>
           )) : (
             <tr>
-              <td colSpan="9" className="text-center">
-                No data found
+              <td colSpan="6" className="text-center">
+                No completed inspections today
               </td>
             </tr>
           )}
@@ -181,4 +148,4 @@ const formattedToday = today.toLocaleDateString("en-GB", {
   );
 };
 
-export default CannotVisitInspections;
+export default CompletedInspections;

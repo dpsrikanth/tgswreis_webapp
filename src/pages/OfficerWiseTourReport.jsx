@@ -2,7 +2,6 @@ import React from 'react'
 import dayjs from 'dayjs';
 import * as XLSX from 'xlsx';
 import { _fetch } from '../libs/utils';
-import { toast, ToastContainer } from "react-toastify";
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { useEffect,useState } from 'react';
@@ -12,6 +11,7 @@ import { Fancybox } from "@fancyapps/ui";
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
 import { format } from "date-fns";
 import Select from 'react-select';
+import { notify } from '../services/notify';
 
 
 const OfficerWiseTourReport = () => {
@@ -84,7 +84,7 @@ const [selectedRoles, setSelectedRoles] = useState([
             if(res.status === 'success'){
                 setOfficersList(res.data);
             }else {
-                toast.error('Error fetching Officers list')
+                console.error('Error fetching Officers list')
             }
         })
 
@@ -124,14 +124,14 @@ const [selectedRoles, setSelectedRoles] = useState([
   
     } catch (error) {
       console.error('PDF download error:', error);
-      toast.error('Unable to download inspection report');
+      notify.error('Unable to download inspection report');
     }
   };
 
 
   const fetchOfficerWiseReport = async() => {
     if (!fromDate || !toDate) {
-    toast.warning('Please select From and To dates');
+    notify.warning('Please select From and To dates');
     return;
   }
 
@@ -196,7 +196,7 @@ const ExcelReportOfficerWise = async (summary = [], visits = [], meta = {}) => {
   } = meta;
 
   if (!summary.length && !visits.length) {
-    toast.warning('No data available to export');
+    notify.warning('No data available to export');
     return;
   }
 
@@ -442,9 +442,7 @@ const ExcelReportOfficerWise = async (summary = [], visits = [], meta = {}) => {
       closeMenuOnSelect={false}
     />
 
-    <small className="text-muted">
-      Leave empty to include all
-    </small>
+   
   </div>
 )}
 

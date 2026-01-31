@@ -2,7 +2,7 @@ import React,{ useEffect,useRef,useState} from 'react'
 import { data, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { _fetch } from '../libs/utils';
-import { toast, ToastContainer } from "react-toastify";
+import { notify } from '../services/notify';
 
 const StockProvisions = () => {
 
@@ -30,9 +30,9 @@ const StockProvisions = () => {
             if(res.status === 'success'){
                 setStockProvisionsGrid(res.data.criticalStockData);
                 setCriticalCount(res.data.Summary[0].NoOfSchools)
-                toast.success(res.message);
+                notify.success(res.message);
             } else {
-                toast.error(res.message);
+                notify.error(res.message);
                 setStockProvisionsGrid([])
             }
         })

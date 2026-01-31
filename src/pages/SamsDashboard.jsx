@@ -78,7 +78,7 @@ const fetchStudentCompleteDetails = async () => {
       if(res.status === 'success'){
         setStudentTotal(res.data.totals.students);
       } else {
-        toast.error('Error fetching student details');
+        console.error('Error fetching student details');
       }
     })
 
@@ -96,7 +96,7 @@ const fetchStudentDetailsRefresh = async () => {
       if(res.status === 'success'){
         fetchStudentCompleteDetails();
       } else {
-        toast.error('Error refreshing data');
+        console.error('Error refreshing data');
       }
     })
 
