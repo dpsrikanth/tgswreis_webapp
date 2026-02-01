@@ -16,6 +16,14 @@ const UserId = useSelector((state) => state.userappdetails.profileData.Id);
 const [tourReport,setTourReport] = useState([])
 const navigate = useNavigate();
 
+  const today = new Date();
+
+  const formattedToday = today.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric"
+  });
+
 
 const fetchDailyTourReport = async () => {
   try{
@@ -150,7 +158,7 @@ fetchDailyTourReport();
     <div className='col-sm-12'>
             <div className="white-box shadow-sm">
                 <div className="table-header">
-                    <h5><span className="pink fw-bold">Daily Inspection Compliance Report</span></h5>
+                    <h5><span className="pink fw-bold">Daily Inspection Compliance Report ({formattedToday})</span></h5>
                     <div>
                        <button className='btn btn-success' onClick={() => ExcelReportTourDaily(tourReport)}>Excel Report</button>
                     </div>

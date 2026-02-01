@@ -93,7 +93,7 @@ fetchUpcomingWeek();
       
           <div className="white-box d-flex justify-content-between shadow-sm">
             <div>
-              <h3 className="fw-bold text-primary">{planned}</h3>
+              <h3 className="fw-bold text-primary">{planned || 0}</h3>
               <h6 className="fw-bold">Planned/Yet to Visit This Month</h6>
             </div>
             <div className="text-end">
@@ -107,7 +107,7 @@ fetchUpcomingWeek();
           <a href="">
           <div className="white-box d-flex justify-content-between shadow-sm">
             <div>
-              <h3 className="fw-bold text-success">{completed}</h3>
+              <h3 className="fw-bold text-success">{completed || 0}</h3>
                <h6 className="fw-bold">Completed This Month</h6>
             </div>
             <div className="text-end">
@@ -119,7 +119,7 @@ fetchUpcomingWeek();
         <div className="col-md-3" style={{cursor:'pointer'}} onClick={() => navigate("/tour/visit-details/4")}>
           <div className="white-box d-flex justify-content-between shadow-sm">
             <div>
-              <h3 className="fw-bold text-danger">{NotVisited}</h3>
+              <h3 className="fw-bold text-danger">{NotVisited || 0}</h3>
                 <h6 className="fw-bold">Not Visited This Month</h6>
             </div>
             <div className="text-end">
@@ -218,19 +218,20 @@ fetchUpcomingWeek();
                      <p className='mb-0'>My Inspection Report</p>
                     </div>
 
-                    {UserType === 'SpecialOfficer' && (
+                    {(UserType === 'StateOfficer') && (
                         <div className='col-sm-4 shadow-sm border rounded-3 p-3 d-flex gap-3 align-items-center' onClick={() => navigate('/officerwisetourreport')}  style={{cursor:'pointer'}}>
                         <div className="report-icon"><i class="bi bi-file-earmark-person-fill"></i></div>
                      <p className='mb-0'>Officer Wise Report</p>
                     </div>
                     )}
 
-                {UserType === 'Admin' &&  UserType === 'MultiZone' && (<div className='col-sm-12 shadow-sm border rounded-3 p-3 d-flex gap-3 align-items-center' onClick={() => navigate('/tour/dcowisereport')}  style={{cursor:'pointer'}}>
+                {(UserType === 'Admin' ||  UserType === 'MultiZone' || UserType === 'SpecialOfficer') && (
+                  <div className='col-sm-12 shadow-sm border rounded-3 p-3 d-flex gap-3 align-items-center' onClick={() => navigate('/tour/dcowisereport')}  style={{cursor:'pointer'}}>
                         <div className="report-icon"><i class="bi bi-file-earmark-text-fill"></i></div>
                      <p className='mb-0'>DCO Wise Report</p>
                     </div>)}     
 
-                     {UserType === 'MultiZone' && (<div className='col-sm-12 shadow-sm border rounded-3 p-3 d-flex gap-3 align-items-center' onClick={() => navigate('/tour/zonalwisetourreport')}  style={{cursor:'pointer'}}>
+                     {(UserType === 'MultiZone' || UserType === 'SpecialOfficer') && (<div className='col-sm-12 shadow-sm border rounded-3 p-3 d-flex gap-3 align-items-center' onClick={() => navigate('/tour/zonalwisetourreport')}  style={{cursor:'pointer'}}>
                         <div className="report-icon"><i class="bi bi-file-earmark-text-fill"></i></div>
                      <p className='mb-0'>Zonal Wise Report</p>
                     </div>)}    

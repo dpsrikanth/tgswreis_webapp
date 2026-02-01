@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { _fetch } from "../libs/utils";
 import { useSelector } from "react-redux";
 
@@ -12,8 +12,10 @@ const STATUS_MAP = {
 const TourVisitDetails = () => {
 
   const { status } = useParams();
+  const statusId = Number(status);
   const token = useSelector(s => s.userappdetails.TOKEN);
   const userId = useSelector(s => s.userappdetails.profileData.Id);
+  const navigate = useNavigate();
 
   const [rows, setRows] = useState([]);
 
@@ -24,7 +26,7 @@ const TourVisitDetails = () => {
   const loadVisits = async () => {
     const res = await _fetch(
       "statuswisevisits",
-      { UserId: userId, Status: status },
+      { UserId: userId, Status: statusId },
       false,
       token
     );
@@ -36,11 +38,18 @@ const TourVisitDetails = () => {
 
   return (
     <>
-      <h5 className="fw-bold mb-3">
-        {STATUS_MAP[status]?.label}
+    <div className="shadow-sm white-box">
+      <div className="table-header">
+        <h5 className="fw-bold mb-3">
+        {STATUS_MAP[statusId]?.label}
       </h5>
+       <button className="btn btn-secondary btn-sm" onClick={() => navigate('/touruserdashboard')}>
+            Back
+          </button>
+      </div>
+ 
 
-      <table className="table table-bordered">
+      <table className="table table-bordered mt-3">
         <thead>
           <tr>
             <th>S.No</th>
@@ -73,6 +82,8 @@ const TourVisitDetails = () => {
           )}
         </tbody>
       </table>
+    </div>
+     
     </>
   );
 };

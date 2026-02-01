@@ -20,6 +20,7 @@ const DCOWiseReport = () => {
       const UserId = useSelector((state) => state.userappdetails.profileData.Id);
       const ZoneId = useSelector((state) => state.userappdetails.profileData.ZoneId);
       const DistrictId = useSelector((state) => state.userappdetails.profileData.DistrictId);
+      const MultiZoneId =  useSelector((state) => state.userappdetails.profileData.MultiZoneId);
       const navigate = useNavigate();
 
        const [officersList,setOfficersList] = useState([]);
@@ -94,9 +95,21 @@ const DCOWiseReport = () => {
 
         const fetchDCOSbyZone = async () => {
            try{
-               const payload = {ZoneId}
+               const payload = {
+  UserType,
+  Id: UserId
+};
+
+if (UserType === 'Admin') {
+  payload.ZoneId = ZoneId;
+}
+
+if (UserType === 'MultiZone') {
+  payload.MultiZoneId = MultiZoneId;
+}
+
        
-               _fetch('dcosbyzone',payload,false,token).then(res => {
+               _fetch('accessibledcos',payload,false,token).then(res => {
                    if(res.status === 'success'){
                        setOfficersList(res.data);
                    }else {
@@ -147,11 +160,19 @@ const fetchDCOWiseReport = async () => {
     : officersList.map(o => o.UserId);
 
     const payload = {
-      FromDate: fromDate,
-      ToDate: toDate,
-      OfficerIds: officerIdsToSend,
-      ZoneId
-    };
+  FromDate: fromDate,
+  ToDate: toDate,
+  OfficerIds: officerIdsToSend,
+  UserType
+};
+
+if (UserType === 'Admin') {
+  payload.ZoneId = ZoneId;
+}
+
+if (UserType === 'MultiZone') {
+  payload.MultiZoneId = MultiZoneId;
+}
 
     const res = await _fetch(
       'dcowisereport',
@@ -380,9 +401,7 @@ useEffect(
       closeMenuOnSelect={false}
     />
 
-    <small className="text-muted">
-     Leave empty to include all DCOs in this zone
-    </small>
+    
   </div>
 )}
 
@@ -418,6 +437,7 @@ useEffect(
                         <table className='table table-bordered'>
                             <thead>
                                 <tr>
+                                   <th>S.No</th>
                                     <th>Officer Name</th>
                                     <th>Designation</th>
                                     <th>District Name</th>
@@ -432,6 +452,7 @@ useEffect(
                             <tbody>
                                {Array.isArray(summary) && summary.length > 0 ? (  summary.map((item,index) => (
                                 <tr key={index}>
+                                  <td>{index + 1}</td>
                                     <td>{item.OfficerName}</td>
                                     <td>District Coordinator</td>
                                     <td>{item.DistrictName}</td>
@@ -490,9 +511,7 @@ useEffect(
       📘 Academic Books Report
     </button>
   ) : (
-    <span className="badge text-bg-secondary">
-      Academic Report Not Uploaded
-    </span>
+    null
   )}   
               
            

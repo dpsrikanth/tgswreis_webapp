@@ -37,6 +37,7 @@ const ZonalWiseTourReport = () => {
                  const [toDate,setToDate] = useState('');
                  const [selectedOfficers, setSelectedOfficers] = useState([]);  
                  const apiUrl = window.gc.cdn;
+                 const navigate = useNavigate();
 
                         
                  
@@ -92,7 +93,7 @@ const ZonalWiseTourReport = () => {
                  
                          const fetchZonalOffcersbyMultiZone = async () => {
                             try{
-                                const payload = {MultiZoneId}
+                                const payload = {MultiZoneId,UserType}
                         
                            const res = await _fetch('zosbymultizone',payload,false,token)
                                     if(res.status === 'success'){
@@ -142,12 +143,16 @@ const ZonalWiseTourReport = () => {
       ? selectedOfficers.map(o => o.value)
       : officersList.map(o => o.UserId);
 
-  const payload = {
-    FromDate: fromDate,
-    ToDate: toDate,
-    OfficerIds: officerIdsToSend,
-    MultiZoneId
-  };
+ const payload = {
+  FromDate: fromDate,
+  ToDate: toDate,
+  OfficerIds: officerIdsToSend,
+  UserType
+};
+
+if (UserType === 'MultiZone') {
+  payload.MultiZoneId = MultiZoneId;
+}
 
   const res = await _fetch(
     'zonalwisetourreport',
@@ -166,7 +171,7 @@ const ZonalWiseTourReport = () => {
 
 
 useEffect(() => {
-  if (UserType === 'MultiZone') {
+  if (UserType === 'MultiZone' || UserType === 'SpecialOfficer') {
     fetchZonalOffcersbyMultiZone();
   }
 }, []);
@@ -368,6 +373,9 @@ const ExcelReportZonalWise = async (
       toDate
     })
   }>Excel Report</button>
+   <button className="btn btn-secondary btn-sm ms-2" onClick={() => navigate('/touruserdashboard')}>
+            Back
+          </button>
                  </div>
                 </div>
                 <div className='row align-items-center'>
@@ -387,9 +395,7 @@ const ExcelReportZonalWise = async (
       closeMenuOnSelect={false}
     />
 
-    <small className="text-muted">
-     Leave empty to include all Zonal Officers in this Multizone
-    </small>
+   
   </div>
 )}
 
@@ -497,9 +503,7 @@ const ExcelReportZonalWise = async (
       📘 Academic Books Report
     </button>
   ) : (
-    <span className="badge text-bg-secondary">
-      Academic Report Not Uploaded
-    </span>
+   null
   )}    
               
            
