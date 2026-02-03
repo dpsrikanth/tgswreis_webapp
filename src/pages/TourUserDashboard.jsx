@@ -104,7 +104,7 @@ fetchUpcomingWeek();
           
         </div>
         <div className="col-md-3" style={{cursor:'pointer'}} onClick={() => navigate("/tour/visit-details/3")}>
-          <a href="">
+          
           <div className="white-box d-flex justify-content-between shadow-sm">
             <div>
               <h3 className="fw-bold text-success">{completed || 0}</h3>
@@ -114,7 +114,7 @@ fetchUpcomingWeek();
              <i className="bi bi-check-circle-fill text-success" style={{fontSize:'28px'}}></i>
             </div>
           </div>
-          </a>
+          
         </div>
         <div className="col-md-3" style={{cursor:'pointer'}} onClick={() => navigate("/tour/visit-details/4")}>
           <div className="white-box d-flex justify-content-between shadow-sm">

@@ -304,7 +304,7 @@ const maxDate = format(monthEnd, "yyyy-MM-dd");
 
 
 const editStart = subDays(monthStart,3);
-const editEnd = monthStart;
+const editEnd = addDays(monthStart, 2);
 
 let isWithinWindow = false;
 
@@ -318,8 +318,7 @@ try {
 }
 
 
-const isScheduleEditable =
-  isNextMonthSelected && isWithinWindow;
+const isScheduleEditable = isWithinWindow;
 
   const hasAdditionalVisits =
   // tourRows.length > requiredVisits;

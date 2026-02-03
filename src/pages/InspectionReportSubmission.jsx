@@ -39,23 +39,19 @@ const InspectionReportSubmission = () => {
     const navigate = useNavigate();
     const [academicReportFile, setAcademicReportFile] = useState(null);
     const [sections,setSections] = useState({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
 
-    const validateFiles = () => {
-        // if(report && report.size > 3 * 1024 * 1024){
-        //     notify.error('PDF Size must be less than 3MB');
-        //     return false;
-        // }
-    
-        for(let file of photos){
-            if(file.size > 1 * 1024 * 1024){
-                notify.error('Each Photo must be less than 1MB');
-                return false;
-            }
-        }
-        return true;
+
+  const validateFiles = () => {
+  for (let p of photos) {
+    if (p.file.size > 1 * 1024 * 1024) {
+      notify.error('Each Photo must be less than 1MB');
+      return false;
     }
-
+  }
+  return true;
+};
 
 
     const uploadPhotos = async () => {
@@ -64,7 +60,9 @@ const InspectionReportSubmission = () => {
             return;
         }
 
-        validateFiles();
+        if (!validateFiles()) {
+    return null; 
+  }
     
         const formData = new FormData();
     
@@ -80,7 +78,7 @@ const InspectionReportSubmission = () => {
     throw new Error(res.message);
   }
 
-  return res.data; // array of filenames
+  return res.files; // array of filenames
     
         } catch(error){
             console.error('Error fetching Photos',error);
@@ -89,6 +87,18 @@ const InspectionReportSubmission = () => {
 
 
     const uploadAcademicReport = async () => {
+
+     if (!academicReportFile) {
+    notify.error('Please upload Academic Books Report');
+    return null;
+  }
+
+  if (academicReportFile.size > 3 * 1024 * 1024) {
+    notify.error('Report must be less than 3MB');
+    return null;
+  }
+
+
        const fd = new FormData();
   fd.append('TourDiaryId', TourDiaryId);
   fd.append('report', academicReportFile);
@@ -609,6 +619,11 @@ useEffect(() => {
 
 
 const SubmitCaptureInfo =  async () => {
+
+
+   if (isSubmitting) return;
+  setIsSubmitting(true);
+
     try{
 
       const getMissingDetails = () => {
@@ -691,8 +706,10 @@ if (missing.length > 0) {
       }
 
       const uploadedPhotos = await uploadPhotos();
+      if(!uploadedPhotos) throw new Error('Photo upload Failed,Please retry');
 
       const uploadedReport = await uploadAcademicReport();
+      if(!uploadedReport) throw new Error('Report upload failed, please retry')
 
          const CapturedInfo = {
             generalInfo: {
@@ -727,19 +744,37 @@ if (missing.length > 0) {
 
        
 
-        _fetch('inspectionreportsubmit',payload,false,token).then(res => {
-            if(res.status === 'success'){
-                notify.success(res.message);
-                localStorage.removeItem(`inspection_draft_${TourDiaryId}`);
-                navigate('/touruservisits')
-            } else{
-              notify.error(res.message);
-            }
-        })
+        // _fetch('inspectionreportsubmit',payload,false,token).then(res => {
+        //     if(res.status === 'success'){
+        //         notify.success(res.message);
+        //         localStorage.removeItem(`inspection_draft_${TourDiaryId}`);
+        //         navigate('/touruservisits')
+        //     } else{
+        //       notify.error(res.message);
+        //     }
+        // })
+
+        const res = await _fetch(
+  'inspectionreportsubmit',
+  payload,
+  false,
+  token
+);
+
+if (res.status === 'success') {
+  notify.success(res.message);
+  localStorage.removeItem(`inspection_draft_${TourDiaryId}`);
+  navigate('/touruservisits');
+} else {
+  notify.error(res.message);
+}
+
 
     }catch(error){
         console.error('Error Submitting Inspection Report',error);
         notify.error('Error submitting Inspection Report')
+    } finally {
+      setIsSubmitting(false);
     }
 }
 
@@ -1284,10 +1319,10 @@ const isIncomplete =
 
        <button
         className="btn btn-primary px-4 py-2 mt-3 fw-semibold"
-       
+        disabled={isSubmitting}
         onClick={SubmitCaptureInfo}
       >
-        Submit Report
+        {isSubmitting ? 'Submitting' : 'Submit Report'}
       </button>
     </div>
   </div>
