@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import { _fetch } from "../libs/utils";
@@ -15,6 +15,10 @@ const DateWiseInspectionReport = () => {
   const [toDate, setToDate] = useState("");
   const [dates, setDates] = useState([]);
   const navigate = useNavigate();
+  const [statusFilter, setStatusFilter] = useState('ALL')
+  const [hasFetched, setHasFetched] = useState(false);
+const [loading, setLoading] = useState(false);
+
 
   /* ======================================
      FETCH REPORT
@@ -25,6 +29,9 @@ const DateWiseInspectionReport = () => {
       toast.warning("Select from & to dates");
       return;
     }
+
+    setLoading(true);
+    setHasFetched(false);
 
     const payload = {
       fromDate,
@@ -37,6 +44,9 @@ const DateWiseInspectionReport = () => {
       false,
       token
     );
+
+    setLoading(false);
+    setHasFetched(true);
 
     if (res.status === "success") {
       setDates(res.data);
@@ -121,7 +131,7 @@ const DateWiseInspectionReport = () => {
 
     dates.forEach(day => {
 
-      day.visits.forEach(visit => {
+      getFilteredVisits(day.visits).forEach(visit => {
 
         const row = sheet.addRow([
           sno++,
@@ -179,6 +189,33 @@ const DateWiseInspectionReport = () => {
     );
   };
 
+
+  const getFilteredVisits = visits => {
+  if (statusFilter === "ALL") return visits;
+
+  return visits.filter(v => v.VisitStatus === statusFilter);
+};
+
+ 
+
+  const filteredDays = dates
+  .map(day => {
+    const filteredVisits = getFilteredVisits(day.visits);
+    return { ...day, filteredVisits };
+  })
+  .filter(day => day.filteredVisits.length > 0);
+
+
+  useEffect(() => {
+
+    if(!fromDate && !toDate) return;
+
+    fetchReport();
+    setStatusFilter('ALL')
+
+  },[fromDate,toDate])
+
+
   /* ======================================
      UI
   ====================================== */
@@ -196,7 +233,7 @@ const DateWiseInspectionReport = () => {
           </button>
       </div>
 
-      <div className="row g-3">
+      <div className="row g-3 pt-3">
 
         <div className="col-sm-3">
           <label>From Date</label>
@@ -219,56 +256,90 @@ const DateWiseInspectionReport = () => {
           />
         </div>
 
-        <div className="col-sm-12 text-center">
+        <div className="col-sm-3">
+  <label>Filter by Status</label>
+  <select
+    className="form-select"
+    value={statusFilter}
+    onChange={e => setStatusFilter(e.target.value)}
+  >
+    <option value="ALL">All</option>
+    <option value="VISITED">Visited</option>
+    <option value="NOT_VISITED">Not Visited</option>
+    <option value="CANNOT_VISIT">Cannot Visit</option>
+    <option value="EXTRA_VISIT">Extra / Additional Visit</option>
+    <option value="PLANNED">Planned</option>
+  </select>
+</div>
+
+
+        {/* <div className="col-sm-12 text-center">
           <button className="btn btn-primary mt-3" onClick={fetchReport}>
             Fetch
           </button>
-        </div>
+        </div> */}
 
       </div>
 
       <hr />
 
-      {dates.map((day, i) => (
-        <div key={i} className="mb-4">
+      {loading && (
+  <div className="text-center mt-4">
+    <span className="spinner-border spinner-border-sm me-2" />
+    Fetching report...
+  </div>
+)}
 
-          <h6 className="fw-bold text-primary">
-            {format(new Date(day.VisitDate), "dd MMM yyyy")}
-          </h6>
 
-          <table className="table table-bordered">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Officer</th>
-                <th>Designation</th>
-                <th>School</th>
-                <th>District</th>
-                <th>Type</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {day.visits.map((v, idx) => (
-                <tr key={idx}>
-                  <td>{idx + 1}</td>
-                  <td>{v.OfficerName}</td>
-                  <td>{v.Designation}</td>
-                  <td>{v.InstitutionName}</td>
-                  <td>{v.DistrictName}</td>
-                  <td>{v.TypeOfSchool}</td>
-                  <td>
-                    <span className={getBadge(v.VisitStatus)}>
-                      {v.VisitStatus}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {hasFetched && !loading && filteredDays.length === 0 && (
+  <div className="text-center text-muted mt-4">
+    No visits found for the selected date range & status
+  </div>
+)}
 
-        </div>
-      ))}
+
+{filteredDays.map((day, i) => (
+  <div key={i} className="mb-4">
+
+    <h6 className="fw-bold text-primary">
+      {format(new Date(day.VisitDate), "dd MMM yyyy")}
+    </h6>
+
+    <table className="table table-bordered">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Officer</th>
+          <th>Designation</th>
+          <th>School</th>
+          <th>District</th>
+          <th>Type</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {day.filteredVisits.map((v, idx) => (
+          <tr key={idx}>
+            <td>{idx + 1}</td>
+            <td>{v.OfficerName}</td>
+            <td>{v.Designation}</td>
+            <td>{v.InstitutionName}</td>
+            <td>{v.DistrictName}</td>
+            <td>{v.TypeOfSchool}</td>
+            <td>
+              <span className={getBadge(v.VisitStatus)}>
+                {v.VisitStatus}
+              </span>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+
+  </div>
+))}
+
+
 
     </div>
   );

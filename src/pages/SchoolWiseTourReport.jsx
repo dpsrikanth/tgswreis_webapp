@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { _fetch } from "../libs/utils";
 import { useSelector } from "react-redux";
 import { format } from "date-fns";
@@ -6,17 +6,51 @@ import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import { useNavigate } from "react-router-dom";
 import { notify } from "../services/notify";
+import Select from 'react-select'
 
 
 const SchoolWiseTourReport = () => {
 
   const token = useSelector(state => state.userappdetails.TOKEN);
   const apiUrl = window.gc.cdn;
+  
+ const schoolsMaster = useSelector(state => state.userappdetails.SCHOOL_LIST);
+ const districtMaster = useSelector(state => state.userappdetails.DISTRICT_LIST);
 
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [schools, setSchools] = useState([]);
+  const [selectedDistricts,setSelectedDistricts] = useState([]);
+  const [selectedSchools,setSelectedSchools] = useState([]);
+  const [hasFetched, setHasFetched] = useState(false);
+const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
+
+  const districtMap = React.useMemo(() => {
+    const map = {};
+    districtMaster.forEach(d => {
+      map[d.DistrictId] = d.DistrictName
+    });
+    return map;
+  },[districtMaster])
+
+  const districtOptions = districtMaster.map(d => ({
+    value: d.DistrictId,
+    label: d.DistrictName
+  })) ;
+
+  const schoolOptions = schoolsMaster
+  .filter(s =>
+    selectedDistricts.length === 0 ||
+    selectedDistricts.some(d => d.value === s.DistrictId)
+  )
+  .map(s => ({
+    value: s.SchoolID,
+    label: s.PartnerName
+  }));
+
+
 
   const fetchSchoolWiseReport = async () => {
     if (!fromDate || !toDate) {
@@ -24,20 +58,40 @@ const SchoolWiseTourReport = () => {
       return;
     }
 
+    setLoading(true);
+  setHasFetched(false);
+
     const payload = {
       fromDate,
       toDate
     };
 
-    _fetch("schoolwisetourreport", payload, false, token)
-      .then(res => {
-        if (res.status === "success") {
-          setSchools(res.data);
-        } else {
-          notify.error("No data found");
-        }
-      });
+    try {
+    const res = await _fetch(
+      "schoolwisetourreport",
+      payload,
+      false,
+      token
+    );
+
+    setLoading(false);
+    setHasFetched(true);
+
+    if (res.status === "success") {
+      setSchools(res.data);
+    } else {
+      setSchools([]);
+      notify.error("No data found");
+    }
+  } catch (err) {
+    setLoading(false);
+    setHasFetched(true);
+    setSchools([]);
+    notify.error("Failed to fetch data");
+  }
   };
+
+  
 
   const getBadge = status => {
     switch (status) {
@@ -208,7 +262,7 @@ const exportInstitutionWiseExcel = async (
           : "",
         visit.OfficerName || "",
         visit.Designation || "",
-        visit.ReportPDF || ""
+        visit.CapturedInfo ? "Report Uploaded" : "Not Submitted"
       ]);
 
       row.eachCell(cell => {
@@ -249,6 +303,38 @@ const exportInstitutionWiseExcel = async (
 
 
 
+const filteredSchools = schools.filter(school => {
+
+  // District filter
+  if (
+    selectedDistricts.length > 0 &&
+    !selectedDistricts.some(d => d.label === school.DistrictName)
+  ) {
+    return false;
+  }
+
+  // School filter
+  if (
+    selectedSchools.length > 0 &&
+    !selectedSchools.some(s => s.value === school.SchoolID)
+  ) {
+    return false;
+  }
+
+  return true;
+});
+
+
+useEffect(() => {
+  if(!fromDate && !toDate)
+    return;
+
+  fetchSchoolWiseReport();
+
+  setSelectedDistricts([]);
+  setSelectedSchools([]);
+
+},[fromDate,toDate])
 
 
   return (
@@ -265,7 +351,7 @@ const exportInstitutionWiseExcel = async (
             <button
   className="btn btn-success"
   onClick={() =>
-    exportInstitutionWiseExcel(schools, fromDate, toDate)
+    exportInstitutionWiseExcel(filteredSchools, fromDate, toDate)
   }
 >
   Excel Report
@@ -278,7 +364,7 @@ const exportInstitutionWiseExcel = async (
           {/* ================= FILTER ================= */}
           <div className="row align-items-end mb-3">
 
-            <div className="col-sm-3">
+            <div className="col-sm-2">
               <label>From Date</label>
               <input
                 type="date"
@@ -288,7 +374,7 @@ const exportInstitutionWiseExcel = async (
               />
             </div>
 
-            <div className="col-sm-3">
+            <div className="col-sm-2">
               <label>To Date</label>
               <input
                 type="date"
@@ -299,19 +385,52 @@ const exportInstitutionWiseExcel = async (
               />
             </div>
 
-            <div className="col-sm-3">
+            <div className="col-sm-4">
+  <label>Filter by District</label>
+  <Select
+    isMulti
+    options={districtOptions}
+    value={selectedDistricts}
+    onChange={setSelectedDistricts}
+    placeholder="Select district(s)"
+    classNamePrefix="react-select"
+  />
+</div>
+
+
+<div className="col-sm-4">
+  <label>Filter by School</label>
+  <Select
+    isMulti
+    options={schoolOptions}
+    value={selectedSchools}
+    onChange={setSelectedSchools}
+    placeholder="Select school(s)"
+    classNamePrefix="react-select"
+    isDisabled={selectedDistricts.length === 0}
+  />
+</div>
+
+
+            {/* <div className="col-sm-3">
               <button
                 className="btn btn-primary mt-4"
                 onClick={fetchSchoolWiseReport}
               >
                 Fetch
               </button>
-            </div>
+            </div> */}
 
           </div>
 
+          {hasFetched && !loading && filteredSchools.length === 0 && (
+  <div className="text-center text-muted mt-4">
+    No records found for the selected filters
+  </div>
+)}
+
           {/* ================= REPORT ================= */}
-          {schools.map((school, index) => (
+          {filteredSchools.map((school, index) => (
 
             <div key={school.SchoolID} className="mb-4">
 
@@ -354,20 +473,10 @@ const exportInstitutionWiseExcel = async (
                           </span>
                         </td>
                         <td>
-                          {v.ReportPDF ? (
-                            <button
-                              className="btn btn-sm btn-outline-primary"
-                              onClick={() =>
-                                window.open(
-                                  `${apiUrl}/uploads/tourdiary/reports/${v.ReportPDF}`,
-                                  "_blank"
-                                )
-                              }
-                            >
-                              View
-                            </button>
+                          {v.CapturedInfo ? (
+                           <span>Report Submitted</span>
                           ) : (
-                            "-"
+                             <span>Not Submitted</span>
                           )}
                         </td>
                       </tr>

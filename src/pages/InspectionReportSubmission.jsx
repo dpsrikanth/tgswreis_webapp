@@ -61,7 +61,7 @@ const InspectionReportSubmission = () => {
         }
 
         if (!validateFiles()) {
-    return null; 
+    return;
   }
     
         const formData = new FormData();
@@ -81,7 +81,8 @@ const InspectionReportSubmission = () => {
   return res.files; // array of filenames
     
         } catch(error){
-            console.error('Error fetching Photos',error);
+            notify.error(error.message || 'Failed to Upload Photo')
+            console.error('Photo Upload Error:',error)
         }
     }
 
@@ -90,12 +91,12 @@ const InspectionReportSubmission = () => {
 
      if (!academicReportFile) {
     notify.error('Please upload Academic Books Report');
-    return null;
+    return;
   }
 
   if (academicReportFile.size > 3 * 1024 * 1024) {
-    notify.error('Report must be less than 3MB');
-    return null;
+    notify.error('Academic Report must be less than 3MB');
+    return;
   }
 
 
@@ -118,7 +119,8 @@ const InspectionReportSubmission = () => {
   return res.file;
 
   } catch (error){
-    console.error('Error uploading academic report')
+    notify.error(error.message || 'Failed to upload academic report');
+    console.error('Academic Report Upload:',error)
   }
  
     }
@@ -706,10 +708,16 @@ if (missing.length > 0) {
       }
 
       const uploadedPhotos = await uploadPhotos();
-      if(!uploadedPhotos) throw new Error('Photo upload Failed,Please retry');
+      if(!uploadedPhotos){
+        setIsSubmitting(false);
+        return;
+      }
 
       const uploadedReport = await uploadAcademicReport();
-      if(!uploadedReport) throw new Error('Report upload failed, please retry')
+      if(!uploadedReport){
+        setIsSubmitting(false);
+        return;
+      } 
 
          const CapturedInfo = {
             generalInfo: {
@@ -1071,6 +1079,8 @@ useEffect(() => {
         Academic Books Utilization Report
       </h4>
 
+      <span className='text-danger fw-bold'>Note: Academic Report must be less than 3MB</span>
+
       <p className=" small">
         Upload a class/ subject-wise pdf report signed by the Principal in the following format:
       </p>
@@ -1259,7 +1269,7 @@ const isIncomplete =
       <h4 className="fw-bold mb-3">Inspection Photos</h4>
 
       <label className="form-label fw-semibold">
-        Upload Photos <span className="text-danger">(Max 3)</span>
+        Upload Photos <span className="text-danger">(Max 3 - Each Photo must be less than 1MB)</span>
       </label>
 
       <input
