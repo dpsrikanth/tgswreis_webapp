@@ -22,6 +22,17 @@ const Login = () => {
             [name]: value
         });
     }
+
+   const fetchServerToday = async (tokenToUse) => {
+    _fetch('servertoday',null,false,tokenToUse).then(res => {
+        if(res.status === 'success'){
+            dispatch({type: "SERVER_TODAY",payload: res.data});
+        } else {
+            console.error('Failed to fetch server today:',res.message);
+        }
+    })
+   }
+
     const fetchClassesList = async (tokenToUse) => {
         _fetch("classes", null, false, tokenToUse).then(res => {
             if (res.status === "success") {
@@ -96,6 +107,7 @@ const Login = () => {
         await fetchDistrictList(data.token);
         await fetchDPCList(data.token);
         await fetchClassesList(data.token);
+        await fetchServerToday(data.token)
     }
     // handle login
     const handleLogin = async (e) => {

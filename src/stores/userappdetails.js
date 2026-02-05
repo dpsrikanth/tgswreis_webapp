@@ -3,6 +3,7 @@ const initialState = {
   configData: {},
   siteData: {},  
   TOKEN: "",
+  SERVER_TODAY: null,
 };
 
 const AccountDetailsReducer = (state = initialState, action) => {  
@@ -29,6 +30,8 @@ const AccountDetailsReducer = (state = initialState, action) => {
       return { ...state, ZONES_LIST: action.payload };
       case "CLASSES_LIST":
       return { ...state, CLASSES_LIST: action.payload };
+      case "SERVER_TODAY":
+        return {...state,SERVER_TODAY: action.payload};
     default:
       return state; // Fixed to return current state instead of initialState
   }

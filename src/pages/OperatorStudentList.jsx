@@ -11,7 +11,7 @@ const CATEGORY_BUTTONS = [
   {label: 'Sent Home', value: 'SENT_HOME'},
   { label: 'Admitted', value: 'ADMITTED' },
   { label: 'Referred', value: 'REFERRED' },
-  { label: 'Insect Bite', value: 'INSECT_BITE' }
+  { label: 'Bite', value: 'INSECT_BITE' }
 ]
 
 const OperatorStudentList = ({

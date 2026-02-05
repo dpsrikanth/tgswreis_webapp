@@ -13,6 +13,7 @@ const TourUserVisits = () => {
 const token = useSelector((state) => state.userappdetails.TOKEN);
 const UserType = useSelector((state) => state.userappdetails.profileData.UserType);
 const UserId = useSelector((state) => state.userappdetails.profileData.Id)
+const serverToday = useSelector((state) => state.userappdetails.SERVER_TODAY)
 const [tourschedule,setTourSchedule] = useState([]);
 const [planned,setPlanned] = useState([]);
 const [completed,setCompleted] = useState([]);
@@ -144,13 +145,14 @@ const DownloadInspectionPdfReport = async (TourDiaryId) => {
 
 
 const isToday = (dateStr) => {
-    const d = new Date(dateStr);
-    const today = new Date();
-    return (
-      d.getFullYear() === today.getFullYear() &&
-      d.getMonth() === today.getMonth() &&
-      d.getDate() === today.getDate()
-    );
+  if(!dateStr || !serverToday) return false;
+    // const d = new Date(dateStr);
+    // const today = new Date();
+    // const dd = String(today.getDate()).padStart(2, "0");
+    // const mm = String(today.getMonth() + 1).padStart(2, "0");
+    // const yyyy = today.getFullYear();
+    // return dateStr === `${dd}-${mm}-${yyyy}`;
+    return dateStr === serverToday;
 }
 
 
@@ -171,11 +173,14 @@ const openPhotoGallery = (tourDiaryId, photoList) => {
 
 
 const canAddRemarks = (dateStr) => {
-  const visitDate = new Date(dateStr);
-  const today = new Date();
+  if (!dateStr || !serverToday) return false;
+  const [dd, mm, yyyy] = dateStr.split("-");
+  const visitDate = new Date(yyyy, mm - 1, dd);
+  const [td, tm, ty] = serverToday.split("-");
+  const today = new Date(ty, tm - 1, td);
 
-  const diffDays =
-    (today.setHours(0,0,0,0) - visitDate.setHours(0,0,0,0)) /
+    const diffDays =
+    (today.getTime() - visitDate.getTime()) /
     (1000 * 60 * 60 * 24);
 
   return diffDays <= 2;
@@ -251,7 +256,7 @@ const submitNotVisitedRemarks = async () => {
         <div className="card-body d-flex justify-content-between align-items-start">
           <div>
             <span className="badge bg-secondary">
-              {new Date(item.DateOfVisit).toLocaleDateString('en-IN')}
+              {(item.DateOfVisitStr)}
             </span>
             <h6 className="mt-2 mb-1 fw-bold">
               {item.PartnerName.replace("TGSWREIS", "")}
@@ -264,14 +269,14 @@ const submitNotVisitedRemarks = async () => {
             <div className="d-flex gap-2 justify-content-end">
               <button
                 className="btn btn-success btn-sm"
-                disabled={!isToday(item.DateOfVisit)}
+                disabled={!isToday(item.DateOfVisitStr)}
                 onClick={() => { setVisitedId(item.TourDiaryId); setShowMarkVisitModal(true); }}
               >
                 Mark Visited
               </button>
               <button
                 className="btn btn-danger btn-sm"
-                disabled={!isToday(item.DateOfVisit)}
+                disabled={!isToday(item.DateOfVisitStr)}
                 onClick={() => { setCannotVisitId(item.TourDiaryId); setCannotVisitModal(true); }}
               >
                 Cannot Visit
@@ -293,7 +298,7 @@ const submitNotVisitedRemarks = async () => {
 
     {notvisited.length ? notvisited.map(item => {
 
-      const allowRemarks = canAddRemarks(item.DateOfVisit);
+      const allowRemarks = canAddRemarks(item.DateOfVisitStr);
 
       return (
         <div key={item.TourDiaryId} className="card mb-3 shadow-sm border-sm">
@@ -301,7 +306,7 @@ const submitNotVisitedRemarks = async () => {
 
             <div>
               <span className="badge bg-secondary">
-                {new Date(item.DateOfVisit).toLocaleDateString('en-IN')}
+                {item.DateOfVisitStr}
               </span>
 
               <h6 className="mt-2 mb-1 fw-bold">
@@ -367,7 +372,7 @@ const submitNotVisitedRemarks = async () => {
 
           <div>
             <span className="badge bg-secondary">
-              {new Date(item.DateOfVisit).toLocaleDateString('en-IN')}
+              {item.DateOfVisitStr}
             </span>
             <h6 className="mt-2 mb-1 fw-bold">{item.PartnerName}</h6>
             <p className="text-muted small mb-1">{item.Purpose}</p>
@@ -459,7 +464,7 @@ const submitNotVisitedRemarks = async () => {
 
           <div>
             <span className="badge bg-secondary">
-              {new Date(item.DateOfVisit).toLocaleDateString('en-IN')}
+              {item.DateOfVisitStr}
             </span>
             <h6 className="mt-2 mb-1 fw-bold">
               {item.PartnerName.replace("TGSWREIS","")}

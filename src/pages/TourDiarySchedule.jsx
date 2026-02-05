@@ -17,6 +17,17 @@ const UserId = useSelector((state) => state.userappdetails.profileData.Id);
 const requiredVisits = useSelector((state) => state.userappdetails.profileData.MonthlyVisitTarget);
 const DistrictId = useSelector((state) => state.userappdetails.profileData.DistrictId);
 const ZoneId = useSelector((state) => state.userappdetails.profileData.ZoneId);
+const serverToday = useSelector((state) => state.userappdetails.SERVER_TODAY);
+
+
+const todayDate = React.useMemo(() => {
+  if (!serverToday) return null;
+  const [dd, mm, yyyy] = serverToday.split("-");
+  return new Date(yyyy, mm - 1, dd);
+}, [serverToday]);
+
+
+
 const navigate = useNavigate();
 const [officersList,setOfficersList] = useState([])
 const [selectedOfficer,setSelectedOfficer] = useState('');
@@ -27,7 +38,7 @@ const [purpose,setPurpose] = useState('');
 const [schoolList,setSchoolList] = useState([]);
 const [tourSchedule,setTourSchedule] = useState([]);
 const [tourRows,setTourRows] = useState([]);
-const [selectedMonth,setSelectedMonth] = useState(new Date());
+const [selectedMonth,setSelectedMonth] = useState(null);
 
 useEffect(() => {
 
@@ -49,13 +60,21 @@ useEffect(() => {
 },[schoolsList,UserType,ZoneId,DistrictId])
 
 
+useEffect(() => {
+  if (todayDate && !selectedMonth) {
+    setSelectedMonth(startOfMonth(todayDate));
+  }
+}, [todayDate]);
+
+
+
 const schoolOptions = schoolList.map((school) => ({
     value: school.SchoolID,
     label: school.PartnerName.replace('TGSWREIS',''),
     schoolcode: school.SchoolCode
 }))
 
-const nextMonth = addMonths(new Date(), 1);
+const nextMonth = todayDate ? addMonths(todayDate, 1) : null;
 
 const isNextMonthSelected = isSameMonth(
   selectedMonth,
@@ -211,7 +230,7 @@ const fetchTourScheduleNew = async () => {
 
     const normalized = rows.map(r => ({
       TourDiaryId: r.TourDiaryId,
-      VisitDate: r.DateOfVisit?.split("T")[0] || "",
+      VisitDate: r.DateOfVisitISO || "",
       SchoolId: r.SchoolId,
       Purpose: r.Purpose || "",
       Status: r.Status,
@@ -273,7 +292,7 @@ const saveTourScheduleNew = async () => {
 
 
     }catch(error){
-     onsole.error("Error saving tour schedule", error);
+     console.error("Error saving tour schedule", error);
       notify.error("Error saving schedule");
     }
 }
@@ -292,9 +311,19 @@ const saveTourScheduleNew = async () => {
 }, [selectedMonth,UserId]);
 
 
-const todayDate = new Date();
+// const todayDate = new Date();
+// const todayDate = serverToday ? (() => {
+//       const [dd, mm, yyyy] = serverToday.split("-");
+//       return new Date(yyyy, mm - 1, dd);
+//     })() : null
 const year = todayDate.getFullYear();
 const month = todayDate.getMonth();
+
+
+if (!todayDate || !selectedMonth) {
+  return <div className="text-muted p-3">Loading schedule…</div>;
+}
+
 
 const monthStart = startOfMonth(selectedMonth);
 const monthEnd = endOfMonth(selectedMonth);
@@ -308,13 +337,15 @@ const editEnd = addDays(monthStart, 2);
 
 let isWithinWindow = false;
 
-try {
-  isWithinWindow = isWithinInterval(todayDate, {
-    start: editStart,
-    end: editEnd
-  });
-} catch {
-  isWithinWindow = false;
+if (todayDate) {
+  try {
+    isWithinWindow = isWithinInterval(todayDate, {
+      start: editStart,
+      end: editEnd
+    });
+  } catch {
+    isWithinWindow = false;
+  }
 }
 
 
@@ -370,6 +401,8 @@ else {
   scheduleMessage = `Note: Schedule is locked. Only additional visits can be added.`;
   scheduleColor = "text-danger";
 }
+
+
 
 
   return (
@@ -430,12 +463,12 @@ else {
                       onChange={(e) =>
       setSelectedMonth(new Date(e.target.value + "-01"))}
                       >
-                        <option value={format(new Date(), "yyyy-MM")}>
-      {format(new Date(), "MMMM yyyy")}
+                        <option value={format(todayDate, "yyyy-MM")}>
+      {format(todayDate, "MMMM yyyy")}
     </option>
 
-    <option value={format(addMonths(new Date(), 1), "yyyy-MM")}>
-      {format(addMonths(new Date(), 1), "MMMM yyyy")}
+    <option value={format(addMonths(todayDate, 1), "yyyy-MM")}>
+      {format(addMonths(todayDate, 1), "MMMM yyyy")}
     </option>
                       </select>
                     </div>

@@ -27,7 +27,7 @@ const OperatorZoneSummary = ({ onZoneSelect }) => {
   { label: 'Admitted', key: 'Admitted', value: 'ADMITTED', danger: true },
   { label: 'Referred', key: 'Referred', value: 'REFERRED' },
   {label: 'Sent Home', key: 'SentHome', value: 'SENT_HOME'},
-  {label: 'Insect Bite', key: 'InsectBite', value: 'INSECT_BITE'}
+  {label: 'Bite', key: 'InsectBite', value: 'INSECT_BITE'}
 ]
 
 const excelColumns = [
@@ -37,7 +37,7 @@ const excelColumns = [
   { header: 'Admitted', key: 'Admitted', width: 15 },
   { header: 'Referred', key: 'Referred', width: 15 },
   { header: 'Sent Home', key: 'SentHome', width: 15 },
-   { header: 'Insect Bite', key: 'InsectBite', width: 15 }
+   { header: 'Bite', key: 'InsectBite', width: 15 }
 ]
 
 
@@ -48,7 +48,7 @@ const excelData = zones.map(zone => ({
   Admitted: zone.Admitted,
   Referred: zone.Referred,
   SentHome: zone.SentHome,
-  InsectBite: zone.InsectBite
+  Bite: zone.InsectBite
 }))
 
 const contextRows = [

@@ -17,7 +17,7 @@ const DateWiseInspectionReport = () => {
   const navigate = useNavigate();
   const [statusFilter, setStatusFilter] = useState('ALL')
   const [hasFetched, setHasFetched] = useState(false);
-const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
 
   /* ======================================

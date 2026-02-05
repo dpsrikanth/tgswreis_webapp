@@ -160,7 +160,8 @@ const _gc = {
         userprofile: {url: 'http://localhost:9001/user/profile', method: 'GET'},
         statuswisevisits: {url: 'http://localhost:9001/tour/statuswisevisits', method: 'GET'},
         comparativeinspection: {url: 'http://localhost:9001/tour/inspection/comparative', method: 'GET'},
-        accessibledcos: {url: 'http://localhost:9001/tour/accessible-dcos', method: 'GET'}
+        accessibledcos: {url: 'http://localhost:9001/tour/accessible-dcos', method: 'GET'},
+        servertoday: {url: 'http://localhost:9001/system/time', method: 'GET'},
     },
 };
 window.gc = _gc;
