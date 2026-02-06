@@ -184,7 +184,7 @@ const ComparativeInspection = () => {
                 <th>Officer</th>
                 <th>Designation</th>
                 <th>Answer</th>
-                <th>Value</th>
+                {/* <th>Value</th> */}
                 <th>Remarks</th>
               </tr>
             </thead>
@@ -214,13 +214,13 @@ const ComparativeInspection = () => {
                       )}
                     </td>
 
-                    <td>{row.NumericValue ?? "-"}</td>
+                    {/* <td>{row.NumericValue ?? "-"}</td> */}
                     <td>{JSON.parse(row.AnswerValue)?.remarks || "-"}</td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="7" className="text-center text-muted">
+                  <td colSpan="6" className="text-center text-muted">
                     No data found
                   </td>
                 </tr>

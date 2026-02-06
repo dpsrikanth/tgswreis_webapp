@@ -305,7 +305,7 @@ const saveTourScheduleNew = async () => {
 
 
   useEffect(() => {
-  if (UserId) {
+  if (UserId && selectedMonth) {
     fetchTourScheduleNew();
   }
 }, [selectedMonth,UserId]);
@@ -316,13 +316,15 @@ const saveTourScheduleNew = async () => {
 //       const [dd, mm, yyyy] = serverToday.split("-");
 //       return new Date(yyyy, mm - 1, dd);
 //     })() : null
-const year = todayDate.getFullYear();
-const month = todayDate.getMonth();
+
 
 
 if (!todayDate || !selectedMonth) {
   return <div className="text-muted p-3">Loading schedule…</div>;
 }
+
+const year = todayDate.getFullYear();
+const month = todayDate.getMonth();
 
 
 const monthStart = startOfMonth(selectedMonth);

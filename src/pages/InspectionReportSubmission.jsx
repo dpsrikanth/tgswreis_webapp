@@ -5,6 +5,7 @@ import { useEffect, useState, useRef,} from 'react';
 import { _fetch } from "../libs/utils";
 import { useSelector } from 'react-redux';
 import { notify } from '../services/notify';
+import imageCompression from 'browser-image-compression'
 
 const InspectionReportSubmission = () => {
     const token = useSelector((state) => state.userappdetails.TOKEN);
@@ -42,11 +43,31 @@ const InspectionReportSubmission = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
 
+  const formatMB = (bytes) => (bytes / (1024 * 1024)).toFixed(2);
+
+  const compressImage = async (file) => {
+    const options = {
+      maxSizeMB: 0.8,
+      maxWidthOrHeight: 1280,
+      useWebWorker: true
+    };
+
+     const compressed = await imageCompression(file, options);
+
+     return new File(
+    [compressed],
+    file.name.replace(/\.\w+$/, ".jpg"),
+    { type: "image/jpeg" }
+  );
+  }
+
+  
+
 
   const validateFiles = () => {
   for (let p of photos) {
-    if (p.file.size > 1 * 1024 * 1024) {
-      notify.error('Each Photo must be less than 1MB');
+    if (p.file.size > 5 * 1024 * 1024) {
+      notify.error('Each Photo must be less than 5 MB');
       return false;
     }
   }
@@ -94,8 +115,8 @@ const InspectionReportSubmission = () => {
     return;
   }
 
-  if (academicReportFile.size > 3 * 1024 * 1024) {
-    notify.error('Academic Report must be less than 3MB');
+  if (academicReportFile.size > 5 * 1024 * 1024) {
+    notify.error('Academic Report must be less than 5 MB');
     return;
   }
 
@@ -1079,7 +1100,7 @@ useEffect(() => {
         Academic Books Utilization Report
       </h4>
 
-      <span className='text-danger fw-bold'>Note: Academic Report must be less than 3MB</span>
+      <span className='text-danger fw-bold'>Note: Academic Report must be less than 5 MB</span>
 
       <p className=" small">
         Upload a class/ subject-wise pdf report signed by the Principal in the following format:
@@ -1269,7 +1290,7 @@ const isIncomplete =
       <h4 className="fw-bold mb-3">Inspection Photos</h4>
 
       <label className="form-label fw-semibold">
-        Upload Photos <span className="text-danger">(Max 3 - Each Photo must be less than 1MB)</span>
+        Upload Photos <span className="text-danger">(Max 3 - Photos will be auto-compressed)</span>
       </label>
 
       <input
@@ -1277,19 +1298,57 @@ const isIncomplete =
         className="form-control"
         multiple
         accept="image/*"
-        onChange={(e) => {
-          const selected = Array.from(e.target.files);
-          if (selected.length > 3) {
-            notify.error('Only 3 photos allowed');
-            e.target.value = '';
-            return;
-          }
-           const mapped = selected.map(file => ({
-      file,
-      preview: URL.createObjectURL(file)
-    }));
-          setPhotos(mapped);
-        }}
+    //     onChange={(e) => {
+    //       const selected = Array.from(e.target.files);
+    //       if (selected.length > 3) {
+    //         notify.error('Only 3 photos allowed');
+    //         e.target.value = '';
+    //         return;
+    //       }
+    //        const mapped = selected.map(file => ({
+    //   file,
+    //   preview: URL.createObjectURL(file)
+    // }));
+    //       setPhotos(mapped);
+    //     }}
+    onChange={async (e) => {
+  const selected = Array.from(e.target.files);
+
+  if (selected.length > 3) {
+    notify.error("Only 3 photos allowed");
+    e.target.value = "";
+    return;
+  }
+
+  try {
+    notify.info("Compressing photos... Please wait");
+
+    const compressedMapped = [];
+
+    for (const file of selected) {
+      const before = formatMB(file.size);
+
+      const compressedFile = await compressImage(file);
+
+      const after = formatMB(compressedFile.size);
+
+      compressedMapped.push({
+        file: compressedFile,
+        preview: URL.createObjectURL(compressedFile),
+        beforeSize: before,
+        afterSize: after
+      });
+    }
+
+    setPhotos(compressedMapped);
+
+    notify.success("Photos compressed successfully");
+
+  } catch (err) {
+    console.error(err);
+    notify.error("Photo compression failed. Please try again.");
+  }
+}}
       />
 
       {photos.length > 0 && (
