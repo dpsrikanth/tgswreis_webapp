@@ -100,7 +100,14 @@ const navigate = useNavigate();
 
 const getStatus = (status, isAdditional = false) => {
 
-  // ⭐ highest priority
+  if (isAdditional && status === 3) {
+    return {
+      label: "Additional Visit (Completed)",
+      badge: "badge bg-success"
+    };
+  }
+
+  
   if (isAdditional) {
     return {
       label: "Additional Visit",

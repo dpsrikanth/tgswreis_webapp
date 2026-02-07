@@ -76,6 +76,7 @@ import PendingInspections from './pages/PendingInspections';
 import ProfilePage from './components/common/ProfilePage';
 import TourVisitDetails from './pages/TourVisitDetails';
 import ComparativeInspection from './pages/ComparativeInspection';
+import DailyOperatorReport from './pages/DailyOperatorReport';
 const AppRoutes = () => {
   return (
     <Router>
@@ -522,6 +523,13 @@ const AppRoutes = () => {
 <Route path='/comparativeinspection' element={
 <ProtectedRoute>
   <ComparativeInspection />
+</ProtectedRoute>
+} />
+
+
+<Route path='/dailyoperatorreport' element={
+<ProtectedRoute>
+  <DailyOperatorReport />
 </ProtectedRoute>
 } />
 
