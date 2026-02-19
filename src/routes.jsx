@@ -77,6 +77,8 @@ import ProfilePage from './components/common/ProfilePage';
 import TourVisitDetails from './pages/TourVisitDetails';
 import ComparativeInspection from './pages/ComparativeInspection';
 import DailyOperatorReport from './pages/DailyOperatorReport';
+import TelanganaSchoolMap from './components/TelanganaSchoolMap';
+import TelanganaD3Map from './components/TelanganaD3Map';
 const AppRoutes = () => {
   return (
     <Router>
@@ -533,6 +535,18 @@ const AppRoutes = () => {
 </ProtectedRoute>
 } />
 
+
+<Route path='/map' element={
+  <ProtectedRoute>
+    <TelanganaSchoolMap />
+  </ProtectedRoute>
+} />
+
+<Route path="/map/d3" element={
+  <ProtectedRoute>
+    <TelanganaD3Map />
+  </ProtectedRoute>
+} />
 
         </Route>
       </Routes>

@@ -3,12 +3,15 @@ import { useSelector } from 'react-redux'
 import { _fetch } from '../libs/utils'
 import { useNavigate } from 'react-router-dom'
 import { exportToExcel } from '../libs/exportToExcel'
+import { useDebounce } from '../libs/useDebounce'
 
 
 const HealthSupervisorsList = ({ ZoneId, DistrictId }) => {
   const token = useSelector((state) => state.userappdetails.TOKEN)
   const [supervisors, setSupervisors] = useState([])
   const [loading, setLoading] = useState(false)
+  const [searchInput,setSearchInput] = useState('');
+  const debouncedSearch = useDebounce(searchInput,300);
   const navigate = useNavigate();
 
   const fetchSupervisors = async () => {
@@ -43,6 +46,14 @@ const HealthSupervisorsList = ({ ZoneId, DistrictId }) => {
     fetchSupervisors()
   }, [ZoneId, DistrictId])
 
+
+  const filteredSupervisors = supervisors.filter((s) => {
+    const text = `${s.HealthSupervisorName} ${s.HealthSupervisorMobile} ${s.SchoolCode} ${s.SchoolName}`.toLowerCase()
+    return text.includes(debouncedSearch.toLowerCase());
+  })
+
+
+
   const excelColumns = [
   { header: 'S.No', key: 'SNo', width: 8 },
   { header: 'Zone', key: 'ZoneName', width: 18 },
@@ -54,7 +65,7 @@ const HealthSupervisorsList = ({ ZoneId, DistrictId }) => {
   { header: 'HS Mobile Number', key: 'HealthSupervisorMobile', width: 20 }
 ]
 
-const excelData = supervisors.map((item, index) => ({
+const excelData = filteredSupervisors.map((item, index) => ({
   ...item,
   SNo: index + 1
 }))
@@ -62,10 +73,10 @@ const excelData = supervisors.map((item, index) => ({
 
 const contextRows = []
 
-if (DistrictId && DistrictId !== 0 && supervisors.length > 0) {
-  contextRows.push(`District : ${supervisors[0].DistrictName}`)
-} else if (ZoneId && ZoneId !== 0 && supervisors.length > 0) {
-  contextRows.push(`Zone : ${supervisors[0].ZoneName}`)
+if (DistrictId && DistrictId !== 0 && filteredSupervisors.length > 0) {
+  contextRows.push(`District : ${filteredSupervisors[0].DistrictName}`)
+} else if (ZoneId && ZoneId !== 0 && filteredSupervisors.length > 0) {
+  contextRows.push(`Zone : ${filteredSupervisors[0].ZoneName}`)
 }
 
 
@@ -84,7 +95,7 @@ const handleExport = () => {
   return (
     <>
     <div className='white-box shadow-sm'>
-      <div className="row align-items-center mb-3">
+      <div className="row align-items-center mb-3 gy-3">
         <div className='col-sm-6'>
         <h5 className="fw-bold" style={{ color: '#cc1178' }}>
         Health Supervisors List
@@ -94,13 +105,16 @@ const handleExport = () => {
            <button
     className="btn btn-success btn-sm me-2"
     onClick={handleExport}
-    disabled={loading || supervisors.length === 0}
+    disabled={loading || filteredSupervisors.length === 0}
   >
     Export Excel
   </button>
           <button className="btn btn-secondary btn-sm" onClick={() => navigate('/sickdashboard')}>
             Back
           </button>
+        </div>
+        <div className='col-sm-12'>
+          <input type='text' placeholder='Search by Supervisor Name or Mobile or School Code or School Name' className='form-control' value={searchInput} onChange={(e) => setSearchInput(e.target.value)} />
         </div>
       </div>
       
@@ -126,14 +140,14 @@ const handleExport = () => {
                   Loading...
                 </td>
               </tr>
-            ) : supervisors.length === 0 ? (
+            ) : filteredSupervisors.length === 0 ? (
               <tr>
                 <td colSpan="5" className="text-center">
                   No supervisors found
                 </td>
               </tr>
             ) : (
-              supervisors.map((item, index) => (
+              filteredSupervisors.map((item, index) => (
                 <tr key={index}>
                   <td>{index+1}</td>
                    <td>{item.ZoneName}</td>

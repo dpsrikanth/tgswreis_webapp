@@ -106,6 +106,10 @@ const handleExport = () => {
 }
 
 
+const getFileUrl = (refDocNo,fileType="jpg") => {
+  return `https://tgswreisuat.unicampus.in/viewfile.aspx?fname=${refDocNo}&ftype=${fileType}&rdoctype=Health`
+}
+
 
   return (
     <div className="white-box shadow-sm">
@@ -171,6 +175,7 @@ const handleExport = () => {
               <th>Health Action Taken</th>
               <th>Any Medical Emergencies</th>
               <th>Is Student in Wellness Center</th>
+              <th>Uploaded Document</th>
             </tr>
           </thead>
           <tbody>
@@ -198,6 +203,7 @@ const handleExport = () => {
                   <td>{s.HealthActionTaken}</td>
                   <td>{s.IsMedicalEmergencies}</td>
                   <td>{s.StudentInWellnessCenter}</td>
+                  <td>{s.RefDocNo ? (<a href={getFileUrl(s.RefDocNo, "jpg")} target="_blank" rel="noreferrer">View</a>) : (<span>No Document Uploaded</span>)}</td>
               </tr>
             ))}
 

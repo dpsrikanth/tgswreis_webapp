@@ -10,6 +10,7 @@ import {saveAs} from 'file-saver';
 import DrilldownReport from '../components/DrilldownReport';
 import OperatorHealthView from '../components/OperatorHealthView';
 import { useQuery } from '@tanstack/react-query';
+import CountUp from 'react-countup'
 
 const SickEntryDashboard = () => {
 
@@ -635,7 +636,10 @@ useEffect(() => {
         navigate('/sicknotentered') // optional list page
       }}
     >
-      <h3 className="fw-bold">{statusLoading ? '-' : dailyStatusCounts?.notEntered ?? 0}</h3>
+      <h3 className="fw-bold">{statusLoading ? '-' : (<CountUp
+        end = {dailyStatusCounts?.notEntered ?? 0}
+        separator=','
+      />)}</h3>
       <h6 className="fw-bold">Schools Not Entered</h6>
       <small>Today</small>
     </div>
@@ -663,7 +667,11 @@ useEffect(() => {
         navigate('/sick/nosickstudents') // optional list page
       }}
     >
-      <h3 className="fw-bold">{statusLoading ? '—' : dailyStatusCounts?.noSickConfirmed ?? 0}</h3>
+      <h3 className="fw-bold">{statusLoading ? '—' : (
+        <CountUp
+        end = {dailyStatusCounts?.noSickConfirmed ?? 0}
+        separator=','
+      />)}</h3>
       <h6 className="fw-bold">No Sick Students Schools</h6>
       <small>Today</small>
     </div>
@@ -677,7 +685,13 @@ useEffect(() => {
         navigate('/sick/recovered') // optional list page
       }}
     >
-      <h3 className="fw-bold">{recoveredLoading ? '-' : recoveredCount}</h3>
+      <h3 className="fw-bold">{recoveredLoading ? '-' : (
+    <CountUp
+      end={recoveredCount}
+      duration={1.2}
+      separator=","
+    />
+  )}</h3>
       <h6 className="fw-bold">Students Recovered</h6>
       <small>Today</small>
     </div>
@@ -693,7 +707,13 @@ useEffect(() => {
           <a href="">
           <div className="white-box d-flex justify-content-between shadow-sm">
             <div>
-              <h3 className="fw-bold maroon">{sickStatsLoading ? '-' : sickStats?.general ?? 0}</h3>
+              <h3 className="fw-bold maroon">{sickStatsLoading ? '-' : (
+    <CountUp
+      end={sickStats?.general ?? 0}
+      duration={1.2}
+      separator=","
+    />
+  )}</h3>
               <h6 className="fw-bold">General Sick Cases</h6>
             </div>
             <div className="text-end">

@@ -13,6 +13,8 @@ const UtmostEmergencyList = () => {
 
   const [students, setStudents] = useState([])
   const [loading, setLoading] = useState(false)
+  const [searchInput,setSearchInput] = useState('');
+  const [debouncedSearch,setDebouncedSearch] = useState('');
 
   const fetchUtmostEmergency = async () => {
     try {
@@ -49,6 +51,14 @@ const UtmostEmergencyList = () => {
   }, [])
 
 
+  const filteredStudents = students.filter((s) => {
+    const text =  `${s.FName || ''} ${s.LName || ''} ${s.SchoolName || ''} ${s.SchoolCode || ''}`.toLowerCase();
+    return text.includes(debouncedSearch.toLowerCase())
+  
+  });
+   
+
+
   const excelColumns = [
   { header: 'Student Name', key: 'StudentName', width: 25 },
   { header: 'Gender', key: 'GenderName', width: 12 },
@@ -62,7 +72,7 @@ const UtmostEmergencyList = () => {
   { header: 'Action Taken', key: 'ClinicalActionTaken', width: 35 }
 ]
 
-const excelData = students.map(item => ({
+const excelData = filteredStudents.map(item => ({
   ...item,
   StudentName: `${item.FName} ${item.LName || ''}`.trim(),
   HealthDate: item.HealthIssueDate
@@ -75,10 +85,10 @@ const excelData = students.map(item => ({
 
 const contextRows = []
 
-if (DistrictId && DistrictId !== 0 && students.length > 0) {
-  contextRows.push(`District : ${students[0].DistrictName}`)
-} else if (ZoneId && ZoneId !== 0 && students.length > 0) {
-  contextRows.push(`Zone : ${students[0].ZoneName}`)
+if (DistrictId && DistrictId !== 0 && filteredStudents.length > 0) {
+  contextRows.push(`District : ${filteredStudents[0].DistrictName}`)
+} else if (ZoneId && ZoneId !== 0 && filteredStudents.length > 0) {
+  contextRows.push(`Zone : ${filteredStudents[0].ZoneName}`)
 }
 
 const handleExport = () => {
@@ -93,12 +103,25 @@ const handleExport = () => {
 }
 
 
+useEffect(() => {
+const timer = setTimeout(() => {
+setDebouncedSearch(searchInput);
+},300);
+
+return () => {
+  clearTimeout(timer);
+}
+
+},[searchInput])
+
+
+
   return (
     <>
       
       <div className='white-box shadow-sm'>
        {/* Header */}
-        <div className="row align-items-center mb-3">
+        <div className="row align-items-center mb-3 gy-3">
         <div className="col-sm-6">
           <h5 className="fw-bold text-danger">
             🔴 Utmost Emergency Students
@@ -119,6 +142,10 @@ const handleExport = () => {
             Back to Dashboard
           </button>
         </div>
+        <div className='col-sm-12'>
+          <input type='text' className='form-control' placeholder='Search By Student Name,School Code and School Name' value={searchInput} onChange={(e) => setSearchInput(e.target.value)} />
+        </div>
+        
       </div>
 
        {/* Table */}
@@ -144,14 +171,14 @@ const handleExport = () => {
                   Loading...
                 </td>
               </tr>
-            ) : students.length === 0 ? (
+            ) : filteredStudents.length === 0 ? (
               <tr>
                 <td colSpan="9" className="text-center">
                   No utmost emergency cases found
                 </td>
               </tr>
             ) : (
-              students.map((s) => (
+              filteredStudents.map((s) => (
                 <tr key={s.UserId}>
                   <td>{s.FName} {s.LName}</td>
                   <td>{s.GenderName}</td>

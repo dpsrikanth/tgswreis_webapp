@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef, use } from 'react';
 import { _fetch } from "../libs/utils";
 import { useSelector } from 'react-redux';
+import TelanganaInspectionHeatMap from '../components/TelanganaInspectionHeatMap';
 
 const TourDiaryDashboard = () => {
   const token = useSelector((state) => state.userappdetails.TOKEN);
@@ -373,6 +374,12 @@ useEffect(() => {
             </div>
         </div> */}
 
+        <div className='col-sm-12'>
+          <div className='white-box shadow-sm'>
+            <TelanganaInspectionHeatMap />
+          </div>
+        </div>
+
          <div className="col-sm-12">
             <div className="white-box shadow-sm">
                 <h5 className="chart-title">Reports</h5>
@@ -423,6 +430,11 @@ useEffect(() => {
                      <div className='col-sm-4 shadow-sm border rounded-3 p-3 d-flex gap-3 align-items-center' onClick={() => navigate('/comparativeinspection')}  style={{cursor:'pointer'}}>
                         <div className="report-icon"><i class="bi bi-clipboard-data-fill"></i></div>
                      <p className='mb-0'>Comparative Inspection Analysis</p>
+                    </div>
+
+                     <div className='col-sm-4 shadow-sm border rounded-3 p-3 d-flex gap-3 align-items-center' onClick={() => navigate('/dailyoperatorreport')}  style={{cursor:'pointer'}}>
+                        <div className="report-icon"><i class="bi bi-gear-wide-connected"></i></div>
+                     <p className='mb-0'>Daily Operator Report</p>
                     </div>
 
                     <div className='col-sm-4 shadow-sm border rounded-3 p-3 d-flex gap-3 align-items-center' onClick={() => navigate('/schoolscontact')}  style={{cursor:'pointer'}}>

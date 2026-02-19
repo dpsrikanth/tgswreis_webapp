@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { _fetch } from '../libs/utils'
-import { useNavigate } from 'react-router-dom'
+import { useFetcher, useNavigate } from 'react-router-dom'
 import { exportToExcel } from '../libs/exportToExcel'
+import { useDebounce } from '../libs/useDebounce'
 
 
 const ChronicStudentsList = ({ ZoneId, DistrictId }) => {
   const token = useSelector((state) => state.userappdetails.TOKEN)
   const [students, setStudents] = useState([])
   const [loading, setLoading] = useState(false)
+  const [searchInput,setSearchInput] = useState('');
+  const debouncedSearch = useDebounce(searchInput,300);
   const navigate = useNavigate();
 
   const fetchChronicStudents = async () => {
@@ -43,6 +46,12 @@ const ChronicStudentsList = ({ ZoneId, DistrictId }) => {
     fetchChronicStudents()
   }, [ZoneId, DistrictId])
 
+
+  const filteredStudents = students.filter((s) => {
+    const text = `${s.FName} ${s.LName} ${s.SchoolCode} ${s.SchoolName}`.toLowerCase();
+    return text.includes(debouncedSearch.toLowerCase());
+  })
+
   const excelColumns = [
   { header: 'Student Name', key: 'StudentName', width: 25 },
   { header: 'Gender', key: 'GenderName', width: 12 },
@@ -56,7 +65,7 @@ const ChronicStudentsList = ({ ZoneId, DistrictId }) => {
   { header: 'Last Updated', key: 'LastUpdated', width: 18 }
 ]
 
-const excelData = students.map(item => ({
+const excelData = filteredStudents.map(item => ({
   ...item,
   StudentName: `${item.FName} ${item.LName || ''}`.trim(),
   ChronicTreatment: item.ChronicTreatment || '-',
@@ -67,10 +76,10 @@ const excelData = students.map(item => ({
 
 const contextRows = []
 
-if (DistrictId && DistrictId !== 0 && students.length > 0) {
-  contextRows.push(`District : ${students[0].DistrictName}`)
+if (DistrictId && DistrictId !== 0 && filteredStudents.length > 0) {
+  contextRows.push(`District : ${filteredStudents[0].DistrictName}`)
 } else if (ZoneId && ZoneId !== 0 && students.length > 0) {
-  contextRows.push(`Zone : ${students[0].ZoneName}`)
+  contextRows.push(`Zone : ${filteredStudents[0].ZoneName}`)
 }
 
 const handleExport = () => {
@@ -85,10 +94,11 @@ const handleExport = () => {
 }
 
 
+
   return (
     <>
     <div className='white-box shadow-sm'>
-      <div className="row align-items-center mb-3">
+      <div className="row align-items-center mb-3 gy-3">
         <div className='col-sm-6'>
        <h5 className="fw-bold" style={{ color: '#cc1178' }}>
         Students with Chronic Conditions
@@ -105,6 +115,9 @@ const handleExport = () => {
            <button className="btn btn-secondary btn-sm" onClick={() => navigate('/sickdashboard')}>
             Back
           </button>
+        </div>
+        <div className='col-sm-12'>
+          <input type='text' placeholder='Search By Student Name, School Code and School Name' className='form-control' value={searchInput} onChange={(e)=>setSearchInput(e.target.value)} />
         </div>
       </div>
    
@@ -132,14 +145,14 @@ const handleExport = () => {
                   Loading...
                 </td>
               </tr>
-            ) : students.length === 0 ? (
+            ) : filteredStudents.length === 0 ? (
               <tr>
                 <td colSpan="7" className="text-center">
                   No data found
                 </td>
               </tr>
             ) : (
-              students.map((item, index) => (
+              filteredStudents.map((item, index) => (
                 <tr key={index}>
                   <td>{item.FName} {item.LName}</td>
                   <td>{item.GenderName}</td>

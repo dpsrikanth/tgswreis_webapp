@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux'
 import { _fetch } from '../libs/utils'
 import { useNavigate } from 'react-router-dom'
 import { exportToExcel } from '../libs/exportToExcel'
+import { useDebounce } from '../libs/useDebounce'
 
 
 
@@ -14,6 +15,8 @@ const StudentsAdmittedList = () => {
       const [entryDate, setEntryDate] = useState('')
       const [students, setStudents] = useState([])
       const [loading, setLoading] = useState(false)
+      const [searchInput,setSearchInput] = useState('');
+      const debouncedSearch = useDebounce(searchInput,300);
       const navigate = useNavigate();
     
       const fetchStudents = async () => {
@@ -52,6 +55,12 @@ const StudentsAdmittedList = () => {
        fetchStudents();
       },[])
 
+
+      const filteredStudents = students.filter((s) => {
+        const text = `${s.FName} ${s.SchoolCode} ${s.SchoolName}`.toLowerCase();
+        return text.includes(debouncedSearch.toLowerCase());
+      })
+
       const excelColumns = [
   { header: 'Zone', key: 'ZoneName', width: 18 },
   { header: 'District', key: 'DistrictName', width: 18 },
@@ -72,16 +81,16 @@ const StudentsAdmittedList = () => {
 
 const contextRows = []
 
-if (DistrictId && DistrictId !== 0 && students.length > 0) {
-  contextRows.push(`District : ${students[0].DistrictName}`)
-} else if (ZoneId && ZoneId !== 0 && students.length > 0) {
-  contextRows.push(`Zone : ${students[0].ZoneName}`)
+if (DistrictId && DistrictId !== 0 && filteredStudents.length > 0) {
+  contextRows.push(`District : ${filteredStudents[0].DistrictName}`)
+} else if (ZoneId && ZoneId !== 0 && filteredStudents.length > 0) {
+  contextRows.push(`Zone : ${filteredStudents[0].ZoneName}`)
 }
 
 
 const handleExport = () => {
   exportToExcel({
-    data: students,
+    data: filteredStudents,
     columns: excelColumns,
     sheetName: 'Admitted Students',
     fileName: 'Admitted_Students',
@@ -96,7 +105,7 @@ const handleExport = () => {
     <>
       <div className='white-box shadow-sm'>
       {/* Header */}
-      <div className="row align-items-center mb-3">
+      <div className="row align-items-center mb-3 gy-3">
         <div className="col-sm-6">
           <h5 className="fw-bold" style={{ color: '#cc1178' }}>
             Admitted Students List
@@ -106,7 +115,7 @@ const handleExport = () => {
           <button
   className="btn btn-success btn-sm me-2"
   onClick={handleExport}
-  disabled={loading || students.length === 0}
+  disabled={loading || filteredStudents.length === 0}
 >
   Export Excel
 </button>
@@ -114,6 +123,9 @@ const handleExport = () => {
           <button className="btn btn-secondary btn-sm" onClick={() => navigate(-1)}>
             Back
           </button>
+        </div>
+        <div className='col-sm-12'>
+          <input type='text' placeholder='Search by Student Name, or School Code or School Name' className='form-control' value={searchInput} onChange={(e) => setSearchInput(e.target.value)} />
         </div>
       </div>
 
@@ -150,8 +162,7 @@ const handleExport = () => {
               <th>Name of Hospital</th>
               <th>Date of Admission</th>
               <th>Diagnosis</th>
-              <th>Doctor Remarks</th>
-              <th>General Remarks</th>
+              <th>Remarks</th>
               <th>Date of Discharge</th>
               <th>School Rejoined Date</th>
             </tr>
@@ -163,14 +174,14 @@ const handleExport = () => {
                   Loading...
                 </td>
               </tr>
-            ) : students.length === 0 ? (
+            ) : filteredStudents.length === 0 ? (
               <tr>
                 <td colSpan="10" className="text-center">
                   No students found
                 </td>
               </tr>
             ) : (
-              students.map((s) => (
+             filteredStudents.map((s) => (
                 <tr key={s.SchoolID}>
                   <td>{s.ZoneName}</td>
                   <td>{s.DistrictName}</td>
@@ -183,7 +194,6 @@ const handleExport = () => {
                   <td>{s.HospitalAdmittedDate}</td>
                   <td>{s.HospitalAdmittedDiagnosis}</td>
                   <td>{s.HospitalAdmittedRemarks}</td>
-                  <td>{s.AdmittedHospitalRemarks}</td>
                   <td>{s.DischargeDate}</td>
                   <td>{s.SchoolRejoinDate}</td>
                 </tr>

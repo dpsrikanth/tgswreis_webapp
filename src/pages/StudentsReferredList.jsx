@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux'
 import { _fetch } from '../libs/utils'
 import { useNavigate } from 'react-router-dom'
 import { exportToExcel } from '../libs/exportToExcel'
+import { useDebounce } from '../libs/useDebounce'
 
 const StudentsReferredList = () => {
     const token = useSelector((state) => state.userappdetails.TOKEN)
@@ -12,6 +13,8 @@ const StudentsReferredList = () => {
           const [entryDate, setEntryDate] = useState('')
           const [students, setStudents] = useState([])
           const [loading, setLoading] = useState(false)
+          const [searchInput,setSearchInput] = useState('');
+          const debouncedSearch = useDebounce(searchInput,300);
           const navigate = useNavigate();
         
           const fetchStudents = async () => {
@@ -48,7 +51,12 @@ const StudentsReferredList = () => {
         
           useEffect(() => {
            fetchStudents();
-          },[])
+          },[]);
+
+          const filteredStudents = students.filter((s) => {
+            const text = `${s.FName || ''} ${s.SchoolCode || ''} ${s.SchoolName || ''}`.toLowerCase();
+            return text.includes(debouncedSearch.toLowerCase());
+          })
 
 
           const excelColumns = [
@@ -79,7 +87,7 @@ const contextRows = []
 
 const handleExport = () => {
   exportToExcel({
-  data: students,
+  data: filteredStudents,
   columns: excelColumns,
   sheetName: 'Referred Students',
   fileName: 'Referred_Students',
@@ -94,7 +102,7 @@ const handleExport = () => {
     <>
      <div className='white-box shadow-sm'>
       {/* Header */}
-      <div className="row align-items-center mb-3">
+      <div className="row align-items-center mb-3 gy-3">
         <div className="col-sm-6">
           <h5 className="fw-bold" style={{ color: '#cc1178' }}>
            Referred Students List
@@ -104,7 +112,7 @@ const handleExport = () => {
           <button
   className="btn btn-success btn-sm me-2"
   onClick={handleExport}
-  disabled={loading || students.length === 0}
+  disabled={loading || filteredStudents.length === 0}
 >
   Export Excel
 </button>
@@ -112,6 +120,9 @@ const handleExport = () => {
           <button className="btn btn-secondary btn-sm" onClick={() => navigate(-1)}>
             Back
           </button>
+        </div>
+        <div className='col-sm-12'>
+          <input type='text' placeholder='Search by Student Name or School Code or School Name' className='form-control' value={searchInput} onChange={(e) => setSearchInput(e.target.value)} />
         </div>
       </div>
 
@@ -159,15 +170,15 @@ const handleExport = () => {
                   Loading...
                 </td>
               </tr>
-            ) : students.length === 0 ? (
+            ) : filteredStudents.length === 0 ? (
               <tr>
                 <td colSpan="10" className="text-center">
                   No students found
                 </td>
               </tr>
             ) : (
-              students.map((s) => (
-                <tr key={s.SchoolID}>
+              filteredStudents.map((s,i) => (
+                <tr key={s.UserId}>
                   <td>{s.FName}</td>
                   <td>{s.SchoolCode}</td>
                   <td>{s.SchoolName}</td>

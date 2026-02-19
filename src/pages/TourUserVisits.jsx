@@ -7,6 +7,11 @@ import { useSelector } from 'react-redux';
 import { Fancybox } from "@fancyapps/ui";
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
 import { notify } from '../services/notify';
+import { useLocation } from "react-router-dom";
+import {motion,AnimatePresence} from 'framer-motion';
+
+
+
 
 
 const TourUserVisits = () => {
@@ -35,8 +40,12 @@ const apiUrl = window.gc.cdn;
 const [showNotVisitedModal, setShowNotVisitedModal] = useState(false);
 const [remarksTourId, setRemarksTourId] = useState(null);
 const [notVisitedRemarks, setNotVisitedRemarks] = useState('');
+const [highlightId, setHighlightId] = useState(null);
+const completedCardRefs = useRef({});
 
 
+
+const location = useLocation();
 
 
 const fetchTourScheduleInd = async () => {
@@ -223,6 +232,33 @@ const submitNotVisitedRemarks = async () => {
   }
 };
 
+useEffect(() => {
+  if (location.state?.openTab === "completed") {
+    const tabBtn = document.querySelector(`button[data-bs-target="#completed"]`);
+    tabBtn?.click();
+  }
+}, [location.state]);
+
+useEffect(() => {
+  if (!location.state?.highlightId) return;
+
+  const id = location.state.highlightId;
+
+  setHighlightId(id);
+
+  // wait for tab switch + DOM render
+  setTimeout(() => {
+    const el = completedCardRefs.current[id];
+    el?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, 700);
+
+  // highlight stays longer
+  setTimeout(() => setHighlightId(null), 8000);
+}, [location.state]);
+
+
+
+
 
   return (
     <>
@@ -367,7 +403,35 @@ const submitNotVisitedRemarks = async () => {
     <h5>Completed Inspections</h5>
 
     {completed.length ? completed.map(item => (
-      <div key={item.TourDiaryId} className="card mb-3 shadow-sm border-sm">
+      <motion.div
+  key={item.TourDiaryId}
+  ref={(el) => {
+    if (el) completedCardRefs.current[item.TourDiaryId] = el;
+  }}
+  className="card mb-3 shadow-sm border-sm"
+  animate={
+    highlightId === item.TourDiaryId
+      ? {
+          scale: [1, 1.03, 1],
+          boxShadow: [
+            "0 0 0 rgba(0,0,0,0)",
+            "0 0 25px rgba(25,135,84,0.55)",
+            "0 0 0 rgba(0,0,0,0)"
+          ],
+           borderColor: ["#198754", "#20c997", "#198754"],
+          borderWidth: 2
+        }
+      : { scale: 1, boxShadow: "0 0 0 rgba(0,0,0,0)",
+        borderColor: "#dee2e6",
+          borderWidth: 1
+       }
+  }
+  transition={{
+    duration: 1.2,
+    repeat: highlightId === item.TourDiaryId ? 3 : 0,
+    repeatType: "loop"
+  }}
+>
         <div className="card-body d-flex justify-content-between align-items-start">
 
           <div>
@@ -447,7 +511,7 @@ const submitNotVisitedRemarks = async () => {
           </div>
 
         </div>
-      </div>
+      </motion.div>
     )) : <div className="text-muted">No completed visits</div>}
   </div>
     </div>

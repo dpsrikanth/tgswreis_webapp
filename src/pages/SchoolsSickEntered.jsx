@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux'
 import { _fetch } from '../libs/utils'
 import { useNavigate } from 'react-router-dom'
 import { exportToExcel } from '../libs/exportToExcel'
+import { useDebounce } from '../libs/useDebounce'
 
 const SchoolsSickEntered = ({defaultDate}) => {
 
@@ -13,6 +14,8 @@ const SchoolsSickEntered = ({defaultDate}) => {
       const [entryDate, setEntryDate] = useState(defaultDate || '')
       const [schools, setSchools] = useState([])
       const [loading, setLoading] = useState(false)
+      const [searchInput,setSearchInput] = useState('');
+      const debouncedSearch = useDebounce(searchInput,300);
       const navigate = useNavigate();
     
       const fetchSchools = async () => {
@@ -56,6 +59,12 @@ const SchoolsSickEntered = ({defaultDate}) => {
           fetchSchools()
         }
       }, [entryDate])
+
+
+      const filteredSchools = schools.filter((s) => {
+        const text = `${s.SchoolCode} ${s.SchoolName}`.toLowerCase();
+        return text.includes(debouncedSearch.toLowerCase());
+      })
     
       const excelColumns = [
       { header: 'Zone', key: 'ZoneName', width: 20 },
@@ -70,10 +79,10 @@ const SchoolsSickEntered = ({defaultDate}) => {
     
     const contextRows = []
     
-    if (DistrictId && DistrictId !== 0 && schools.length > 0) {
-      contextRows.push(`District : ${schools[0].DistrictName}`)
-    } else if (ZoneId && ZoneId !== 0 && schools.length > 0) {
-      contextRows.push(`Zone : ${schools[0].ZoneName}`)
+    if (DistrictId && DistrictId !== 0 && filteredSchools.length > 0) {
+      contextRows.push(`District : ${filteredSchools[0].DistrictName}`)
+    } else if (ZoneId && ZoneId !== 0 && filteredSchools.length > 0) {
+      contextRows.push(`Zone : ${filteredSchools[0].ZoneName}`)
     }
     
     if (entryDate) {
@@ -83,7 +92,7 @@ const SchoolsSickEntered = ({defaultDate}) => {
     
     const handleExport = () => {
       exportToExcel({
-        data: schools,
+        data: filteredSchools,
         columns: excelColumns,
         sheetName: 'Entered Sick',
         fileName: 'Schools_Entered_Sick',
@@ -123,10 +132,11 @@ const SchoolsSickEntered = ({defaultDate}) => {
             Back
           </button>
         </div>
+       
       </div>
 
       {/* Date Filter */}
-      <div className="row mb-3">
+      <div className="row mb-3 gy-3">
         <div className="col-sm-3">
           <label className="form-label">Select Date</label>
           <input
@@ -140,6 +150,9 @@ const SchoolsSickEntered = ({defaultDate}) => {
           <button className="btn btn-primary" onClick={fetchSchools}>
             Fetch
           </button>
+        </div>
+         <div className='col-sm-12'>
+          <input type='text' placeholder='Search by School Code or School Name' className='form-control' value={searchInput} onChange={(e) => setSearchInput(e.target.value)} />
         </div>
       </div>
 
@@ -165,14 +178,14 @@ const SchoolsSickEntered = ({defaultDate}) => {
                   Loading...
                 </td>
               </tr>
-            ) : schools.length === 0 ? (
+            ) : filteredSchools.length === 0 ? (
               <tr>
                 <td colSpan="8" className="text-center">
                   No schools found
                 </td>
               </tr>
             ) : (
-              schools.map((s,index) => (
+              filteredSchools.map((s,index) => (
                 <tr key={s.SchoolID}>
                   <td>{index+1}</td>
                     <td>{s.ZoneName}</td>

@@ -162,7 +162,8 @@ const _gc = {
         comparativeinspection: {url: 'http://localhost:9001/tour/inspection/comparative', method: 'GET'},
         accessibledcos: {url: 'http://localhost:9001/tour/accessible-dcos', method: 'GET'},
         servertoday: {url: 'http://localhost:9001/system/time', method: 'GET'},
-        dailyoperatorreport: {url: 'http://localhost:9001/tour/daily-operator-report', method: 'GET'}
+        dailyoperatorreport: {url: 'http://localhost:9001/tour/daily-operator-report', method: 'GET'},
+        tourinspectionheatmap: {url: 'http://localhost:9001/tour/inspection-heatmap-today', method: 'GET'},
     },
 };
 window.gc = _gc;

@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux'
 import { _fetch } from '../libs/utils'
 import { useNavigate } from 'react-router-dom'
 import { exportToExcel } from '../libs/exportToExcel'
+import { useDebounce } from '../libs/useDebounce'
 
 
 const StudentsRecoveredList = ({defaultDate}) => {
@@ -13,6 +14,8 @@ const StudentsRecoveredList = ({defaultDate}) => {
       const [entryDate, setEntryDate] = useState(defaultDate || '')
       const [students, setStudents] = useState([])
       const [loading, setLoading] = useState(false)
+      const [searchInput,setSearchInput] = useState('');
+      const debouncedSearch = useDebounce(searchInput,300);
       const navigate = useNavigate();
     
       const fetchStudents = async () => {
@@ -58,6 +61,12 @@ const StudentsRecoveredList = ({defaultDate}) => {
       }, [entryDate])
 
 
+      const filteredStudents = students.filter((s) => {
+        const text = `${s.FName} ${s.SchoolCode} ${s.SchoolName}`.toLowerCase();
+        return text.includes(debouncedSearch.toLowerCase());
+      })
+
+
       const excelColumns = [
   { header: 'Student Name', key: 'FName', width: 22 },
   { header: 'School Code', key: 'SchoolCode', width: 15 },
@@ -69,10 +78,10 @@ const StudentsRecoveredList = ({defaultDate}) => {
 
 const contextRows = []
 
-if (DistrictId && DistrictId !== 0 && students.length > 0) {
-  contextRows.push(`District : ${students[0].DistrictName}`)
-} else if (ZoneId && ZoneId !== 0 && students.length > 0) {
-  contextRows.push(`Zone : ${students[0].ZoneName}`)
+if (DistrictId && DistrictId !== 0 && filteredStudents.length > 0) {
+  contextRows.push(`District : ${filteredStudents[0].DistrictName}`)
+} else if (ZoneId && ZoneId !== 0 && filteredStudents.length > 0) {
+  contextRows.push(`Zone : ${filteredStudents[0].ZoneName}`)
 }
 
 if (entryDate) {
@@ -82,7 +91,7 @@ if (entryDate) {
 
 const handleExport = () => {
   exportToExcel({
-    data: students,
+    data: filteredStudents,
     columns: excelColumns,
     sheetName: 'Recovered Students',
     fileName: 'Recovered_Students',
@@ -114,10 +123,11 @@ const handleExport = () => {
             Back
           </button>
         </div>
+      
       </div>
 
       {/* Date Filter */}
-      <div className="row mb-3">
+      <div className="row mb-3 gy-3">
         <div className="col-sm-3">
           <label className="form-label">Select Date</label>
           <input
@@ -131,6 +141,9 @@ const handleExport = () => {
           <button className="btn btn-primary" onClick={fetchStudents}>
             Fetch
           </button>
+        </div>
+          <div className='col-sm-12'>
+          <input type='text' placeholder='Search by Student Name or School Code or School Name' className='form-control' value={searchInput} onChange={(e) => setSearchInput(e.target.value)} />
         </div>
       </div>
 
@@ -154,14 +167,14 @@ const handleExport = () => {
                   Loading...
                 </td>
               </tr>
-            ) : students.length === 0 ? (
+            ) : filteredStudents.length === 0 ? (
               <tr>
                 <td colSpan="5" className="text-center">
                   No students found
                 </td>
               </tr>
             ) : (
-              students.map((s) => (
+              filteredStudents.map((s) => (
                 <tr key={s.SchoolID}>
                   <td>{s.FName}</td>
                   <td>{s.SchoolCode}</td>

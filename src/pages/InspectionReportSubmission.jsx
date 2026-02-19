@@ -6,6 +6,7 @@ import { _fetch } from "../libs/utils";
 import { useSelector } from 'react-redux';
 import { notify } from '../services/notify';
 import imageCompression from 'browser-image-compression'
+import { motion, AnimatePresence } from "framer-motion";
 
 const InspectionReportSubmission = () => {
     const token = useSelector((state) => state.userappdetails.TOKEN);
@@ -41,6 +42,7 @@ const InspectionReportSubmission = () => {
     const [academicReportFile, setAcademicReportFile] = useState(null);
     const [sections,setSections] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [showSuccess,setShowSuccess] = useState(false);
 
 
   const formatMB = (bytes) => (bytes / (1024 * 1024)).toFixed(2);
@@ -106,6 +108,7 @@ const InspectionReportSubmission = () => {
             console.error('Photo Upload Error:',error)
         }
     }
+    
 
 
     const uploadAcademicReport = async () => {
@@ -791,9 +794,15 @@ if (missing.length > 0) {
 );
 
 if (res.status === 'success') {
+  setShowSuccess(true);
   notify.success(res.message);
   localStorage.removeItem(`inspection_draft_${TourDiaryId}`);
-  navigate('/touruservisits');
+  setTimeout(() => {
+  navigate('/touruservisits',{
+    state: {openTab: 'completed', highlightId: TourDiaryId}
+  });
+  },1500)
+  return;
 } else {
   notify.error(res.message);
 }
@@ -1008,7 +1017,15 @@ useEffect(() => {
 </div>
 
 <div className="p-4">
-    {activeTab === 'general' && (
+  <AnimatePresence mode="wait">
+    <motion.div
+      key={activeTab}
+      initial={{ opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -14 }}
+      transition={{ duration: 0.25 }}
+    >
+  {activeTab === 'general' && (
   <div className='shadow-sm white-box'>
     <h4 className="fw-bold mb-4">General Information</h4>
 
@@ -1386,13 +1403,29 @@ const isIncomplete =
   </div>
       )}
 
-       <button
+       {/* <button
         className="btn btn-primary px-4 py-2 mt-3 fw-semibold"
         disabled={isSubmitting}
         onClick={SubmitCaptureInfo}
       >
         {isSubmitting ? 'Submitting' : 'Submit Report'}
-      </button>
+      </button> */}
+      <motion.button
+  className="btn btn-primary px-4 py-2 mt-3 fw-semibold"
+  disabled={isSubmitting}
+  whileTap={{ scale: 0.96 }}
+  whileHover={isSubmitting ? {} : { scale: 1.02 }}
+  onClick={SubmitCaptureInfo}
+>
+  {isSubmitting ? (
+    <>
+      <span className="spinner-border spinner-border-sm me-2" />
+      Submitting...
+    </>
+  ) : (
+    "Submit Report"
+  )}
+</motion.button>
     </div>
   </div>
 )}
@@ -1422,12 +1455,21 @@ const isIncomplete =
 
   </div>
 </div>
+    </motion.div>
+    </AnimatePresence>
+  
 
 
 </div>
 
-{showGeoModal && ( <div class="modal show fade" id="missedModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{ display: "block", backgroundColor: 'rgba(0,0,0,0.5)' }}>
-        <div class="modal-dialog modal-lg">
+{showGeoModal && ( 
+  <div class="modal show fade" id="missedModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{ display: "block", backgroundColor: 'rgba(0,0,0,0.5)' }}>
+        <motion.div
+  className="modal-dialog modal-lg"
+  initial={{ opacity: 0, scale: 0.95, y: 20 }}
+  animate={{ opacity: 1, scale: 1, y: 0 }}
+  transition={{ duration: 0.2 }}
+>
           <div class="modal-content">
             <div class="modal-header">
               <h1 class="modal-title fs-5" id="exampleModalLabel">Location Verification</h1>
@@ -1472,8 +1514,32 @@ const isIncomplete =
                 
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>)}
+      
+      {showSuccess && (
+  <div
+    className="modal show fade"
+    style={{ display: "block", backgroundColor: "rgba(0,0,0,0.5)" }}
+  >
+    <motion.div
+      className="modal-dialog modal-md"
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+    >
+      <div className="modal-content text-center p-4">
+        <h3 className="text-success fw-bold">✅ Submitted!</h3>
+        <p className="mb-0">
+          Inspection report has been submitted successfully.
+        </p>
+        <small className="text-muted">
+          Redirecting...
+        </small>
+      </div>
+    </motion.div>
+  </div>
+)}
+
      </>
    </div>
     </>

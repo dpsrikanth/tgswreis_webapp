@@ -8,6 +8,7 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import 'react-toastify/dist/ReactToastify.css';
 import 'react-datepicker/dist/react-datepicker.css';
+import "leaflet/dist/leaflet.css";
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import NotificationProvider from './providers/NotificationProvider.jsx';
 

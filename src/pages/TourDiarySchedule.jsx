@@ -7,6 +7,8 @@ import { useSelector } from 'react-redux';
 import Select from 'react-select';
 import {format,startOfMonth,endOfMonth,addMonths,addDays,subDays,isWithinInterval,isSameMonth,differenceInDays,formatDistanceToNow,startOfDay,differenceInCalendarDays} from 'date-fns'
 import { notify } from '../services/notify';
+import { motion, AnimatePresence } from "framer-motion";
+
 
 
 const TourDiarySchedule = () => {
@@ -18,6 +20,7 @@ const requiredVisits = useSelector((state) => state.userappdetails.profileData.M
 const DistrictId = useSelector((state) => state.userappdetails.profileData.DistrictId);
 const ZoneId = useSelector((state) => state.userappdetails.profileData.ZoneId);
 const serverToday = useSelector((state) => state.userappdetails.SERVER_TODAY);
+const bottomRowRef = useRef(null);
 
 
 const todayDate = React.useMemo(() => {
@@ -39,6 +42,7 @@ const [schoolList,setSchoolList] = useState([]);
 const [tourSchedule,setTourSchedule] = useState([]);
 const [tourRows,setTourRows] = useState([]);
 const [selectedMonth,setSelectedMonth] = useState(null);
+const [isSaving,setIsSaving] = useState(false);
 
 useEffect(() => {
 
@@ -273,7 +277,9 @@ const fetchTourScheduleNew = async () => {
 
 const saveTourScheduleNew = async () => {
     if(!UserId) return;
+    if(isSaving) return;
     try{
+      setIsSaving(true);
     const payload = {UserId,Visits: tourRows.map((row, index) => ({
     ...row,
     IsAdditionalVisit: row.IsAdditionalVisit ?? (
@@ -281,19 +287,21 @@ const saveTourScheduleNew = async () => {
 )
   }))}
 
-    _fetch('monthlytourschedulenew',payload,false,token).then(res => {
+   const res = await _fetch('monthlytourschedulenew',payload,false,token);
         if(res.status === 'success'){
             notify.success(res.message);
-            fetchTourScheduleNew();
+           await fetchTourScheduleNew();
         }else {
             notify.error(res.message);
         }
-    })
+    
 
 
     }catch(error){
      console.error("Error saving tour schedule", error);
       notify.error("Error saving schedule");
+    } finally{
+      setIsSaving(false);
     }
 }
 
@@ -420,9 +428,21 @@ else {
                 <div className="row gy-3">
                   
                   <div className="col-sm-12 mt-3">
-  <small className={`fw-semibold ${scheduleColor}`}>
+  {/* <small className={`fw-semibold ${scheduleColor}`}>
     {scheduleMessage}
-  </small>
+  </small> */}
+  <AnimatePresence mode='wait'>
+  <motion.small
+  key={scheduleMessage} // important: re-animates when message changes
+    className={`fw-semibold ${scheduleColor}`}
+    initial={{ opacity: 0, y: -6 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: 6 }}
+    transition={{ duration: 0.25 }}
+  >
+    {scheduleMessage}
+  </motion.small>
+  </AnimatePresence>
 </div>
 
                     <div className="col-sm-4">
@@ -504,13 +524,18 @@ else {
                 </div>
  <button 
   className='btn btn-secondary mt-3'
-  onClick={() =>
+  onClick={() =>{
     setTourRows([...tourRows, {
       VisitDate: "",
       SchoolId: "",
       Purpose: "",
       IsAdditionalVisit: 1,
-    }])
+    }]);
+     notify.info("✅ Additional Visit row added at the bottom. Please scroll down, fill details and click Save.");
+     setTimeout(() => {
+      bottomRowRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 150);
+  }
   }
 >
   + Add Additional Visit
@@ -585,13 +610,43 @@ else {
                              </td>
                             </tr>
                         ))}
+
+                        <tr ref={bottomRowRef}>
+  <td colSpan={5} style={{ padding: 0, border: "none" }}></td>
+</tr>
+
                         
                     </tbody>
                 </table>
 </div>
                
                 <div className='text-center'>
-                 <button className='btn btn-primary' disabled={!canSave} onClick={() => saveTourScheduleNew()}>Save</button>
+                 {/* <button className='btn btn-primary' disabled={!canSave} onClick={() => saveTourScheduleNew()}>Save</button> */}
+                 <motion.div
+  className="text-center"
+  initial={{ opacity: 0 }}
+  animate={{ opacity: 1 }}
+  transition={{ duration: 0.3 }}
+>
+<motion.button
+  className="btn btn-primary"
+  disabled={!canSave || isSaving}
+  onClick={saveTourScheduleNew}
+  whileHover={!canSave || isSaving ? {} : { scale: 1.02 }}
+  whileTap={!canSave || isSaving ? {} : { scale: 0.97 }}
+>
+  {isSaving ? (
+    <>
+      <span className="spinner-border spinner-border-sm me-2" />
+      Saving...
+    </>
+  ) : (
+    "Save"
+  )}
+</motion.button>
+</motion.div>
+                 
+
                 </div>
                 
                 </div>
