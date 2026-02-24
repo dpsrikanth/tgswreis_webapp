@@ -164,6 +164,8 @@ const _gc = {
         servertoday: {url: 'http://localhost:9001/system/time', method: 'GET'},
         dailyoperatorreport: {url: 'http://localhost:9001/tour/daily-operator-report', method: 'GET'},
         tourinspectionheatmap: {url: 'http://localhost:9001/tour/inspection-heatmap-today', method: 'GET'},
+        studentsenthome: {url: 'http://localhost:9001/sick/senthome', method: 'GET'},
+        studentsgeneralsick: {url: 'http://localhost:9001/sick/general' , method: 'GET'}
     },
 };
 window.gc = _gc;

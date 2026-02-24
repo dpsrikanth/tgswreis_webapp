@@ -23,21 +23,21 @@ const OperatorZoneSummary = ({ onZoneSelect }) => {
 
   const CATEGORY_CONFIG = [
   { label: 'General', key: 'GeneralSick', value: 'GENERAL' },
-  { label: 'Fever', key: 'Fever', value: 'FEVER' },
+  // { label: 'Fever', key: 'Fever', value: 'FEVER' },
   { label: 'Admitted', key: 'Admitted', value: 'ADMITTED', danger: true },
   { label: 'Referred', key: 'Referred', value: 'REFERRED' },
   {label: 'Sent Home', key: 'SentHome', value: 'SENT_HOME'},
-  {label: 'Bite', key: 'InsectBite', value: 'INSECT_BITE'}
+  // {label: 'Bite', key: 'InsectBite', value: 'INSECT_BITE'}
 ]
 
 const excelColumns = [
   { header: 'Zone Name', key: 'ZoneName', width: 25 },
   { header: 'General', key: 'GeneralSick', width: 15 },
-  { header: 'Fever', key: 'Fever', width: 15 },
+  // { header: 'Fever', key: 'Fever', width: 15 },
   { header: 'Admitted', key: 'Admitted', width: 15 },
   { header: 'Referred', key: 'Referred', width: 15 },
   { header: 'Sent Home', key: 'SentHome', width: 15 },
-   { header: 'Bite', key: 'InsectBite', width: 15 }
+  //  { header: 'Bite', key: 'InsectBite', width: 15 }
 ]
 
 

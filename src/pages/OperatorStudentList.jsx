@@ -3,15 +3,85 @@ import { useSelector } from 'react-redux'
 import { _fetch } from '../libs/utils'
 import { exportToExcel } from '../libs/exportToExcel'
 
+const getCaseType = (s) => {
+  const tags = [];
+
+  if (s.IsFever === 1 || s.IsFever === true) tags.push("Fever");
+  if (s.InsectByte === 1 || s.InsectByte === true) tags.push("Insect Bite");
+  if (s.IsFoorneCase === 1 || s.IsFoorneCase === true) tags.push("Food Borne");
+
+  return tags.length ? tags.join(", ") : "Other";
+};
+
+
+
+const COMMON_COLUMNS = [
+    {header: "Zone Name", render: (s) => s.ZoneName},
+  {header: "District Name", render: (s) => s.DistrictName},
+  {header: "School Code", render: (s) => s.SchoolCode},
+  {header: "School Name", render: (s) => s.SchoolName},
+  {header: "Student Name", render: (s) => `${s.FName} ${s.LName || ""}`},
+  {header: "Gender" , render: (s) => s.GenderName},
+  {header: "Health Issue Title", render: (s) => (  <span className="badge bg-primary">
+                    {s.HealthIssueTitle}
+                  </span>)},
+  {header: "Health Issue Date", render: (s) => s.HealthIssueDate ? new Date(s.HealthIssueDate).toLocaleDateString("en-IN") : "-" },
+  {header: "Sick From Date", render: (s) => s.SickFromDate ? new Date(s.SickFromDate).toLocaleDateString("en-IN") : "-" },
+  {header: "Health Action Taken", render: (s) => s.HealthActionTaken},
+  {header: "Health Issue Description", render: (s) => s.HealthIssueDescription},
+  {header: "Case Type", render:  (s) => getCaseType(s)},
+  {
+  header: "Prescription/ Attachments",
+  render: (s) =>
+    s.RefDocNo ? (
+      <a
+        href={getFileUrl(s.RefDocNo, "jpg")}
+        target="_blank"
+        rel="noreferrer"
+        onClick={(e) => e.stopPropagation()}
+      >
+        View
+      </a>
+    ) : (
+      "Not Uploaded"
+    )
+} 
+]
+
+const CATEGORY_COLUMNS = {
+  GENERAL: [
+    {header: "Is Student in Wellness Center", render: (s) => s.StudentInWellnessCenter}
+  ],
+  ADMITTED: [
+    {header: "Name of Hospital", render: (s) => s.HospitalAdmittedName},
+    {header: "Date of Admission", render: (s) => s.HospitalAdmittedDate},
+    {header: "Diagnosis", render: (s) => s.HospitalAdmittedDiagnosis},
+    {header: "Remarks", render: (s) => s.HospitalAdmittedRemarks}
+  ],
+  REFERRED: [
+    {header: "Referred Hospital Name", render: (s) => s.ReferredHospitalName},
+    {header: "Referral Date", render: (s) => s.ReferredDate},
+    {header: "Reason for Referral", render: (s) => s.RefrralHospitalReason},
+    {header: "Follow up Status", render: (s) => s.ReferredHospitalStatus}
+  ],
+  SENT_HOME: [
+    {header: "Parent Contact Number", render: (s) => s.SickGroundHomeDate},
+    {header: "Parent Name", render: (s) => s.SickGroundRemarks},
+    {header: "Sent Home Date", render: (s) => s.SickGroundContactNo},
+    {header: "Family Feedback", render: (s) => s.SickGroundFamilyHealthFeedback},
+    {header: "Health Status", render: (s) => s.SickGroundHealthStatus}
+  ]
+}
+
 
 const CATEGORY_BUTTONS = [
   { label: 'All', value: null },
   { label: 'General', value: 'GENERAL' },
-  { label: 'Fever', value: 'FEVER' },
+  // { label: 'Fever', value: 'FEVER' },
   {label: 'Sent Home', value: 'SENT_HOME'},
   { label: 'Admitted', value: 'ADMITTED' },
   { label: 'Referred', value: 'REFERRED' },
-  { label: 'Bite', value: 'INSECT_BITE' }
+  // { label: 'Bite', value: 'INSECT_BITE' }
 ]
 
 const OperatorStudentList = ({
@@ -111,6 +181,13 @@ const getFileUrl = (refDocNo,fileType="jpg") => {
 }
 
 
+const columns = [
+  ...COMMON_COLUMNS,
+  ...(CATEGORY_COLUMNS[selectedCategory] || [])
+]
+
+
+
   return (
     <div className="white-box shadow-sm">
 
@@ -163,7 +240,7 @@ const getFileUrl = (refDocNo,fileType="jpg") => {
       <div className="table-responsive">
         <table className="table table-bordered table-hover">
           <thead>
-            <tr>
+            {/* <tr>
               <th>Name</th>
               <th>Gender</th>
               <th>School</th>
@@ -176,16 +253,19 @@ const getFileUrl = (refDocNo,fileType="jpg") => {
               <th>Any Medical Emergencies</th>
               <th>Is Student in Wellness Center</th>
               <th>Uploaded Document</th>
+            </tr> */}
+            <tr>
+              {columns.map((col) => (<th key={col.header}>{col.header}</th>))}
             </tr>
           </thead>
           <tbody>
             {filteredStudents.map((s, idx) => (
               <tr
-                key={idx}
+                key={s.UserId}
                 style={{ cursor: 'pointer' }}
                 onClick={() => onStudentSelect(s.UserId)}
               >
-                <td>{s.FName} {s.LName}</td>
+                {/* <td>{s.FName} {s.LName}</td>
                 <td>{s.GenderName}</td>
                 <td>{s.SchoolName}</td>
                 <td>
@@ -203,13 +283,16 @@ const getFileUrl = (refDocNo,fileType="jpg") => {
                   <td>{s.HealthActionTaken}</td>
                   <td>{s.IsMedicalEmergencies}</td>
                   <td>{s.StudentInWellnessCenter}</td>
-                  <td>{s.RefDocNo ? (<a href={getFileUrl(s.RefDocNo, "jpg")} target="_blank" rel="noreferrer">View</a>) : (<span>No Document Uploaded</span>)}</td>
+                  <td>{s.RefDocNo ? (<a href={getFileUrl(s.RefDocNo, "jpg")} target="_blank" rel="noreferrer">View</a>) : (<span>No Document Uploaded</span>)}</td> */}
+                  {columns.map((col) => (
+                    <td key={col.header}>{col.render(s)}</td>
+                  ))}
               </tr>
             ))}
 
             {filteredStudents.length === 0 && (
               <tr>
-                <td colSpan="5" className="text-center">
+                <td colSpan={columns.length} className="text-center">
                   No records found
                 </td>
               </tr>

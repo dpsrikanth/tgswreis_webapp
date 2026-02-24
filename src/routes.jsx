@@ -79,6 +79,8 @@ import ComparativeInspection from './pages/ComparativeInspection';
 import DailyOperatorReport from './pages/DailyOperatorReport';
 import TelanganaSchoolMap from './components/TelanganaSchoolMap';
 import TelanganaD3Map from './components/TelanganaD3Map';
+import StudentsSentHome from './pages/StudentsSentHome';
+import StudentsGeneralSick from './pages/StudentsGeneralSick';
 const AppRoutes = () => {
   return (
     <Router>
@@ -545,6 +547,19 @@ const AppRoutes = () => {
 <Route path="/map/d3" element={
   <ProtectedRoute>
     <TelanganaD3Map />
+  </ProtectedRoute>
+} />
+
+
+<Route path="/sick/senthome" element={
+  <ProtectedRoute>
+    <StudentsSentHome />
+  </ProtectedRoute>
+} />
+
+<Route path="/sick/general" element={
+  <ProtectedRoute>
+    <StudentsGeneralSick />
   </ProtectedRoute>
 } />
 

@@ -49,7 +49,8 @@ const getSickStats = async({queryKey}) => {
     general: res.data[0].General,
     fever: res.data[0].Fever,
     referral: res.data[0].ReferralCases,
-    admitted: res.data[0].AdmittedCases
+    admitted: res.data[0].AdmittedCases,
+    senthome: res.data[0].SentHomeCases
   };
   
 }
@@ -653,7 +654,14 @@ useEffect(() => {
         navigate('/sickentered') // optional list page
       }}
     >
-      <h3 className="fw-bold">{statusLoading ? '-' : dailyStatusCounts?.hasSickEntries ?? 0}</h3>
+      <h3 className="fw-bold">{statusLoading ? '-' :(
+        <CountUp 
+         end = {dailyStatusCounts?.hasSickEntries ?? 0}
+         separator=','
+        />
+      )}
+        
+        </h3>
       <h6 className="fw-bold">Schools with Sick Entries</h6>
       <small>Today</small>
     </div>
@@ -704,8 +712,12 @@ useEffect(() => {
         <div className="col-sm-12 mt-3">
             <div className="row g-3">
         <div className="col-md-3">
-          <a href="">
-          <div className="white-box d-flex justify-content-between shadow-sm">
+       
+          <div className="white-box d-flex justify-content-between shadow-sm"
+          style={{ cursor: 'pointer' }}
+            onClick={() => {
+        navigate('/sick/general') }}
+          >
             <div>
               <h3 className="fw-bold maroon">{sickStatsLoading ? '-' : (
     <CountUp
@@ -720,40 +732,7 @@ useEffect(() => {
               <i className="bi bi-file-medical maroon" style={{fontSize:'28px'}}></i>
             </div>
           </div>
-          </a>
-        </div>
-        <div className="col-md-3">
-          <a href="">
-          <div
-            className="white-box d-flex justify-content-between shadow-sm"
-          >
-            <div>
-             
-              <h3 className="fw-bold" style={{color:'#FFA500'}}>{sickStatsLoading ? '-' : sickStats?.fever ?? 0}</h3>
-               <h6 className="fw-bold">Fever Cases</h6>
-            </div>
-            <div className="text-end">
-             <i className="bi bi-thermometer-half" style={{fontSize:'28px',color:'#FFA500'}}></i>
-             
-            </div>
-          </div>
-          </a>
-        </div>
-        <div className="col-md-3">
-          <div
-            className="white-box d-flex justify-content-between shadow-sm" 
-            style={{ cursor: 'pointer' }}
-            onClick={() => {
-              navigate('/sick/referred')
-            }}>
-            <div>
-              <h3 className="fw-bold text-success">{sickStatsLoading ? '-' : sickStats?.referral ?? 0}</h3>
-                <h6 className="fw-bold">Referral Cases</h6>
-            </div>
-            <div className="text-end">
-              <i className="bi bi-bandaid-fill text-success" style={{fontSize:'28px'}}></i>
-            </div>
-          </div>
+        
         </div>
         <div className="col-md-3">
           <div
@@ -772,6 +751,44 @@ useEffect(() => {
             </div>
           </div>
         </div>
+        <div className="col-md-3">
+          <div
+            className="white-box d-flex justify-content-between shadow-sm" 
+            style={{ cursor: 'pointer' }}
+            onClick={() => {
+              navigate('/sick/referred')
+            }}>
+            <div>
+              <h3 className="fw-bold text-success">{sickStatsLoading ? '-' : sickStats?.referral ?? 0}</h3>
+                <h6 className="fw-bold">Referral Cases</h6>
+            </div>
+            <div className="text-end">
+              <i className="bi bi-bandaid-fill text-success" style={{fontSize:'28px'}}></i>
+            </div>
+          </div>
+        </div>
+        <div className="col-md-3">
+          
+          <div
+            className="white-box d-flex justify-content-between shadow-sm"
+            style={{ cursor: 'pointer' }}
+            onClick={() => {
+        navigate('/sick/senthome') }}
+          >
+            <div>
+             
+              <h3 className="fw-bold" style={{color:'#FFA500'}}>{sickStatsLoading ? '-' : sickStats?.senthome ?? 0}</h3>
+               <h6 className="fw-bold">Sent Home Cases</h6>
+            </div>
+            <div className="text-end">
+             <i className="bi bi-house-door-fill" style={{fontSize:'28px',color:'#FFA500'}}></i>
+             
+            </div>
+          </div>
+         
+        </div>
+        
+        
       </div>
         </div>
 
