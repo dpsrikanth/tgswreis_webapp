@@ -14,6 +14,10 @@ const getCaseType = (s) => {
 };
 
 
+const getFileUrl = (refDocNo,fileType="jpg",schoolCode) => {
+  return `https://tgswreisuat.unicampus.in/viewfile.aspx?fname=${refDocNo}&ftype=${fileType}&rdoctype=Health&SchoolCode=${schoolCode}`
+}
+
 
 const COMMON_COLUMNS = [
     {header: "Zone Name", render: (s) => s.ZoneName},
@@ -35,7 +39,7 @@ const COMMON_COLUMNS = [
   render: (s) =>
     s.RefDocNo ? (
       <a
-        href={getFileUrl(s.RefDocNo, "jpg")}
+        href={getFileUrl(s.RefDocNo, "jpg",s.SchoolCode)}
         target="_blank"
         rel="noreferrer"
         onClick={(e) => e.stopPropagation()}
@@ -176,9 +180,7 @@ const handleExport = () => {
 }
 
 
-const getFileUrl = (refDocNo,fileType="jpg") => {
-  return `https://tgswreisuat.unicampus.in/viewfile.aspx?fname=${refDocNo}&ftype=${fileType}&rdoctype=Health`
-}
+
 
 
 const columns = [

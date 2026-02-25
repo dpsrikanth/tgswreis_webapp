@@ -7,6 +7,7 @@ import ExcelJS from 'exceljs';
 import {saveAs} from 'file-saver';
 import DataTable from 'react-data-table-component';
 import { notify } from '../services/notify';
+import { useDebounce } from '../libs/useDebounce'
 
 
 const ComplaintDashboard = () => {
@@ -26,6 +27,8 @@ const [selectedRow,setSelectedRow] = useState('');
 const [notification, setNotification] = useState(null);
 const [toDate,setToDate] = useState('');
 const [fromDate,setFromDate] = useState('');
+const [searchInput,setSearchInput] = useState('');
+const debouncedSearch = useDebounce(searchInput,300);
 const navigate = useNavigate();
 
 const fetchComplaintStats = async () => {
@@ -271,6 +274,17 @@ const getStatusClass = (status) => {
   }
 }
 
+
+const filteredComplaintLogs = complaintLogs.filter((c) => {
+  const text = `${c.ComplaintId}
+    ${c.GSMNumber}
+    ${c.SchoolId}
+    ${c.PartnerName}
+    ${c.TypeOfCall}
+    ${c.Status}`.toLowerCase();
+  return text.includes(debouncedSearch.toLowerCase());
+})
+
 const DailyLogsReport = async (data) => {
  const workbook = new ExcelJS.Workbook();
 
@@ -285,6 +299,7 @@ const DailyLogsReport = async (data) => {
   {header: 'Complaint ID', key: 'ComplaintId'},
   {header: 'Card/ GSM Number', key: 'GSMNumber'},
   {header: 'School Code', key: 'SchoolId'},
+  {header: 'School Name', key: 'PartnerName'},
   {header: 'Call Notes', key: 'CallNotes'},
   {header: 'Action Taken', key: 'ActionTaken'},
   {header: 'Type of Call', key: 'TypeOfCall'},
@@ -377,6 +392,7 @@ const BetweenExcelReport = async (data) => {
   {header: 'Complaint ID', key: 'ComplaintId'},
   {header: 'Card/ GSM Number', key: 'GSMNumber'},
   {header: 'School Code', key: 'SchoolId'},
+  {header: 'School Name', key: 'PartnerName'},
   {header: 'Call Notes', key: 'CallNotes'},
   {header: 'Action Taken', key: 'ActionTaken'},
   {header: 'Type of Call', key: 'TypeOfCall'},
@@ -505,12 +521,22 @@ const columns = [
         selector: row => row.GSMNumber,
         sortable:true
     },
+     {
+        name: 'School Code',
+        selector: row => row.SchoolId,
+        cell: row => (
+            <div style={{ whiteSpace: 'pre-line',wordBreak: 'break-word' }}>
+                {row.SchoolId}
+            </div>
+        ),
+        sortable:true
+    },
     {
         name: 'School Name',
         selector: row => row.PartnerName,
         cell: row => (
             <div style={{ whiteSpace: 'pre-line',wordBreak: 'break-word' }}>
-                {row.PartnerName}
+                {row.PartnerName.replace(/^TGSWREIS\s*/i,'')}
             </div>
         ),
         sortable:true
@@ -539,7 +565,7 @@ const columns = [
         name: 'Call Notes',
         selector: row => row.CallNotes,
          cell: row => (
-            <div style={{ whiteSpace: 'pre-line',wordBreak: 'break-word' }}>
+            <div style={{ whiteSpace: 'nowrap',textOverflow: 'ellipsis',overflow:'hidden',cursor:'pointer',maxWidth:'150px' }} title={row.CallNotes}>
                 { row.CallNotes}
             </div>
         ),
@@ -549,7 +575,7 @@ const columns = [
         name: 'Action Taken',
         selector: row => row.ActionTaken,
         cell: row => (
-        <div style={{ whiteSpace: 'pre-line' }}>
+        <div style={{ whiteSpace: 'nowrap',textOverflow: 'ellipsis',overflow:'hidden',cursor:'pointer',maxWidth:'150px' }} title={row.ActionTaken}>
             {row.ActionTaken || ''}
         </div>
     ),
@@ -559,7 +585,7 @@ const columns = [
         name: 'Remarks',
         selector: row => row.Remarks,
          cell: row => (
-        <div style={{ whiteSpace: 'pre-line' }}>
+        <div style={{ whiteSpace: 'nowrap',textOverflow: 'ellipsis',overflow:'hidden',cursor:'pointer',maxWidth:'150px' }} title={row.Remarks}>
             {row.Remarks || ''}
         </div>
     ),
@@ -745,6 +771,15 @@ const columns = [
                 
                 
                 <div className="table-header">
+                  <div className="col-sm-3 pt-3">
+  <input
+    type="text"
+    className="form-control"
+    placeholder="Search by School Code or School Name..."
+    value={searchInput}
+    onChange={(e) => setSearchInput(e.target.value)}
+  />
+</div>
                     {/* <h5><span className="pink fw-bold">List of Complaints</span></h5> */}
                      {/* <div className="table-tools">
                         <input type="text" className="form-control" placeholder="Search..." />
@@ -771,7 +806,7 @@ const columns = [
 
                   <DataTable 
                   columns={columns}
-                  data={complaintLogs}
+                  data={filteredComplaintLogs}
                   pagination
                   striped
                   persistTableHead
